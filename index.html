@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amy's 24-Week Transformation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Amy's Workout">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    // Firebase imports - ADD YOUR CONFIG BELOW
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+    // 🔥 REPLACE THIS WITH YOUR FIREBASE CONFIG 🔥
+    const firebaseConfig = {
+      {
+     apiKey: "AIzaSyAbC123dEfG456...",
+     authDomain: "amy-workout-app.firebaseapp.com",
+     databaseURL: "https://amy-workout-app-default-rtdb.firebaseio.com",
+     projectId: "amy-workout-app",
+     storageBucket: "amy-workout-app.appspot.com",
+     messagingSenderId: "123456789",
+     appId: "1:123456789:web:abc123"
+   }
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+    
+    let userId = null;
+
+    // Auto sign in anonymously
+    signInAnonymously(auth).catch((error) => {
+      console.error("Auth error:", error);
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userId = user.uid;
+        loadDataFromFirebase();
+      }
+    });
+
+    // Save to Firebase
+    window.saveToFirebase = async (key, value) => {
+      if (!userId) return;
+      try {
+        await set(ref(database, `users/${userId}/${key}`), value);
+      } catch (error) {
+        console.error("Save error:", error);
+      }
+    };
+
+    // Load from Firebase
+    async function loadDataFromFirebase() {
+      if (!userId) return;
+      
+      try {
+        const weekSnapshot = await get(ref(database, `users/${userId}/currentWeek`));
+        if (weekSnapshot.exists()) {
+          window.setCurrentWeek(weekSnapshot.val());
+        }
+        
+        const workoutsSnapshot = await get(ref(database, `users/${userId}/completedWorkouts`));
+        if (workoutsSnapshot.exists()) {
+          window.setCompletedWorkouts(workoutsSnapshot.val());
+        }
+      } catch (error) {
+        console.error("Load error:", error);
+      }
+    }
+
+    // Listen for changes (sync across devices)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userId = user.uid;
+        
+        onValue(ref(database, `users/${userId}/currentWeek`), (snapshot) => {
+          if (snapshot.exists()) {
+            window.setCurrentWeek(snapshot.val());
+          }
+        });
+        
+        onValue(ref(database, `users/${userId}/completedWorkouts`), (snapshot) => {
+          if (snapshot.exists()) {
+            window.setCompletedWorkouts(snapshot.val());
+          }
+        });
+      }
+    });
+  </script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen">
+  <div id="app"></div>
+
+  <script>
+    const exercises = {
+      "Barbell/Dumbbell Bench Press": "Lie on bench, feet flat. Grip bar slightly wider than shoulders. Lower to chest with control, elbows at 45°. Press up until arms nearly straight. Alt: Smith machine, dumbbell, machine press.",
+      "Incline Barbell/DB Press": "Same as bench but on 30-45° incline. Targets upper chest. Lower to upper chest, press up. Alt: Smith incline, machine.",
+      "Barbell/DB Shoulder Press": "Seated or standing. Bar/dumbbells at shoulders. Press overhead until arms nearly straight. Lower with control. Alt: Smith, machine press.",
+      "Dips": "Hands on parallel bars, lower until upper arms parallel to floor (90° bend). Press up. Lean forward slightly for chest. Alt: Assisted dips, bench dips, machine.",
+      "Pull-ups": "Grip bar shoulder-width or wider. Dead hang. Pull until chin clears bar, elbows down and back. Lower with control. Alt: Assisted, band, negatives.",
+      "Negative Pull-ups": "Jump/step to top (chin over bar). Lower as slowly as possible (5-10 seconds). Builds incredible strength!",
+      "Lat Pulldowns": "Sit at machine. Grip bar wider than shoulders. Pull to upper chest, squeeze shoulder blades. Slowly return. Alt: Wide, close, neutral grip.",
+      "Barbell Rows": "Bend at hips, back flat, knees bent. Pull bar to lower chest/upper abs, squeeze shoulder blades. Alt: Smith, DB, cable, machine.",
+      "Barbell Squats": "Bar on upper back. Feet shoulder-width. Squat down like sitting, chest up, knees over toes. Drive through heels. Alt: Smith, goblet, leg press.",
+      "Barbell RDLs": "Bar at thighs. Slight knee bend. Push hips back, lower bar along legs until hamstring stretch. Squeeze glutes to stand. Alt: DB RDLs, machine.",
+      "Barbell/DB Curls": "Stand, weight at thighs, palms forward. Curl up, keep upper arms still. Squeeze at top. Lower slowly. Alt: EZ-bar, cable, machine.",
+      "Hanging Leg Raises": "Hang from bar. Raise knees/legs toward chest, engage abs. Lower with control. Don't swing. Alt: Lying leg raises, machine.",
+      "Plank": "Forearms on ground, elbows under shoulders. Body straight head to heels. Squeeze abs, glutes, quads. Don't let hips sag!",
+      "Face Pulls": "Cable at upper height, rope attachment. Pull toward face, separate rope ends. Squeeze shoulder blades. Critical for shoulder health!"
+    };
+
+    const phases = {
+      1: {
+        name: "Foundation Building",
+        weeks: "Weeks 1-8",
+        focus: "Build base strength, establish movement patterns, begin fat loss",
+        days: {
+          1: {
+            name: "Upper Body Push",
+            exercises: [
+              { name: "Incline Barbell or DB Press", sets: "3x8-12", alt: "Smith Machine, Incline Machine" },
+              { name: "Barbell or DB Shoulder Press", sets: "3x10-12", alt: "Machine Press, Smith" },
+              { name: "Assisted Dips OR Bench Dips", sets: "3x5-8", alt: "Machine Dips, Band-Assisted" },
+              { name: "Dumbbell Lateral Raises", sets: "3x12-15", alt: "Cable Laterals, Machine" },
+              { name: "Tricep Cable Pushdowns", sets: "3x10-12", alt: "Overhead Extensions, Machine" },
+              { name: "Push-ups", sets: "3x max", alt: "Knee Push-ups, Incline" }
+            ],
+            notes: "Rest 90-120 seconds between sets. Focus on form over weight. Use Smith machine for safety if training alone."
+          },
+          2: {
+            name: "Lower Body & Core",
+            exercises: [
+              { name: "Barbell Squats OR Goblet Squats", sets: "3x10-12", alt: "Smith Machine, Leg Press" },
+              { name: "Barbell Romanian Deadlifts", sets: "3x10-12", alt: "Dumbbell RDLs, Machine" },
+              { name: "Barbell or DB Lunges", sets: "3x8-10/leg", alt: "Smith Lunges, Machine" },
+              { name: "Plank", sets: "3x30-45s", alt: "Knee Plank" },
+              { name: "Dead Bug", sets: "3x10/side", alt: "Leg Lowers" },
+              { name: "Bicycle Crunches", sets: "3x15-20", alt: "Regular Crunches" }
+            ],
+            notes: "Focus on hip hinge pattern for RDLs. Core work is essential for six-pack development!"
+          },
+          3: {
+            name: "Cardio & Recovery",
+            type: "cardio",
+            options: ["Stationary Bike: 30 min moderate", "Elliptical: 30 min moderate", "Treadmill Walk: 30 min"],
+            notes: "Choose what feels best for breathing. Plus 15 min stretching."
+          },
+          4: {
+            name: "Upper Body Pull",
+            exercises: [
+              { name: "Barbell Rows", sets: "4x10-12", alt: "DB Rows, Smith, Cable, Machine" },
+              { name: "Negative Pull-ups", sets: "3x3-5", alt: "Assisted Pull-ups, Band" },
+              { name: "Lat Pulldowns (heavy)", sets: "3x8-10", alt: "Wide Grip, Close Grip" },
+              { name: "Barbell or DB Bicep Curls", sets: "3x10-12", alt: "EZ-Bar, Cable, Machine" },
+              { name: "Cable Face Pulls", sets: "3x15", alt: "Band Pulls, DB Reverse Flyes" },
+              { name: "Hammer Curls", sets: "3x10-12", alt: "Cable Rope, Cross-Body" }
+            ],
+            notes: "Negative pull-ups build incredible strength! Jump up, lower slowly for 5+ seconds. Your path to real pull-ups!"
+          },
+          5: {
+            name: "Cardio",
+            type: "cardio",
+            options: ["Elliptical: 30 min", "Bike: 40 min", "Rowing: 25 min"],
+            notes: "Choose based on how you feel today."
+          },
+          6: {
+            name: "REST",
+            type: "rest",
+            notes: "Complete rest or light walking. Focus on sleep, hydration, meal prep."
+          },
+          7: {
+            name: "REST",
+            type: "rest",
+            notes: "Complete rest. Recovery is when you get stronger!"
+          }
+        }
+      },
+      2: {
+        name: "Strength & Hypertrophy",
+        weeks: "Weeks 9-16",
+        focus: "Build significant muscle, increase strength, accelerate fat loss",
+        days: {
+          1: {
+            name: "Push",
+            exercises: [
+              { name: "Barbell Bench Press", sets: "4x6-10", alt: "DB Bench, Smith" },
+              { name: "Barbell or DB Shoulder Press", sets: "4x8-10", alt: "Smith, Machine" },
+              { name: "Incline Barbell or DB Press", sets: "3x8-12", alt: "Smith Incline" },
+              { name: "Dips (band-assisted if needed)", sets: "4x6-10", alt: "Assisted Machine, Bench Dips" },
+              { name: "Dumbbell Lateral Raises", sets: "4x12-15", alt: "Cable, Machine" },
+              { name: "Overhead Tricep Extension", sets: "3x10-12", alt: "Close-Grip Bench, Cable" },
+              { name: "Push-ups", sets: "3x max", alt: "Decline, Weighted" }
+            ],
+            notes: "Increase weight when you complete all reps with good form."
+          },
+          2: {
+            name: "Pull",
+            exercises: [
+              { name: "Negative Pull-ups", sets: "4x4-6", alt: "Assisted with lighter help" },
+              { name: "Barbell Rows (heavy)", sets: "4x8-10", alt: "DB, Smith, T-Bar, Machine" },
+              { name: "Single Arm DB Row", sets: "3x10", alt: "Cable Row, Machine" },
+              { name: "Dumbbell Pullovers", sets: "3x10-12", alt: "Cable, Machine" },
+              { name: "Barbell Curls", sets: "4x8-12", alt: "EZ-Bar, DB, Cable, Machine" },
+              { name: "Hammer Curls", sets: "3x10-12", alt: "Cable Rope, Cross-Body" }
+            ],
+            notes: "GOAL: By week 12, attempt your first full strict pull-up!"
+          },
+          3: {
+            name: "Legs & Core",
+            exercises: [
+              { name: "Barbell Back Squats", sets: "4x8-10", alt: "Smith, Goblet, Leg Press" },
+              { name: "Barbell RDLs", sets: "4x8-10", alt: "Dumbbell, Machine" },
+              { name: "Bulgarian Split Squats", sets: "3x10/leg", alt: "Lunges, Step-ups" },
+              { name: "Hanging Knee Raises", sets: "4x10-15", alt: "Lying Leg Raises, Machine" },
+              { name: "Russian Twists with DB", sets: "3x20", alt: "Bicycle Crunches" },
+              { name: "Plank", sets: "3x60s", alt: "RKC Plank" }
+            ],
+            notes: "Core work develops your six-pack!"
+          },
+          4: {
+            name: "Cardio & Core",
+            type: "cardio",
+            options: ["Rowing: 20 min intervals (1 min hard, 2 min easy)", "Elliptical: 30 min steady", "Bike: 30 min steady"],
+            coreWork: ["Dead Bug: 3x12/side", "Side Planks: 3x45s/side", "Cable Crunches: 3x15-20"],
+            notes: "Cardio choice based on breathing comfort."
+          },
+          5: {
+            name: "Full Body Power",
+            exercises: [
+              { name: "DB or Barbell Clean & Press", sets: "4x6-8", alt: "Barbell version" },
+              { name: "Barbell Front Squats", sets: "3x8-10", alt: "Goblet, Back Squats" },
+              { name: "Barbell Bench Press", sets: "3x8-10", alt: "DB, Smith" },
+              { name: "Pull-up Practice", sets: "4x max", alt: "Assisted, Negatives, Full" },
+              { name: "Dips", sets: "3x max", alt: "Assisted, Bench" },
+              { name: "Walking Lunges", sets: "3x12/leg", alt: "Barbell Lunges, DB" }
+            ],
+            notes: "Maximum effort on pull-ups!"
+          },
+          6: {
+            name: "Steady Cardio",
+            type: "cardio",
+            options: ["Bike: 45 min moderate", "Elliptical: 45 min moderate"],
+            notes: "Comfortable, sustainable pace."
+          },
+          7: {
+            name: "REST",
+            type: "rest",
+            notes: "Complete rest. Meal prep and recovery."
+          }
+        }
+      },
+      3: {
+        name: "Peak Performance",
+        weeks: "Weeks 17-24",
+        focus: "Achieve pull-ups & dips, reveal six-pack, maximum definition",
+        days: {
+          1: {
+            name: "Heavy Push",
+            exercises: [
+              { name: "Barbell Bench Press", sets: "5x5-8 (heavy)", alt: "Smith, Dumbbell" },
+              { name: "Barbell Military Press", sets: "4x6-8", alt: "DB, Smith, Machine" },
+              { name: "Weighted Dips", sets: "4x6-10", alt: "Bodyweight, Assisted" },
+              { name: "Incline DB Flyes", sets: "3x10-12", alt: "Cable, Machine" },
+              { name: "Close-Grip Barbell Press", sets: "3x8-10", alt: "DB, Smith" },
+              { name: "Cable Tricep Extensions", sets: "3x12-15", alt: "Rope, Bar, Machine" }
+            ],
+            notes: "Heavy weight, perfect form. By now dips should feel strong!"
+          },
+          2: {
+            name: "Heavy Pull - PULL-UP EMPHASIS",
+            exercises: [
+              { name: "Strict Pull-ups", sets: "5x max (GOAL: 5+ per set)", alt: "Weighted if able" },
+              { name: "Barbell Rows", sets: "4x6-8 (heavy)", alt: "T-Bar, DB, Smith, Machine" },
+              { name: "Wide Grip Lat Pulldown", sets: "4x8-10", alt: "Close Grip" },
+              { name: "Dumbbell Shrugs", sets: "4x12-15", alt: "Barbell, Smith, Machine" },
+              { name: "Barbell or EZ-Bar Curls", sets: "4x8-10", alt: "DB, Cable, Machine" },
+              { name: "Concentration Curls", sets: "3x10-12", alt: "Cable, Preacher" }
+            ],
+            notes: "VICTORY! By week 20, you're crushing 5+ pull-ups per set!"
+          },
+          3: {
+            name: "Legs & Abs - SIX-PACK FOCUS",
+            exercises: [
+              { name: "Barbell Front Squats", sets: "4x8-10", alt: "Goblet, Back Squats, Smith, Leg Press" },
+              { name: "Barbell RDLs", sets: "4x8-10", alt: "DB, Stiff-Leg DL, Machine" },
+              { name: "Walking Lunges (Barbell/DB)", sets: "4x12/leg", alt: "Split Squats, Machine" },
+              { name: "Hanging Leg Raises", sets: "4x12-15", alt: "Knee Raises, Lying" },
+              { name: "Cable Woodchoppers", sets: "3x12/side", alt: "Med Ball, DB" },
+              { name: "Weighted Decline Sit-ups", sets: "4x15-20", alt: "Regular Decline, Crunches" },
+              { name: "Plank with Shoulder Taps", sets: "3x20", alt: "Regular Plank" }
+            ],
+            notes: "Six-pack should be clearly visible now! These exercises sculpt definition."
+          },
+          4: {
+            name: "HIIT & Core",
+            type: "cardio",
+            options: ["Rowing Intervals: 20 min (30s sprint, 90s recover)", "Elliptical Intervals: 25 min", "Bike Intervals: 25 min"],
+            circuit: ["Ab Circuit (3 rounds): Mountain Climbers (20), Bicycle Crunches (25), Plank (60s), Russian Twists (30), Rest 60s"],
+            notes: "High intensity - push yourself!"
+          },
+          5: {
+            name: "Upper Volume - LAT & ARM EMPHASIS",
+            exercises: [
+              { name: "Push-ups", sets: "5x max", alt: "Weighted, Decline" },
+              { name: "Dumbbell Pullovers", sets: "4x12-15", alt: "Cable, Barbell" },
+              { name: "DB Shoulder Circuit", sets: "3x12 each", alt: "Front/Side/Rear raises" },
+              { name: "Dips", sets: "4x max", alt: "Weighted if able" },
+              { name: "Cable Face Pulls", sets: "4x15-20", alt: "Band, Reverse Flyes" },
+              { name: "Barbell Curl 21s", sets: "3 sets", alt: "7 bottom + 7 top + 7 full" },
+              { name: "Tricep Rope Pushdowns", sets: "4x15-20", alt: "Bar, Machine" }
+            ],
+            notes: "High volume for arm definition. Pullovers great for lats!"
+          },
+          6: {
+            name: "Steady Cardio",
+            type: "cardio",
+            options: ["Elliptical: 45-60 min conversational pace", "Bike: 45-60 min", "Optional morning fasted cardio 20-30 min"],
+            notes: "Enjoy the workout!"
+          },
+          7: {
+            name: "Active Recovery or Rest",
+            type: "rest",
+            notes: "Light mobility, stretching, walking, or complete rest."
+          }
+        }
+      }
+    };
+
+    const milestones = [
+      { week: 4, text: "Strength increase, movement patterns natural" },
+      { week: 8, text: "Solid foundation, feeling stronger" },
+      { week: 12, text: "First full pull-up attempt!" },
+      { week: 16, text: "Multiple pull-ups possible" },
+      { week: 20, text: "Sets of 5+ pull-ups, abs showing" },
+      { week: 24, text: "Visible six-pack, strong & ripped!" }
+    ];
+
+    let currentView = 'home';
+    let expandedPhase = null;
+    let expandedDay = null;
+    let currentWeek = 1;
+    let completedWorkouts = {};
+
+    window.setCurrentWeek = (week) => {
+      currentWeek = week;
+      render();
+    };
+
+    window.setCompletedWorkouts = (workouts) => {
+      completedWorkouts = workouts;
+      render();
+    };
+
+    function saveWeek(week) {
+      currentWeek = week;
+      if (window.saveToFirebase) {
+        window.saveToFirebase('currentWeek', week);
+      }
+      render();
+    }
+
+    function toggleWorkout(phaseNum, dayNum) {
+      const key = `${phaseNum}-${dayNum}`;
+      completedWorkouts[key] = !completedWorkouts[key];
+      if (window.saveToFirebase) {
+        window.saveToFirebase('completedWorkouts', completedWorkouts);
+      }
+      render();
+    }
+
+    function getCurrentPhase() {
+      if (currentWeek <= 8) return 1;
+      if (currentWeek <= 16) return 2;
+      return 3;
+    }
+
+    function renderHome() {
+      return `
+        <div class="p-4 max-w-4xl mx-auto">
+          <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-lg mb-6">
+            <h1 class="text-3xl font-bold mb-2">Amy's 24-Week Transformation</h1>
+            <p class="text-lg">December 2025 → June 2026</p>
+            <p class="mt-2">Age: 54 | Training Time: 4:00-5:00 AM</p>
+          </div>
+
+          <div class="bg-white rounded-lg p-4 mb-6 border-2 border-purple-400">
+            <h2 class="text-xl font-bold mb-3">Current Progress</h2>
+            <div class="flex items-center gap-4 mb-3">
+              <button onclick="saveWeek(Math.max(1, ${currentWeek} - 1))" class="bg-gray-300 px-3 py-1 rounded font-bold">←</button>
+              <div class="flex-1 text-center">
+                <div class="text-2xl font-bold text-purple-600">Week ${currentWeek}</div>
+                <div class="text-sm text-gray-600">Phase ${getCurrentPhase()}</div>
+              </div>
+              <button onclick="saveWeek(Math.min(24, ${currentWeek} + 1))" class="bg-gray-300 px-3 py-1 rounded font-bold">→</button>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4">
+              <div class="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full transition-all" style="width: ${(currentWeek / 24) * 100}%"></div>
+            </div>
+            <div class="text-center mt-2 text-sm text-gray-600">${Math.round((currentWeek / 24) * 100)}% Complete</div>
+          </div>
+
+          <div class="bg-green-50 border-2 border-green-500 rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-bold text-green-700 mb-3">Your Goals:</h2>
+            <ul class="space-y-2">
+              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Achieve strict pull-ups (multiple sets)</li>
+              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Perform dips with confidence</li>
+              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Develop visible six-pack abs with toned obliques</li>
+              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Build strong, defined lats and upper body</li>
+              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Full body restoration</li>
+            </ul>
+          </div>
+
+          <div class="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-bold text-red-700 mb-3">⚠️ Health Considerations</h2>
+            <ul class="space-y-2 text-sm">
+              <li>• Always listen to your body - you know when to rest</li>
+              <li>• Monitor breathing quality - stop if difficult</li>
+              <li>• Heart rate awareness - reduce intensity if needed</li>
+              <li>• Choose cardio that feels best for breathing</li>
+              <li>• Recovery is critical with HOCOM</li>
+            </ul>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <button onclick="setView('program')" class="bg-pink-600 text-white p-4 rounded-lg font-bold hover:bg-pink-700">
+              💪 View Program
+            </button>
+            <button onclick="setView('exercises')" class="bg-purple-600 text-white p-4 rounded-lg font-bold hover:bg-purple-700">
+              ❤️ Exercise Guide
+            </button>
+          </div>
+
+          <div class="mt-6 bg-blue-50 border-2 border-blue-400 rounded-lg p-4">
+            <h3 class="font-bold text-blue-700 mb-3">📊 Expected Milestones</h3>
+            ${milestones.map(m => `<div class="mb-2 text-sm"><strong>Week ${m.week}:</strong> ${m.text}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExercises() {
+      return `
+        <div class="p-4 max-w-4xl mx-auto">
+          <div class="bg-purple-600 text-white p-4 rounded-lg mb-4 flex items-center justify-between">
+            <h2 class="text-2xl font-bold">Exercise Descriptions</h2>
+            <button onclick="setView('home')" class="bg-white text-purple-600 px-4 py-2 rounded font-bold">🏠 Home</button>
+          </div>
+          <div class="space-y-3">
+            ${Object.entries(exercises).map(([name, desc]) => `
+              <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
+                <h3 class="font-bold text-blue-700 mb-1">${name}</h3>
+                <p class="text-sm text-gray-700">${desc}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProgram() {
+      return `
+        <div class="p-4 max-w-4xl mx-auto pb-20">
+          <div class="bg-pink-600 text-white p-4 rounded-lg mb-4 flex items-center justify-between">
+            <h2 class="text-2xl font-bold">Training Program</h2>
+            <button onclick="setView('home')" class="bg-white text-pink-600 px-4 py-2 rounded font-bold">🏠 Home</button>
+          </div>
+
+          ${[1, 2, 3].map(phaseNum => {
+            const phase = phases[phaseNum];
+            const isExpanded = expandedPhase === phaseNum;
+            
+            return `
+              <div class="mb-4">
+                <button onclick="togglePhase(${phaseNum})" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4 rounded-lg flex items-center justify-between font-bold">
+                  <div class="text-left">
+                    <div class="text-xl">PHASE ${phaseNum}: ${phase.name}</div>
+                    <div class="text-sm font-normal">${phase.weeks}</div>
+                  </div>
+                  <span>${isExpanded ? '▲' : '▼'}</span>
+                </button>
+
+                ${isExpanded ? `
+                  <div class="mt-2 space-y-2">
+                    <div class="bg-purple-50 p-3 rounded border-l-4 border-purple-500">
+                      <strong>Focus:</strong> ${phase.focus}
+                    </div>
+
+                    ${Object.entries(phase.days).map(([dayNum, day]) => {
+                      const dayKey = `${phaseNum}-${dayNum}`;
+                      const isDayExpanded = expandedDay === dayKey;
+                      const isCompleted = completedWorkouts[dayKey];
+
+                      return `
+                        <div class="border-2 border-pink-300 rounded-lg overflow-hidden">
+                          <button onclick="toggleDay('${dayKey}')" class="w-full p-3 flex items-center justify-between font-bold text-left ${isCompleted ? 'bg-green-100' : 'bg-pink-100'}">
+                            <div class="flex items-center gap-2">
+                              <button onclick="event.stopPropagation(); toggleWorkout(${phaseNum}, ${dayNum})" class="w-6 h-6 rounded border-2 flex items-center justify-center ${isCompleted ? 'bg-green-500 border-green-600' : 'bg-white border-gray-400'}">
+                                ${isCompleted ? '✓' : ''}
+                              </button>
+                              <span>DAY ${dayNum}: ${day.name}</span>
+                            </div>
+                            <span>${isDayExpanded ? '▲' : '▼'}</span>
+                          </button>
+
+                          ${isDayExpanded ? `
+                            <div class="p-4 bg-white">
+                              ${day.type === 'cardio' ? `
+                                <div>
+                                  <div class="bg-blue-50 p-3 rounded mb-3">
+                                    <h4 class="font-bold mb-2">Cardio Options:</h4>
+                                    ${day.options.map(opt => `<div class="text-sm mb-1">• ${opt}</div>`).join('')}
+                                  </div>
+                                  ${day.coreWork ? `
+                                    <div class="bg-yellow-50 p-3 rounded mb-3">
+                                      <h4 class="font-bold mb-2">Core Work:</h4>
+                                      ${day.coreWork.map(work => `<div class="text-sm mb-1">• ${work}</div>`).join('')}
+                                    </div>
+                                  ` : ''}
+                                  ${day.circuit ? `
+                                    <div class="bg-orange-50 p-3 rounded mb-3">
+                                      <h4 class="font-bold mb-2">Circuit:</h4>
+                                      ${day.circuit.map(item => `<div class="text-sm mb-1">${item}</div>`).join('')}
+                                    </div>
+                                  ` : ''}
+                                </div>
+                              ` : ''}
+
+                              ${day.type === 'rest' ? `
+                                <div class="bg-green-50 p-3 rounded">
+                                  <p class="text-sm">${day.notes}</p>
+                                </div>
+                              ` : ''}
+
+                              ${day.exercises ? `
+                                <div class="space-y-2">
+                                  ${day.exercises.map(ex => `
+                                    <div class="bg-gray-50 p-3 rounded">
+                                      <div class="font-bold">${ex.name}</div>
+                                      <div class="text-sm text-gray-600">${ex.sets}</div>
+                                      <div class="text-xs text-gray-500 italic">Alt: ${ex.alt}</div>
+                                    </div>
+                                  `).join('')}
+                                </div>
+                              ` : ''}
+
+                              ${day.notes ? `
+                                <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+                                  <p class="text-sm"><strong>Notes:</strong> ${day.notes}</p>
+                                </div>
+                              ` : ''}
+                            </div>
+                          ` : ''}
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function setView(view) {
+      currentView = view;
+      render();
+    }
+
+    function togglePhase(phaseNum) {
+      expandedPhase = expandedPhase === phaseNum ? null : phaseNum;
+      render();
+    }
+
+    function toggleDay(dayKey) {
+      expandedDay = expandedDay === dayKey ? null : dayKey;
+      render();
+    }
+
+    function render() {
+      let html = '';
+      if (currentView === 'home') html = renderHome();
+      else if (currentView === 'exercises') html = renderExercises();
+      else if (currentView === 'program') html = renderProgram();
+      
+      document.getElementById('app').innerHTML = html;
+    }
+
+    // Initial render
+    render();
+
+    // Make functions global
+    window.setView = setView;
+    window.togglePhase = togglePhase;
+    window.toggleDay = toggleDay;
+    window.saveWeek = saveWeek;
+    window.toggleWorkout = toggleWorkout;
+  </script>
+</body>
+</html>
