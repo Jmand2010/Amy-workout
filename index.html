@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amy's 24-Week Transformation</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Amy's Workout">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module">
-    // Firebase imports - ADD YOUR CONFIG BELOW
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-    import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amy's Workout</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
-    // 🔥 REPLACE THIS WITH YOUR FIREBASE CONFIG 🔥
-    const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyDu-ypnZu4ojzJAR8N1wpWkvhXqmxyNyUY",
   authDomain: "amy-workout-app.firebaseapp.com",
   databaseURL: "https://amy-workout-app-default-rtdb.firebaseio.com",
@@ -25,584 +21,824 @@
   appId: "1:127656923512:web:e3143e94bef691d930788d"
 };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const database = getDatabase(app);
-    
-    let userId = null;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+let uid = null;
 
-    // Auto sign in anonymously
-    signInAnonymously(auth).catch((error) => {
-      console.error("Auth error:", error);
-    });
+signInAnonymously(auth);
+onAuthStateChanged(auth, async (u) => {
+  if (u) {
+    uid = u.uid;
+    try {
+      const snap = await get(ref(db, 'users/' + uid));
+      if (snap.exists()) window.loadAppData(snap.val());
+    } catch(e){}
+  }
+});
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        userId = user.uid;
-        loadDataFromFirebase();
-      }
-    });
-
-    // Save to Firebase
-    window.saveToFirebase = async (key, value) => {
-      if (!userId) return;
-      try {
-        await set(ref(database, `users/${userId}/${key}`), value);
-      } catch (error) {
-        console.error("Save error:", error);
-      }
-    };
-
-    // Load from Firebase
-    async function loadDataFromFirebase() {
-      if (!userId) return;
-      
-      try {
-        const weekSnapshot = await get(ref(database, `users/${userId}/currentWeek`));
-        if (weekSnapshot.exists()) {
-          window.setCurrentWeek(weekSnapshot.val());
-        }
-        
-        const workoutsSnapshot = await get(ref(database, `users/${userId}/completedWorkouts`));
-        if (workoutsSnapshot.exists()) {
-          window.setCompletedWorkouts(workoutsSnapshot.val());
-        }
-      } catch (error) {
-        console.error("Load error:", error);
-      }
-    }
-
-    // Listen for changes (sync across devices)
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        userId = user.uid;
-        
-        onValue(ref(database, `users/${userId}/currentWeek`), (snapshot) => {
-          if (snapshot.exists()) {
-            window.setCurrentWeek(snapshot.val());
-          }
-        });
-        
-        onValue(ref(database, `users/${userId}/completedWorkouts`), (snapshot) => {
-          if (snapshot.exists()) {
-            window.setCompletedWorkouts(snapshot.val());
-          }
-        });
-      }
-    });
-  </script>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-  </style>
+window.saveAppData = async (data) => {
+  if (uid) {
+    try { await set(ref(db, 'users/' + uid), data); } catch(e){}
+  }
+};
+</script>
 </head>
 <body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen">
-  <div id="app"></div>
+<div id="app"></div>
+<script>
+const PRG = {
+1:{n:"Foundation",d:{
+1:{n:"Upper Push",ex:[
+{n:"Incline Barbell/DB Press",s:3,r:"8-12",a:"Smith Machine, Incline DB, Machine Press"},
+{n:"Barbell/DB Shoulder Press",s:3,r:"10-12",a:"Smith Machine, DB Press, Machine Press"},
+{n:"Assisted Dips/Bench Dips",s:3,r:"5-8",a:"Machine Dips, Band-Assisted, Push-ups"},
+{n:"DB Lateral Raises",s:3,r:"12-15",a:"Cable Laterals, Machine Laterals"},
+{n:"Tricep Pushdowns",s:3,r:"10-12",a:"Overhead Extensions, Close-Grip Press"},
+{n:"Push-ups",s:3,r:"max",a:"Knee Push-ups, Incline Push-ups"}
+]},
+2:{n:"Lower Body & Core",ex:[
+{n:"Barbell Squats",s:3,r:"10-12",a:"Smith Machine, Goblet Squats, Leg Press"},
+{n:"Barbell RDLs",s:3,r:"10-12",a:"DB RDLs, Machine RDLs, Stiff-Leg DL"},
+{n:"Barbell/DB Lunges",s:3,r:"8-10",a:"Smith Lunges, Walking Lunges, Split Squats"},
+{n:"Plank",s:3,r:"30-45s",a:"Knee Plank, RKC Plank"},
+{n:"Dead Bug",s:3,r:"10",a:"Leg Lowers, Lying Leg Raises"},
+{n:"Bicycle Crunches",s:3,r:"15-20",a:"Regular Crunches, Cable Crunches"}
+]},
+3:{n:"Cardio & Recovery",t:"c"},
+4:{n:"Upper Body Pull",ex:[
+{n:"Barbell Rows",s:4,r:"10-12",a:"DB Rows, Smith Rows, Cable Rows, Machine Rows"},
+{n:"Negative Pull-ups",s:3,r:"3-5",a:"Assisted Pull-ups, Band Pull-ups, Lat Pulldowns"},
+{n:"Lat Pulldowns",s:3,r:"8-10",a:"Wide Grip, Close Grip, Neutral Grip"},
+{n:"Barbell/DB Curls",s:3,r:"10-12",a:"EZ-Bar Curls, Cable Curls, Machine Curls"},
+{n:"Cable Face Pulls",s:3,r:"15",a:"Band Pulls, DB Reverse Flyes"},
+{n:"Hammer Curls",s:3,r:"10-12",a:"Cable Rope Curls, Cross-Body Curls"}
+]},
+5:{n:"Cardio",t:"c"},
+6:{n:"REST",t:"r"},
+7:{n:"REST",t:"r"}
+}},
+2:{n:"Strength & Hypertrophy",d:{
+1:{n:"Push",ex:[
+{n:"Barbell Bench Press",s:4,r:"6-10",a:"DB Bench, Smith Machine, Machine Press"},
+{n:"Barbell/DB Shoulder Press",s:4,r:"8-10",a:"Smith Press, Machine Press"},
+{n:"Incline Barbell/DB Press",s:3,r:"8-12",a:"Smith Incline, Machine Incline"},
+{n:"Dips",s:4,r:"6-10",a:"Assisted Dips, Bench Dips, Machine Dips"},
+{n:"DB Lateral Raises",s:4,r:"12-15",a:"Cable Laterals, Machine Laterals"},
+{n:"Overhead Tricep Extension",s:3,r:"10-12",a:"Close-Grip Bench, Cable Extensions"},
+{n:"Push-ups",s:3,r:"max",a:"Decline Push-ups, Weighted Push-ups"}
+]},
+2:{n:"Pull",ex:[
+{n:"Negative Pull-ups",s:4,r:"4-6",a:"Assisted Pull-ups (lighter band)"},
+{n:"Barbell Rows",s:4,r:"8-10",a:"DB Rows, Smith, T-Bar, Machine"},
+{n:"Single Arm DB Row",s:3,r:"10",a:"Cable Row, Machine Row"},
+{n:"DB Pullovers",s:3,r:"10-12",a:"Cable Pullovers, Machine"},
+{n:"Barbell Curls",s:4,r:"8-12",a:"EZ-Bar, DB, Cable, Machine"},
+{n:"Hammer Curls",s:3,r:"10-12",a:"Cable Rope, Cross-Body"}
+]},
+3:{n:"Legs & Core",ex:[
+{n:"Barbell Back Squats",s:4,r:"8-10",a:"Smith Machine, Goblet Squats, Leg Press"},
+{n:"Barbell RDLs",s:4,r:"8-10",a:"DB RDLs, Machine"},
+{n:"Bulgarian Split Squats",s:3,r:"10",a:"Lunges, Step-ups, Smith"},
+{n:"Hanging Knee Raises",s:4,r:"10-15",a:"Lying Leg Raises, Machine"},
+{n:"Russian Twists with DB",s:3,r:"20",a:"Bicycle Crunches, Cable Twists"},
+{n:"Plank",s:3,r:"60s",a:"RKC Plank, Side Planks"}
+]},
+4:{n:"Cardio & Core",t:"c"},
+5:{n:"Full Body Power",ex:[
+{n:"DB/Barbell Clean & Press",s:4,r:"6-8",a:"Barbell version, Kettlebell"},
+{n:"Barbell Front Squats",s:3,r:"8-10",a:"Goblet Squats, Back Squats"},
+{n:"Barbell Bench Press",s:3,r:"8-10",a:"DB Bench, Smith"},
+{n:"Pull-up Practice",s:4,r:"max",a:"Assisted, Negatives, Full Pull-ups"},
+{n:"Dips",s:3,r:"max",a:"Assisted, Bench Dips"},
+{n:"Walking Lunges",s:3,r:"12",a:"Barbell Lunges, DB Lunges"}
+]},
+6:{n:"Steady Cardio",t:"c"},
+7:{n:"REST",t:"r"}
+}},
+3:{n:"Peak Performance",d:{
+1:{n:"Heavy Push",ex:[
+{n:"Barbell Bench Press",s:5,r:"5-8",a:"Smith Machine, DB Bench"},
+{n:"Barbell Military Press",s:4,r:"6-8",a:"DB Press, Smith, Machine"},
+{n:"Weighted Dips",s:4,r:"6-10",a:"Bodyweight Dips, Assisted"},
+{n:"Incline DB Flyes",s:3,r:"10-12",a:"Cable Flyes, Machine"},
+{n:"Close-Grip Barbell Press",s:3,r:"8-10",a:"DB Press, Smith"},
+{n:"Cable Tricep Extensions",s:3,r:"12-15",a:"Rope Extensions, Bar Extensions, Machine"}
+]},
+2:{n:"Heavy Pull - PULL-UP EMPHASIS",ex:[
+{n:"Strict Pull-ups",s:5,r:"max (GOAL: 5+)",a:"Weighted Pull-ups if able"},
+{n:"Barbell Rows",s:4,r:"6-8",a:"T-Bar Rows, DB Rows, Smith, Machine"},
+{n:"Wide Grip Lat Pulldown",s:4,r:"8-10",a:"Close Grip, Neutral Grip"},
+{n:"DB Shrugs",s:4,r:"12-15",a:"Barbell Shrugs, Smith, Machine"},
+{n:"Barbell/EZ-Bar Curls",s:4,r:"8-10",a:"DB Curls, Cable, Machine"},
+{n:"Concentration Curls",s:3,r:"10-12",a:"Cable Curls, Preacher Curls"}
+]},
+3:{n:"Legs & Abs - SIX-PACK",ex:[
+{n:"Barbell Front Squats",s:4,r:"8-10",a:"Goblet, Back Squats, Smith, Leg Press"},
+{n:"Barbell RDLs",s:4,r:"8-10",a:"DB RDLs, Stiff-Leg DL, Machine"},
+{n:"Walking Lunges",s:4,r:"12",a:"Split Squats, Smith, Machine"},
+{n:"Hanging Leg Raises",s:4,r:"12-15",a:"Knee Raises, Lying Leg Raises"},
+{n:"Cable Woodchoppers",s:3,r:"12",a:"Med Ball Chops, DB Chops"},
+{n:"Weighted Decline Sit-ups",s:4,r:"15-20",a:"Regular Decline, Crunches"},
+{n:"Plank with Shoulder Taps",s:3,r:"20",a:"Regular Plank, Side Plank"}
+]},
+4:{n:"HIIT & Core",t:"c"},
+5:{n:"Upper Volume",ex:[
+{n:"Push-ups",s:5,r:"max",a:"Weighted, Decline"},
+{n:"DB Pullovers",s:4,r:"12-15",a:"Cable, Barbell"},
+{n:"DB Shoulder Circuit",s:3,r:"12 each",a:"Front/Side/Rear Raises"},
+{n:"Dips",s:4,r:"max",a:"Weighted if able, Assisted"},
+{n:"Cable Face Pulls",s:4,r:"15-20",a:"Band, DB Reverse Flyes"},
+{n:"Barbell Curl 21s",s:3,r:"21",a:"7 bottom+7 top+7 full"},
+{n:"Tricep Rope Pushdowns",s:4,r:"15-20",a:"Bar, Machine"}
+]},
+6:{n:"Steady Cardio",t:"c"},
+7:{n:"Active Recovery",t:"r"}
+}}
+};
 
-  <script>
-    const exercises = {
-      "Barbell/Dumbbell Bench Press": "Lie on bench, feet flat. Grip bar slightly wider than shoulders. Lower to chest with control, elbows at 45°. Press up until arms nearly straight. Alt: Smith machine, dumbbell, machine press.",
-      "Incline Barbell/DB Press": "Same as bench but on 30-45° incline. Targets upper chest. Lower to upper chest, press up. Alt: Smith incline, machine.",
-      "Barbell/DB Shoulder Press": "Seated or standing. Bar/dumbbells at shoulders. Press overhead until arms nearly straight. Lower with control. Alt: Smith, machine press.",
-      "Dips": "Hands on parallel bars, lower until upper arms parallel to floor (90° bend). Press up. Lean forward slightly for chest. Alt: Assisted dips, bench dips, machine.",
-      "Pull-ups": "Grip bar shoulder-width or wider. Dead hang. Pull until chin clears bar, elbows down and back. Lower with control. Alt: Assisted, band, negatives.",
-      "Negative Pull-ups": "Jump/step to top (chin over bar). Lower as slowly as possible (5-10 seconds). Builds incredible strength!",
-      "Lat Pulldowns": "Sit at machine. Grip bar wider than shoulders. Pull to upper chest, squeeze shoulder blades. Slowly return. Alt: Wide, close, neutral grip.",
-      "Barbell Rows": "Bend at hips, back flat, knees bent. Pull bar to lower chest/upper abs, squeeze shoulder blades. Alt: Smith, DB, cable, machine.",
-      "Barbell Squats": "Bar on upper back. Feet shoulder-width. Squat down like sitting, chest up, knees over toes. Drive through heels. Alt: Smith, goblet, leg press.",
-      "Barbell RDLs": "Bar at thighs. Slight knee bend. Push hips back, lower bar along legs until hamstring stretch. Squeeze glutes to stand. Alt: DB RDLs, machine.",
-      "Barbell/DB Curls": "Stand, weight at thighs, palms forward. Curl up, keep upper arms still. Squeeze at top. Lower slowly. Alt: EZ-bar, cable, machine.",
-      "Hanging Leg Raises": "Hang from bar. Raise knees/legs toward chest, engage abs. Lower with control. Don't swing. Alt: Lying leg raises, machine.",
-      "Plank": "Forearms on ground, elbows under shoulders. Body straight head to heels. Squeeze abs, glutes, quads. Don't let hips sag!",
-      "Face Pulls": "Cable at upper height, rope attachment. Pull toward face, separate rope ends. Squeeze shoulder blades. Critical for shoulder health!"
-    };
+let st={v:'home',p:1,w:1,d:1,data:{},info:{name:'',age:'',sw:'',tw:'',goals:''},photos:{},chart:null};
 
-    const phases = {
-      1: {
-        name: "Foundation Building",
-        weeks: "Weeks 1-8",
-        focus: "Build base strength, establish movement patterns, begin fat loss",
-        days: {
-          1: {
-            name: "Upper Body Push",
-            exercises: [
-              { name: "Incline Barbell or DB Press", sets: "3x8-12", alt: "Smith Machine, Incline Machine" },
-              { name: "Barbell or DB Shoulder Press", sets: "3x10-12", alt: "Machine Press, Smith" },
-              { name: "Assisted Dips OR Bench Dips", sets: "3x5-8", alt: "Machine Dips, Band-Assisted" },
-              { name: "Dumbbell Lateral Raises", sets: "3x12-15", alt: "Cable Laterals, Machine" },
-              { name: "Tricep Cable Pushdowns", sets: "3x10-12", alt: "Overhead Extensions, Machine" },
-              { name: "Push-ups", sets: "3x max", alt: "Knee Push-ups, Incline" }
-            ],
-            notes: "Rest 90-120 seconds between sets. Focus on form over weight. Use Smith machine for safety if training alone."
-          },
-          2: {
-            name: "Lower Body & Core",
-            exercises: [
-              { name: "Barbell Squats OR Goblet Squats", sets: "3x10-12", alt: "Smith Machine, Leg Press" },
-              { name: "Barbell Romanian Deadlifts", sets: "3x10-12", alt: "Dumbbell RDLs, Machine" },
-              { name: "Barbell or DB Lunges", sets: "3x8-10/leg", alt: "Smith Lunges, Machine" },
-              { name: "Plank", sets: "3x30-45s", alt: "Knee Plank" },
-              { name: "Dead Bug", sets: "3x10/side", alt: "Leg Lowers" },
-              { name: "Bicycle Crunches", sets: "3x15-20", alt: "Regular Crunches" }
-            ],
-            notes: "Focus on hip hinge pattern for RDLs. Core work is essential for six-pack development!"
-          },
-          3: {
-            name: "Cardio & Recovery",
-            type: "cardio",
-            options: ["Stationary Bike: 30 min moderate", "Elliptical: 30 min moderate", "Treadmill Walk: 30 min"],
-            notes: "Choose what feels best for breathing. Plus 15 min stretching."
-          },
-          4: {
-            name: "Upper Body Pull",
-            exercises: [
-              { name: "Barbell Rows", sets: "4x10-12", alt: "DB Rows, Smith, Cable, Machine" },
-              { name: "Negative Pull-ups", sets: "3x3-5", alt: "Assisted Pull-ups, Band" },
-              { name: "Lat Pulldowns (heavy)", sets: "3x8-10", alt: "Wide Grip, Close Grip" },
-              { name: "Barbell or DB Bicep Curls", sets: "3x10-12", alt: "EZ-Bar, Cable, Machine" },
-              { name: "Cable Face Pulls", sets: "3x15", alt: "Band Pulls, DB Reverse Flyes" },
-              { name: "Hammer Curls", sets: "3x10-12", alt: "Cable Rope, Cross-Body" }
-            ],
-            notes: "Negative pull-ups build incredible strength! Jump up, lower slowly for 5+ seconds. Your path to real pull-ups!"
-          },
-          5: {
-            name: "Cardio",
-            type: "cardio",
-            options: ["Elliptical: 30 min", "Bike: 40 min", "Rowing: 25 min"],
-            notes: "Choose based on how you feel today."
-          },
-          6: {
-            name: "REST",
-            type: "rest",
-            notes: "Complete rest or light walking. Focus on sleep, hydration, meal prep."
-          },
-          7: {
-            name: "REST",
-            type: "rest",
-            notes: "Complete rest. Recovery is when you get stronger!"
-          }
+window.loadAppData=d=>{
+  if(d.data)st.data=d.data;
+  if(d.info)st.info=d.info;
+  if(d.photos)st.photos=d.photos;
+  render();
+};
+
+const sv=()=>{if(window.saveAppData)window.saveAppData({data:st.data,info:st.info,photos:st.photos});};
+const gk=()=>'p'+st.p+'w'+st.w+'d'+st.d;
+const gwd=()=>st.data[gk()]||{};
+
+function updInfo(f,v){st.info[f]=v;sv();render();}
+function updW(f,v){const k=gk();if(!st.data[k])st.data[k]={};st.data[k][f]=v;sv();render();}
+function updEx(i,s,t,v){const k=gk();if(!st.data[k])st.data[k]={};if(!st.data[k].ex)st.data[k].ex={};if(!st.data[k].ex[i])st.data[k].ex[i]={};st.data[k].ex[i]['s'+s+t]=v;sv();render();}
+function updMeas(f,v){const k='p'+st.p+'w'+st.w+'m';if(!st.data[k])st.data[k]={};st.data[k][f]=v;sv();render();}
+
+function photo(k,e){
+  const f=e.target.files[0];
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{st.photos[k]=ev.target.result;sv();render();};
+  r.readAsDataURL(f);
+}
+
+function getExHistory(exName){
+  const hist=[];
+  Object.keys(st.data).forEach(k=>{
+    const m=k.match(/p(\d)w(\d+)d(\d+)/);
+    if(!m||!st.data[k].ex)return;
+    const p=parseInt(m[1]),w=parseInt(m[2]),d=parseInt(m[3]);
+    const ph=PRG[p];
+    if(!ph||!ph.d[d]||!ph.d[d].ex)return;
+    ph.d[d].ex.forEach((e,i)=>{
+      if(e.n===exName&&st.data[k].ex[i]){
+        const ex=st.data[k].ex[i];
+        let maxW=0;
+        for(let s=1;s<=5;s++){
+          const wt=parseFloat(ex['s'+s+'w'])||0;
+          if(wt>maxW)maxW=wt;
         }
-      },
-      2: {
-        name: "Strength & Hypertrophy",
-        weeks: "Weeks 9-16",
-        focus: "Build significant muscle, increase strength, accelerate fat loss",
-        days: {
-          1: {
-            name: "Push",
-            exercises: [
-              { name: "Barbell Bench Press", sets: "4x6-10", alt: "DB Bench, Smith" },
-              { name: "Barbell or DB Shoulder Press", sets: "4x8-10", alt: "Smith, Machine" },
-              { name: "Incline Barbell or DB Press", sets: "3x8-12", alt: "Smith Incline" },
-              { name: "Dips (band-assisted if needed)", sets: "4x6-10", alt: "Assisted Machine, Bench Dips" },
-              { name: "Dumbbell Lateral Raises", sets: "4x12-15", alt: "Cable, Machine" },
-              { name: "Overhead Tricep Extension", sets: "3x10-12", alt: "Close-Grip Bench, Cable" },
-              { name: "Push-ups", sets: "3x max", alt: "Decline, Weighted" }
-            ],
-            notes: "Increase weight when you complete all reps with good form."
-          },
-          2: {
-            name: "Pull",
-            exercises: [
-              { name: "Negative Pull-ups", sets: "4x4-6", alt: "Assisted with lighter help" },
-              { name: "Barbell Rows (heavy)", sets: "4x8-10", alt: "DB, Smith, T-Bar, Machine" },
-              { name: "Single Arm DB Row", sets: "3x10", alt: "Cable Row, Machine" },
-              { name: "Dumbbell Pullovers", sets: "3x10-12", alt: "Cable, Machine" },
-              { name: "Barbell Curls", sets: "4x8-12", alt: "EZ-Bar, DB, Cable, Machine" },
-              { name: "Hammer Curls", sets: "3x10-12", alt: "Cable Rope, Cross-Body" }
-            ],
-            notes: "GOAL: By week 12, attempt your first full strict pull-up!"
-          },
-          3: {
-            name: "Legs & Core",
-            exercises: [
-              { name: "Barbell Back Squats", sets: "4x8-10", alt: "Smith, Goblet, Leg Press" },
-              { name: "Barbell RDLs", sets: "4x8-10", alt: "Dumbbell, Machine" },
-              { name: "Bulgarian Split Squats", sets: "3x10/leg", alt: "Lunges, Step-ups" },
-              { name: "Hanging Knee Raises", sets: "4x10-15", alt: "Lying Leg Raises, Machine" },
-              { name: "Russian Twists with DB", sets: "3x20", alt: "Bicycle Crunches" },
-              { name: "Plank", sets: "3x60s", alt: "RKC Plank" }
-            ],
-            notes: "Core work develops your six-pack!"
-          },
-          4: {
-            name: "Cardio & Core",
-            type: "cardio",
-            options: ["Rowing: 20 min intervals (1 min hard, 2 min easy)", "Elliptical: 30 min steady", "Bike: 30 min steady"],
-            coreWork: ["Dead Bug: 3x12/side", "Side Planks: 3x45s/side", "Cable Crunches: 3x15-20"],
-            notes: "Cardio choice based on breathing comfort."
-          },
-          5: {
-            name: "Full Body Power",
-            exercises: [
-              { name: "DB or Barbell Clean & Press", sets: "4x6-8", alt: "Barbell version" },
-              { name: "Barbell Front Squats", sets: "3x8-10", alt: "Goblet, Back Squats" },
-              { name: "Barbell Bench Press", sets: "3x8-10", alt: "DB, Smith" },
-              { name: "Pull-up Practice", sets: "4x max", alt: "Assisted, Negatives, Full" },
-              { name: "Dips", sets: "3x max", alt: "Assisted, Bench" },
-              { name: "Walking Lunges", sets: "3x12/leg", alt: "Barbell Lunges, DB" }
-            ],
-            notes: "Maximum effort on pull-ups!"
-          },
-          6: {
-            name: "Steady Cardio",
-            type: "cardio",
-            options: ["Bike: 45 min moderate", "Elliptical: 45 min moderate"],
-            notes: "Comfortable, sustainable pace."
-          },
-          7: {
-            name: "REST",
-            type: "rest",
-            notes: "Complete rest. Meal prep and recovery."
-          }
-        }
-      },
-      3: {
-        name: "Peak Performance",
-        weeks: "Weeks 17-24",
-        focus: "Achieve pull-ups & dips, reveal six-pack, maximum definition",
-        days: {
-          1: {
-            name: "Heavy Push",
-            exercises: [
-              { name: "Barbell Bench Press", sets: "5x5-8 (heavy)", alt: "Smith, Dumbbell" },
-              { name: "Barbell Military Press", sets: "4x6-8", alt: "DB, Smith, Machine" },
-              { name: "Weighted Dips", sets: "4x6-10", alt: "Bodyweight, Assisted" },
-              { name: "Incline DB Flyes", sets: "3x10-12", alt: "Cable, Machine" },
-              { name: "Close-Grip Barbell Press", sets: "3x8-10", alt: "DB, Smith" },
-              { name: "Cable Tricep Extensions", sets: "3x12-15", alt: "Rope, Bar, Machine" }
-            ],
-            notes: "Heavy weight, perfect form. By now dips should feel strong!"
-          },
-          2: {
-            name: "Heavy Pull - PULL-UP EMPHASIS",
-            exercises: [
-              { name: "Strict Pull-ups", sets: "5x max (GOAL: 5+ per set)", alt: "Weighted if able" },
-              { name: "Barbell Rows", sets: "4x6-8 (heavy)", alt: "T-Bar, DB, Smith, Machine" },
-              { name: "Wide Grip Lat Pulldown", sets: "4x8-10", alt: "Close Grip" },
-              { name: "Dumbbell Shrugs", sets: "4x12-15", alt: "Barbell, Smith, Machine" },
-              { name: "Barbell or EZ-Bar Curls", sets: "4x8-10", alt: "DB, Cable, Machine" },
-              { name: "Concentration Curls", sets: "3x10-12", alt: "Cable, Preacher" }
-            ],
-            notes: "VICTORY! By week 20, you're crushing 5+ pull-ups per set!"
-          },
-          3: {
-            name: "Legs & Abs - SIX-PACK FOCUS",
-            exercises: [
-              { name: "Barbell Front Squats", sets: "4x8-10", alt: "Goblet, Back Squats, Smith, Leg Press" },
-              { name: "Barbell RDLs", sets: "4x8-10", alt: "DB, Stiff-Leg DL, Machine" },
-              { name: "Walking Lunges (Barbell/DB)", sets: "4x12/leg", alt: "Split Squats, Machine" },
-              { name: "Hanging Leg Raises", sets: "4x12-15", alt: "Knee Raises, Lying" },
-              { name: "Cable Woodchoppers", sets: "3x12/side", alt: "Med Ball, DB" },
-              { name: "Weighted Decline Sit-ups", sets: "4x15-20", alt: "Regular Decline, Crunches" },
-              { name: "Plank with Shoulder Taps", sets: "3x20", alt: "Regular Plank" }
-            ],
-            notes: "Six-pack should be clearly visible now! These exercises sculpt definition."
-          },
-          4: {
-            name: "HIIT & Core",
-            type: "cardio",
-            options: ["Rowing Intervals: 20 min (30s sprint, 90s recover)", "Elliptical Intervals: 25 min", "Bike Intervals: 25 min"],
-            circuit: ["Ab Circuit (3 rounds): Mountain Climbers (20), Bicycle Crunches (25), Plank (60s), Russian Twists (30), Rest 60s"],
-            notes: "High intensity - push yourself!"
-          },
-          5: {
-            name: "Upper Volume - LAT & ARM EMPHASIS",
-            exercises: [
-              { name: "Push-ups", sets: "5x max", alt: "Weighted, Decline" },
-              { name: "Dumbbell Pullovers", sets: "4x12-15", alt: "Cable, Barbell" },
-              { name: "DB Shoulder Circuit", sets: "3x12 each", alt: "Front/Side/Rear raises" },
-              { name: "Dips", sets: "4x max", alt: "Weighted if able" },
-              { name: "Cable Face Pulls", sets: "4x15-20", alt: "Band, Reverse Flyes" },
-              { name: "Barbell Curl 21s", sets: "3 sets", alt: "7 bottom + 7 top + 7 full" },
-              { name: "Tricep Rope Pushdowns", sets: "4x15-20", alt: "Bar, Machine" }
-            ],
-            notes: "High volume for arm definition. Pullovers great for lats!"
-          },
-          6: {
-            name: "Steady Cardio",
-            type: "cardio",
-            options: ["Elliptical: 45-60 min conversational pace", "Bike: 45-60 min", "Optional morning fasted cardio 20-30 min"],
-            notes: "Enjoy the workout!"
-          },
-          7: {
-            name: "Active Recovery or Rest",
-            type: "rest",
-            notes: "Light mobility, stretching, walking, or complete rest."
-          }
+        if(maxW>0){
+          hist.push({
+            p:p,
+            w:w,
+            d:d,
+            val:maxW,
+            label:'P'+p+'W'+w+'D'+d
+          });
         }
       }
-    };
+    });
+  });
+  return hist.sort((a,b)=>(a.p*100+a.w*10+a.d)-(b.p*100+b.w*10+b.d));
+}
 
-    const milestones = [
-      { week: 4, text: "Strength increase, movement patterns natural" },
-      { week: 8, text: "Solid foundation, feeling stronger" },
-      { week: 12, text: "First full pull-up attempt!" },
-      { week: 16, text: "Multiple pull-ups possible" },
-      { week: 20, text: "Sets of 5+ pull-ups, abs showing" },
-      { week: 24, text: "Visible six-pack, strong & ripped!" }
-    ];
-
-    let currentView = 'home';
-    let expandedPhase = null;
-    let expandedDay = null;
-    let currentWeek = 1;
-    let completedWorkouts = {};
-
-    window.setCurrentWeek = (week) => {
-      currentWeek = week;
-      render();
-    };
-
-    window.setCompletedWorkouts = (workouts) => {
-      completedWorkouts = workouts;
-      render();
-    };
-
-    function saveWeek(week) {
-      currentWeek = week;
-      if (window.saveToFirebase) {
-        window.saveToFirebase('currentWeek', week);
+function getWellnessData(field){
+  const data=[];
+  Object.keys(st.data).forEach(k=>{
+    const m=k.match(/p(\d)w(\d+)d(\d+)/);
+    if(!m)return;
+    const p=parseInt(m[1]),w=parseInt(m[2]),d=parseInt(m[3]);
+    const val=st.data[k][field];
+    if(val){
+      let numVal=parseFloat(val);
+      if(field==='mood'){
+        const moodVals={excellent:5,good:4,okay:3,tired:2,sore:2,stressed:1};
+        numVal=moodVals[val]||0;
       }
-      render();
-    }
-
-    function toggleWorkout(phaseNum, dayNum) {
-      const key = `${phaseNum}-${dayNum}`;
-      completedWorkouts[key] = !completedWorkouts[key];
-      if (window.saveToFirebase) {
-        window.saveToFirebase('completedWorkouts', completedWorkouts);
+      if(!isNaN(numVal)&&numVal>0){
+        data.push({
+          p:p,
+          w:w,
+          d:d,
+          val:numVal,
+          label:'P'+p+'W'+w+'D'+d,
+          raw:val
+        });
       }
-      render();
     }
+  });
+  return data.sort((a,b)=>(a.p*100+a.w*10+a.d)-(b.p*100+b.w*10+b.d));
+}
 
-    function getCurrentPhase() {
-      if (currentWeek <= 8) return 1;
-      if (currentWeek <= 16) return 2;
-      return 3;
+function getMeasurementData(field){
+  const data=[];
+  for(let p=1;p<=3;p++){
+    for(let w=1;w<=8;w++){
+      const k='p'+p+'w'+w+'m';
+      if(st.data[k]&&st.data[k][field]){
+        const val=parseFloat(st.data[k][field]);
+        if(!isNaN(val)&&val>0){
+          data.push({
+            p:p,
+            w:w,
+            val:val,
+            label:'P'+p+'W'+w
+          });
+        }
+      }
     }
+  }
+  return data;
+}
 
-    function renderHome() {
-      return `
-        <div class="p-4 max-w-4xl mx-auto">
-          <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-lg mb-6">
-            <h1 class="text-3xl font-bold mb-2">Amy's 24-Week Transformation</h1>
-            <p class="text-lg">December 2025 → June 2026</p>
-            <p class="mt-2">Age: 54 | Training Time: 4:00-5:00 AM</p>
-          </div>
+function stats(){
+  let tw=0,tl=0,tr=0,wts=[];
+  Object.keys(st.data).forEach(k=>{
+    const d=st.data[k];
+    if(d.wt)wts.push(parseFloat(d.wt));
+    if(d.ex){tw++;Object.values(d.ex).forEach(e=>{for(let i=1;i<=5;i++){const w=parseFloat(e['s'+i+'w'])||0,r=parseFloat(e['s'+i+'r'])||0;if(w&&r){tl+=w*r;tr+=r;}}});}
+  });
+  return{tw,tl,tr,wts};
+}
 
-          <div class="bg-white rounded-lg p-4 mb-6 border-2 border-purple-400">
-            <h2 class="text-xl font-bold mb-3">Current Progress</h2>
-            <div class="flex items-center gap-4 mb-3">
-              <button onclick="saveWeek(Math.max(1, ${currentWeek} - 1))" class="bg-gray-300 px-3 py-1 rounded font-bold">←</button>
-              <div class="flex-1 text-center">
-                <div class="text-2xl font-bold text-purple-600">Week ${currentWeek}</div>
-                <div class="text-sm text-gray-600">Phase ${getCurrentPhase()}</div>
-              </div>
-              <button onclick="saveWeek(Math.min(24, ${currentWeek} + 1))" class="bg-gray-300 px-3 py-1 rounded font-bold">→</button>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-4">
-              <div class="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full transition-all" style="width: ${(currentWeek / 24) * 100}%"></div>
-            </div>
-            <div class="text-center mt-2 text-sm text-gray-600">${Math.round((currentWeek / 24) * 100)}% Complete</div>
-          </div>
+function renderChart(title,data){
+  if(!data||!data.length)return'<p class="text-center text-gray-600 py-8">No data yet. Start tracking to see your progress!</p>';
+  const max=Math.max(...data.map(x=>x.val));
+  const min=Math.min(...data.map(x=>x.val));
+  const rng=max-min||1;
+  return`<div class="mb-4 text-center"><div class="text-sm text-gray-600">Showing ${data.length} data points</div></div>
+<div class="h-64 flex items-end justify-center gap-1 px-2 overflow-x-auto">
+${data.slice(-30).map(d=>{
+  const ht=((d.val-min)/rng)*70+20;
+  return`<div class="flex-1 flex flex-col items-center" style="min-width:25px;max-width:40px">
+<div class="text-xs mb-1 font-bold text-blue-600">${d.val.toFixed(1)}</div>
+<div class="w-full bg-blue-500 rounded-t hover:bg-blue-700 cursor-pointer transition-all" style="height:${ht}%" title="${d.label}: ${d.raw||d.val}"></div>
+</div>`;
+}).join('')}
+</div>
+<div class="text-center text-sm text-gray-600 mt-4">Last ${Math.min(30,data.length)} entries</div>`;
+}
 
-          <div class="bg-green-50 border-2 border-green-500 rounded-lg p-4 mb-6">
-            <h2 class="text-xl font-bold text-green-700 mb-3">Your Goals:</h2>
-            <ul class="space-y-2">
-              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Achieve strict pull-ups (multiple sets)</li>
-              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Perform dips with confidence</li>
-              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Develop visible six-pack abs with toned obliques</li>
-              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Build strong, defined lats and upper body</li>
-              <li class="flex items-start"><span class="text-green-600 mr-2">✓</span> Full body restoration</li>
-            </ul>
-          </div>
+function renderWellness(wd){
+  return`<div class="bg-yellow-50 border-2 border-yellow-400 rounded p-4 mb-4">
+<h3 class="font-bold mb-3 flex items-center gap-2"><span class="text-xl">📊</span> Daily Wellness Check</h3>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-sm font-bold mb-1">Sleep (hours):</label>
+<input type="number" step="0.5" placeholder="Hours" class="w-full p-2 border-2 rounded" value="${wd.sl||''}" onchange="updW('sl',this.value)"/>
+</div>
+<div>
+<label class="block text-sm font-bold mb-1">Sleep Quality (1-10):</label>
+<input type="number" min="1" max="10" placeholder="1-10" class="w-full p-2 border-2 rounded" value="${wd.sq||''}" onchange="updW('sq',this.value)"/>
+</div>
+<div>
+<label class="block text-sm font-bold mb-1">Energy Level (1-10):</label>
+<input type="number" min="1" max="10" placeholder="1-10" class="w-full p-2 border-2 rounded" value="${wd.en||''}" onchange="updW('en',this.value)"/>
+</div>
+<div>
+<label class="block text-sm font-bold mb-1">Body Weight (lbs):</label>
+<input type="number" step="0.1" placeholder="Weight" class="w-full p-2 border-2 rounded" value="${wd.wt||''}" onchange="updW('wt',this.value)"/>
+</div>
+<div>
+<label class="block text-sm font-bold mb-1">Workout Date:</label>
+<input type="date" class="w-full p-2 border-2 rounded" value="${wd.dt||''}" onchange="updW('dt',this.value)"/>
+</div>
+<div>
+<label class="block text-sm font-bold mb-1">Start Time:</label>
+<input type="time" class="w-full p-2 border-2 rounded" value="${wd.st||''}" onchange="updW('st',this.value)"/>
+</div>
+<div>
+<label class="block text-sm font-bold mb-1">End Time:</label>
+<input type="time" class="w-full p-2 border-2 rounded" value="${wd.et||''}" onchange="updW('et',this.value)"/>
+</div>
+<div>
+<label class="block text-sm font-bold mb-1">General Mood:</label>
+<select class="w-full p-2 border-2 rounded" onchange="updW('mood',this.value)">
+<option value="">Select...</option>
+<option value="excellent"${wd.mood==='excellent'?' selected':''}>Excellent</option>
+<option value="good"${wd.mood==='good'?' selected':''}>Good</option>
+<option value="okay"${wd.mood==='okay'?' selected':''}>Okay</option>
+<option value="tired"${wd.mood==='tired'?' selected':''}>Tired</option>
+<option value="sore"${wd.mood==='sore'?' selected':''}>Sore</option>
+<option value="stressed"${wd.mood==='stressed'?' selected':''}>Stressed</option>
+</select>
+</div>
+</div>
+</div>`;
+}
 
-          <div class="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6">
-            <h2 class="text-xl font-bold text-red-700 mb-3">⚠️ Health Considerations</h2>
-            <ul class="space-y-2 text-sm">
-              <li>• Always listen to your body - you know when to rest</li>
-              <li>• Monitor breathing quality - stop if difficult</li>
-              <li>• Heart rate awareness - reduce intensity if needed</li>
-              <li>• Choose cardio that feels best for breathing</li>
-              <li>• Recovery is critical with HOCOM</li>
-            </ul>
-          </div>
+function rHome(){
+  const s=stats();
+  const cw=(st.p-1)*8+st.w;
+  const prg=(cw/24)*100;
+  return`<div class="p-4 max-w-4xl mx-auto">
+<div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-lg mb-4">
+<h1 class="text-3xl font-bold mb-2">Amy's 24-Week Transformation</h1>
+<p class="text-lg">December 2025 → June 2026</p>
+<p class="mt-2">Age: 54 | Training: 4:00-5:00 AM</p>
+</div>
+<div class="bg-white rounded-lg p-4 mb-4 border-2 border-purple-400">
+<h2 class="text-xl font-bold mb-3">Progress</h2>
+<div class="text-center mb-3">
+<div class="text-2xl font-bold text-purple-600">Week ${cw} of 24</div>
+<div class="text-sm text-gray-600">Phase ${st.p}: ${PRG[st.p].n}</div>
+</div>
+<div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+<div class="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full" style="width:${prg}%"></div>
+</div>
+<div class="text-center text-sm text-gray-600">${Math.round(prg)}% Complete</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+<div class="bg-blue-50 p-4 rounded-lg text-center">
+<div class="text-2xl font-bold text-blue-600">${s.tw}</div>
+<div class="text-xs text-gray-600">Workouts</div>
+</div>
+<div class="bg-green-50 p-4 rounded-lg text-center">
+<div class="text-2xl font-bold text-green-600">${Math.round(s.tl).toLocaleString()}</div>
+<div class="text-xs text-gray-600">Lbs Lifted</div>
+</div>
+<div class="bg-purple-50 p-4 rounded-lg text-center">
+<div class="text-2xl font-bold text-purple-600">${s.tr.toLocaleString()}</div>
+<div class="text-xs text-gray-600">Reps</div>
+</div>
+<div class="bg-pink-50 p-4 rounded-lg text-center">
+<div class="text-2xl font-bold text-pink-600">${s.wts.length}</div>
+<div class="text-xs text-gray-600">Weigh-ins</div>
+</div>
+</div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <button onclick="setView('program')" class="bg-pink-600 text-white p-4 rounded-lg font-bold hover:bg-pink-700">
-              💪 View Program
-            </button>
-            <button onclick="setView('exercises')" class="bg-purple-600 text-white p-4 rounded-lg font-bold hover:bg-purple-700">
-              ❤️ Exercise Guide
-            </button>
-          </div>
+<div class="bg-green-50 border-2 border-green-500 rounded-lg p-4 mb-4">
+<h2 class="text-xl font-bold text-green-700 mb-3">Your Goals:</h2>
+<ul class="space-y-2 text-sm">
+<li>✓ Achieve strict pull-ups (multiple sets)</li>
+<li>✓ Perform dips with confidence</li>
+<li>✓ Develop visible six-pack abs with toned obliques</li>
+<li>✓ Build strong, defined lats and upper body</li>
+<li>✓ Full body restoration</li>
+</ul>
+</div>
 
-          <div class="mt-6 bg-blue-50 border-2 border-blue-400 rounded-lg p-4">
-            <h3 class="font-bold text-blue-700 mb-3">📊 Expected Milestones</h3>
-            ${milestones.map(m => `<div class="mb-2 text-sm"><strong>Week ${m.week}:</strong> ${m.text}</div>`).join('')}
-          </div>
-        </div>
-      `;
+<div class="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6">
+<h2 class="text-lg font-bold text-red-700 mb-2">⚠️ HOCOM & Tracheobronchomalacia Considerations</h2>
+<ul class="space-y-1 text-xs">
+<li>• <strong>Always listen to your body</strong> - You know when to rest</li>
+<li>• <strong>Monitor breathing quality</strong> - Stop immediately if breathing becomes difficult</li>
+<li>• <strong>Heart rate awareness</strong> - If HR won't elevate properly, reduce intensity</li>
+<li>• <strong>Choose cardio that feels best</strong> - Stationary bike often easiest for breathing</li>
+<li>• <strong>Recovery is critical</strong> - These conditions make rest even more important</li>
+<li>• <strong>Avoid Valsalva maneuver</strong> - Don't hold breath during heavy lifts</li>
+</ul>
+</div>
+
+<div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6">
+<h3 class="font-bold text-blue-700 mb-3">📊 Tracking & Measurements</h3>
+<div class="text-sm space-y-2">
+<div><strong>Weekly (Every Sunday):</strong> Body weight, Progress photos (front/side/back), All workout performance</div>
+<div><strong>Every 4 Weeks:</strong> Body measurements (chest, waist, arms), Assessment & adjustments</div>
+</div>
+</div>
+
+<div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6">
+<h3 class="font-bold text-blue-700 mb-3">📊 Expected Milestones</h3>
+<div class="text-sm space-y-1">
+<div><strong>Week 4:</strong> Strength increase, movement patterns natural</div>
+<div><strong>Week 8:</strong> Solid foundation, feeling stronger</div>
+<div><strong>Week 12:</strong> First full pull-up attempt!</div>
+<div><strong>Week 16:</strong> Multiple pull-ups possible</div>
+<div><strong>Week 20:</strong> Sets of 5+ pull-ups, abs showing</div>
+<div><strong>Week 24:</strong> Visible six-pack, strong & ripped!</div>
+</div>
+</div>
+
+<div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6">
+<h3 class="font-bold text-yellow-700 mb-3">⚠️ Important Reminders</h3>
+<ul class="space-y-1 text-xs">
+<li>• Warm up 5-10 minutes before each workout</li>
+<li>• Use Smith machine for safety when training alone</li>
+<li>• Progressive overload: Increase weight or reps each week when possible</li>
+<li>• Sleep 7-9 hours nightly for recovery</li>
+<li>• Drink 80+ oz of water daily</li>
+<li>• Listen to your breathing - it's your guide</li>
+<li>• You and your husband can do most exercises together!</li>
+</ul>
+</div>
+
+<div class="bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg p-6 mb-6 text-center">
+<h3 class="text-2xl font-bold mb-3">🌟 YOU'VE GOT THIS, AMY! 🌟</h3>
+<p class="mb-3">By June 2026, you WILL be:</p>
+<ul class="text-left max-w-md mx-auto space-y-2">
+<li>✓ Doing multiple strict pull-ups</li>
+<li>✓ Banging out sets of dips</li>
+<li>✓ Showing off a defined six-pack</li>
+<li>✓ Rocking strong, toned lats and arms</li>
+<li>✓ Feeling stronger and more confident than ever</li>
+</ul>
+<p class="text-xl font-bold mt-4">Let's make this happen! 💪❤️</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<button onclick="chView('exercises')" class="bg-indigo-600 text-white p-4 rounded-lg font-bold hover:bg-indigo-700">📖 Exercise Guide & Form</button>
+<button onclick="chView('overview')" class="bg-teal-600 text-white p-4 rounded-lg font-bold hover:bg-teal-700">📅 Program Overview</button>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<button onclick="chView('info')" class="bg-blue-600 text-white p-4 rounded-lg font-bold hover:bg-blue-700">📋 Personal Info</button>
+<button onclick="chView('workout')" class="bg-pink-600 text-white p-4 rounded-lg font-bold hover:bg-pink-700">💪 Workout</button>
+<button onclick="chView('stats')" class="bg-purple-600 text-white p-4 rounded-lg font-bold hover:bg-purple-700">📊 Stats</button>
+</div>
+</div>`;
+}
+
+function rInfo(){
+  return`<div class="p-4 max-w-4xl mx-auto">
+<div class="bg-blue-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
+<h2 class="text-2xl font-bold">Personal Info</h2>
+<button onclick="chView('home')" class="bg-white text-blue-600 px-4 py-2 rounded font-bold">🏠</button>
+</div>
+<div class="bg-white rounded-lg p-6 space-y-4">
+<div><label class="block font-bold mb-2">Name:</label>
+<input class="w-full p-3 border-2 rounded" value="${st.info.name||''}" onchange="updInfo('name',this.value)"/></div>
+<div><label class="block font-bold mb-2">Age:</label>
+<input type="number" class="w-full p-3 border-2 rounded" value="${st.info.age||''}" onchange="updInfo('age',this.value)"/></div>
+<div><label class="block font-bold mb-2">Start Weight (lbs):</label>
+<input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.sw||''}" onchange="updInfo('sw',this.value)"/></div>
+<div><label class="block font-bold mb-2">Target Weight (lbs):</label>
+<input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.tw||''}" onchange="updInfo('tw',this.value)"/></div>
+<div><label class="block font-bold mb-2">Goals:</label>
+<textarea class="w-full p-3 border-2 rounded" rows="4" onchange="updInfo('goals',this.value)">${st.info.goals||''}</textarea></div>
+</div>
+<div class="bg-green-50 border-4 border-green-500 rounded-lg p-6 mt-6">
+<h3 class="text-2xl font-bold text-center mb-4">📸 Starting Photos</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+${['Front','Side','Back'].map(v=>{
+  const k='start'+v;
+  return`<div class="border-2 border-dashed border-green-500 rounded p-4 bg-white text-center">
+<label class="font-bold block mb-2">${v}</label>
+<input type="file" accept="image/*" class="w-full text-sm mb-2" onchange="photo('${k}',event)"/>
+${st.photos[k]?`<img src="${st.photos[k]}" class="max-h-40 mx-auto rounded mt-2"/>`:''}
+</div>`;
+}).join('')}
+</div>
+</div>
+</div>`;
+}
+
+function rStats(){
+  if(st.chart){
+    let data,title;
+    if(st.chart.startsWith('ex:')){
+      const exName=st.chart.substring(3);
+      data=getExHistory(exName);
+      title=exName+' Progress';
+    }else if(st.chart.startsWith('w:')){
+      const field=st.chart.substring(2);
+      data=getWellnessData(field);
+      const labels={sl:'Sleep Hours',sq:'Sleep Quality',en:'Energy Level',wt:'Body Weight',mood:'General Mood'};
+      title=labels[field]+' Trend';
+    }else if(st.chart.startsWith('m:')){
+      const field=st.chart.substring(2);
+      data=getMeasurementData(field);
+      const labels={wt:'Weight',ch:'Chest',wa:'Waist',ar:'Arms'};
+      title='Weekly '+labels[field];
     }
+    return`<div class="p-4 max-w-4xl mx-auto">
+<div class="bg-purple-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
+<h2 class="text-xl font-bold">${title}</h2>
+<button onclick="st.chart=null;render()" class="bg-white text-purple-600 px-4 py-2 rounded font-bold">✕ Close</button>
+</div>
+<div class="bg-white rounded-lg p-6">
+${renderChart(title,data)}
+</div>
+<button onclick="st.chart=null;render()" class="w-full bg-gray-600 text-white p-4 rounded-lg font-bold hover:bg-gray-700 mt-4">Back to Stats</button>
+</div>`;
+  }
 
-    function renderExercises() {
-      return `
-        <div class="p-4 max-w-4xl mx-auto">
-          <div class="bg-purple-600 text-white p-4 rounded-lg mb-4 flex items-center justify-between">
-            <h2 class="text-2xl font-bold">Exercise Descriptions</h2>
-            <button onclick="setView('home')" class="bg-white text-purple-600 px-4 py-2 rounded font-bold">🏠 Home</button>
-          </div>
-          <div class="space-y-3">
-            ${Object.entries(exercises).map(([name, desc]) => `
-              <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
-                <h3 class="font-bold text-blue-700 mb-1">${name}</h3>
-                <p class="text-sm text-gray-700">${desc}</p>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
+  const s=stats();
+  const sw=parseFloat(st.info.sw)||0;
+  const cw=s.wts.length>0?s.wts[s.wts.length-1]:sw;
+  const wc=cw-sw;
+  return`<div class="p-4 max-w-4xl mx-auto">
+<div class="bg-purple-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
+<h2 class="text-2xl font-bold">📊 Stats & Charts</h2>
+<button onclick="chView('home')" class="bg-white text-purple-600 px-4 py-2 rounded font-bold">🏠</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+<div class="bg-white rounded-lg p-6 text-center">
+<div class="text-3xl font-bold text-blue-600">${s.tw}</div>
+<div class="text-sm text-gray-600">Workouts</div>
+</div>
+<div class="bg-white rounded-lg p-6 text-center">
+<div class="text-3xl font-bold text-green-600">${Math.round(s.tl).toLocaleString()}</div>
+<div class="text-sm text-gray-600">Lbs Lifted</div>
+</div>
+<div class="bg-white rounded-lg p-6 text-center">
+<div class="text-3xl font-bold text-purple-600">${s.tr.toLocaleString()}</div>
+<div class="text-sm text-gray-600">Reps</div>
+</div>
+<div class="bg-white rounded-lg p-6 text-center">
+<div class="text-3xl font-bold ${wc<0?'text-green-600':wc>0?'text-orange-600':'text-gray-600'}">
+${wc>0?'+':''}${wc.toFixed(1)}
+</div>
+<div class="text-sm text-gray-600">Weight Change</div>
+</div>
+</div>
+<div class="bg-white rounded-lg p-6 mb-4">
+<h3 class="text-xl font-bold mb-4">📈 Daily Wellness Trends</h3>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+<button onclick="st.chart='w:sl';render()" class="bg-blue-100 p-3 rounded text-sm font-bold hover:bg-blue-200">Sleep Hours</button>
+<button onclick="st.chart='w:sq';render()" class="bg-blue-100 p-3 rounded text-sm font-bold hover:bg-blue-200">Sleep Quality</button>
+<button onclick="st.chart='w:en';render()" class="bg-blue-100 p-3 rounded text-sm font-bold hover:bg-blue-200">Energy Level</button>
+<button onclick="st.chart='w:wt';render()" class="bg-blue-100 p-3 rounded text-sm font-bold hover:bg-blue-200">Daily Weight</button>
+<button onclick="st.chart='w:mood';render()" class="bg-blue-100 p-3 rounded text-sm font-bold hover:bg-blue-200">General Mood</button>
+</div>
+</div>
+<div class="bg-white rounded-lg p-6">
+<h3 class="text-xl font-bold mb-4">📏 Weekly Measurements</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+<button onclick="st.chart='m:wt';render()" class="bg-green-100 p-3 rounded text-sm font-bold hover:bg-green-200">Weight</button>
+<button onclick="st.chart='m:ch';render()" class="bg-green-100 p-3 rounded text-sm font-bold hover:bg-green-200">Chest</button>
+<button onclick="st.chart='m:wa';render()" class="bg-green-100 p-3 rounded text-sm font-bold hover:bg-green-200">Waist</button>
+<button onclick="st.chart='m:ar';render()" class="bg-green-100 p-3 rounded text-sm font-bold hover:bg-green-200">Arms</button>
+</div>
+</div>
+</div>`;
+}
+
+function rWork(){
+  const ph=PRG[st.p];
+  const dy=ph.d[st.d];
+  const wd=gwd();
+
+  if(dy.t==='r'){
+    return`<div class="p-4 max-w-4xl mx-auto">
+<div class="bg-green-600 text-white p-4 rounded-lg mb-4">
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-xl font-bold">REST DAY</h2>
+<button onclick="chView('home')" class="bg-white text-green-600 px-4 py-2 rounded font-bold">🏠</button>
+</div>
+<div class="grid grid-cols-3 gap-2 text-sm">
+<select class="p-2 rounded text-black" onchange="st.p=+this.value;st.w=1;st.d=1;render()">
+${[1,2,3].map(i=>`<option value="${i}"${st.p===i?' selected':''}>Phase ${i}</option>`).join('')}
+</select>
+<select class="p-2 rounded text-black" onchange="st.w=+this.value;st.d=1;render()">
+${[1,2,3,4,5,6,7,8].map(i=>`<option value="${i}"${st.w===i?' selected':''}>Week ${i}</option>`).join('')}
+</select>
+<select class="p-2 rounded text-black" onchange="st.d=+this.value;render()">
+${[1,2,3,4,5,6,7].map(i=>`<option value="${i}"${st.d===i?' selected':''}>Day ${i}</option>`).join('')}
+</select>
+</div>
+<div class="text-center mt-2 text-sm">Currently: Phase ${st.p}, Week ${st.w}, Day ${st.d}</div>
+</div>
+${renderWellness(wd)}
+<div class="bg-white rounded-lg p-6 text-center mb-4">
+<p class="text-xl mb-4">Recovery Day! 🌟</p>
+<p>Focus on sleep, hydration, and meal prep.</p>
+</div>
+${st.d===7?`<div class="bg-purple-50 border-4 border-purple-500 rounded-lg p-6 mb-4">
+<h3 class="text-2xl font-bold text-center mb-4">📊 Week ${st.w} Measurements</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div><label class="block font-bold mb-1 text-sm">Weight (lbs):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${(st.data['p'+st.p+'w'+st.w+'m']||{}).wt||''}" onchange="updMeas('wt',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Chest (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${(st.data['p'+st.p+'w'+st.w+'m']||{}).ch||''}" onchange="updMeas('ch',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Waist (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${(st.data['p'+st.p+'w'+st.w+'m']||{}).wa||''}" onchange="updMeas('wa',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Arms (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${(st.data['p'+st.p+'w'+st.w+'m']||{}).ar||''}" onchange="updMeas('ar',this.value)"/></div>
+</div>
+</div>
+<div class="bg-green-50 border-4 border-green-500 rounded-lg p-6 mb-4">
+<h3 class="text-2xl font-bold text-center mb-4">📸 Week ${st.w} Progress Photos</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+${['Front','Side','Back'].map(v=>{
+  const pk='p'+st.p+'w'+st.w+v;
+  return`<div class="border-2 border-dashed border-green-500 rounded p-4 bg-white text-center">
+<label class="font-bold block mb-2">${v}</label>
+<input type="file" accept="image/*" class="w-full text-sm mb-2" onchange="photo('${pk}',event)"/>
+${st.photos[pk]?`<img src="${st.photos[pk]}" class="max-h-32 mx-auto rounded mt-2"/>`:''}
+</div>`;
+}).join('')}
+</div>
+</div>`:''}
+<div class="flex justify-between">
+<button onclick="prev()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">← Prev</button>
+<button onclick="next()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">Next →</button>
+</div>
+</div>`;
+  }
+
+  if(dy.t==='c'){
+    return`<div class="p-4 max-w-4xl mx-auto">
+<div class="bg-blue-600 text-white p-4 rounded-lg mb-4">
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-xl font-bold">CARDIO DAY</h2>
+<button onclick="chView('home')" class="bg-white text-blue-600 px-4 py-2 rounded font-bold">🏠</button>
+</div>
+<div class="grid grid-cols-3 gap-2 text-sm">
+<select class="p-2 rounded text-black" onchange="st.p=+this.value;st.w=1;st.d=1;render()">
+${[1,2,3].map(i=>`<option value="${i}"${st.p===i?' selected':''}>Phase ${i}</option>`).join('')}
+</select>
+<select class="p-2 rounded text-black" onchange="st.w=+this.value;st.d=1;render()">
+${[1,2,3,4,5,6,7,8].map(i=>`<option value="${i}"${st.w===i?' selected':''}>Week ${i}</option>`).join('')}
+</select>
+<select class="p-2 rounded text-black" onchange="st.d=+this.value;render()">
+${[1,2,3,4,5,6,7].map(i=>`<option value="${i}"${st.d===i?' selected':''}>Day ${i}</option>`).join('')}
+</select>
+</div>
+<div class="text-center mt-2 text-sm">Currently: Phase ${st.p}, Week ${st.w}, Day ${st.d}</div>
+</div>
+${renderWellness(wd)}
+<div class="bg-white rounded-lg p-4 mb-4">
+<p class="mb-4 font-bold">Choose your cardio (choose what feels best for breathing):</p>
+<ul class="mb-4 space-y-2 text-sm">
+<li>• Stationary Bike 30-45 min (moderate - often easiest for breathing)</li>
+<li>• Elliptical 30-45 min</li>
+<li>• Treadmill walk 30 min</li>
+<li>• Rowing 20-30 min</li>
+</ul>
+<input placeholder="Activity" class="w-full p-3 border-2 rounded mb-3" value="${wd.act||''}" onchange="updW('act',this.value)"/>
+<input type="number" placeholder="Minutes" class="w-full p-3 border-2 rounded mb-3" value="${wd.min||''}" onchange="updW('min',this.value)"/>
+<textarea placeholder="Notes" class="w-full p-3 border-2 rounded" rows="3" onchange="updW('n',this.value)">${wd.n||''}</textarea>
+</div>
+${st.d===7?`<div class="bg-purple-50 border-4 border-purple-500 rounded-lg p-6 mb-4">
+<h3 class="text-2xl font-bold text-center mb-4">📊 Week ${st.w} Measurements</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div><label class="block font-bold mb-1 text-sm">Weight (lbs):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${(st.data['p'+st.p+'w'+st.w+'m']||{}).wt||''}" onchange="updMeas('wt',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Chest (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${(st.data['p'+st.p+'w'+st.w+'m']||{}).ch||''}" onchange="updMeas('ch',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Waist (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${(st.data['p'+st.p+'w'+st.w+'m']||{}).wa||''}" onchange="updMeas('wa',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Arms (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${(st.data['p'+st.p+'w'+st.w+'m']||{}).ar||''}" onchange="updMeas('ar',this.value)"/></div>
+</div>
+</div>
+<div class="bg-green-50 border-4 border-green-500 rounded-lg p-6 mb-4">
+<h3 class="text-2xl font-bold text-center mb-4">📸 Week ${st.w} Progress Photos</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+${['Front','Side','Back'].map(v=>{
+  const pk='p'+st.p+'w'+st.w+v;
+  return`<div class="border-2 border-dashed border-green-500 rounded p-4 bg-white text-center">
+<label class="font-bold block mb-2">${v}</label>
+<input type="file" accept="image/*" class="w-full text-sm mb-2" onchange="photo('${pk}',event)"/>
+${st.photos[pk]?`<img src="${st.photos[pk]}" class="max-h-32 mx-auto rounded mt-2"/>`:''}
+</div>`;
+}).join('')}
+</div>
+</div>`:''}
+<div class="flex justify-between">
+<button onclick="prev()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold">← Prev</button>
+<button onclick="next()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold">Next →</button>
+</div>
+</div>`;
+  }
+
+  let h=`<div class="p-4 max-w-4xl mx-auto">
+<div class="bg-pink-600 text-white p-4 rounded-lg mb-4">
+<div class="flex justify-between items-center mb-3">
+<h2 class="text-xl font-bold">${dy.n}</h2>
+<button onclick="chView('home')" class="bg-white text-pink-600 px-4 py-2 rounded font-bold">🏠</button>
+</div>
+<div class="grid grid-cols-3 gap-2 text-sm">
+<select class="p-2 rounded text-black" onchange="st.p=+this.value;st.w=1;st.d=1;render()">
+${[1,2,3].map(i=>`<option value="${i}"${st.p===i?' selected':''}>Phase ${i}</option>`).join('')}
+</select>
+<select class="p-2 rounded text-black" onchange="st.w=+this.value;st.d=1;render()">
+${[1,2,3,4,5,6,7,8].map(i=>`<option value="${i}"${st.w===i?' selected':''}>Week ${i}</option>`).join('')}
+</select>
+<select class="p-2 rounded text-black" onchange="st.d=+this.value;render()">
+${[1,2,3,4,5,6,7].map(i=>`<option value="${i}"${st.d===i?' selected':''}>Day ${i}</option>`).join('')}
+</select>
+</div>
+<div class="text-center mt-2 text-sm">Currently: Phase ${st.p}, Week ${st.w}, Day ${st.d}</div>
+</div>
+${renderWellness(wd)}
+<div class="bg-white rounded-lg p-4 mb-4 overflow-x-auto">
+<table class="w-full text-xs">
+<thead><tr class="bg-blue-600 text-white">
+<th class="p-2 text-left">Exercise</th>`;
+
+  const ms=Math.max(...dy.ex.map(e=>e.s));
+  for(let s=1;s<=ms;s++)h+=`<th class="p-2">Set ${s}</th>`;
+  h+=`</tr></thead><tbody>`;
+
+  dy.ex.forEach((e,i)=>{
+    const ed=(wd.ex&&wd.ex[i])||{};
+    h+=`<tr class="border-b">
+<td class="p-2">
+<div class="font-bold">${e.n}</div>
+<div class="text-gray-500">${e.s}x${e.r}</div>
+<div class="text-gray-400 text-xs italic">Alt: ${e.a}</div>
+<button onclick="st.chart='ex:${e.n}';render()" class="text-blue-600 text-xs underline mt-1 hover:text-blue-800">📈 View Progress</button>
+</td>`;
+    for(let s=1;s<=e.s;s++){
+      h+=`<td class="p-1">
+<div class="flex gap-1 justify-center items-center">
+<input type="number" placeholder="lbs" class="w-14 p-1 border rounded text-center" value="${ed['s'+s+'w']||''}" onchange="updEx(${i},${s},'w',this.value)"/>
+<span class="text-xs">×</span>
+<input type="number" placeholder="reps" class="w-14 p-1 border rounded text-center" value="${ed['s'+s+'r']||''}" onchange="updEx(${i},${s},'r',this.value)"/>
+</div>
+</td>`;
     }
+    h+=`</tr>`;
+  });
 
-    function renderProgram() {
-      return `
-        <div class="p-4 max-w-4xl mx-auto pb-20">
-          <div class="bg-pink-600 text-white p-4 rounded-lg mb-4 flex items-center justify-between">
-            <h2 class="text-2xl font-bold">Training Program</h2>
-            <button onclick="setView('home')" class="bg-white text-pink-600 px-4 py-2 rounded font-bold">🏠 Home</button>
-          </div>
+  h+=`</tbody></table></div>
+<div class="bg-gray-100 p-4 rounded mb-4">
+<label class="block font-bold mb-2">Notes:</label>
+<textarea class="w-full p-3 border-2 rounded" rows="3" onchange="updW('n',this.value)">${wd.n||''}</textarea>
+</div>`;
 
-          ${[1, 2, 3].map(phaseNum => {
-            const phase = phases[phaseNum];
-            const isExpanded = expandedPhase === phaseNum;
-            
-            return `
-              <div class="mb-4">
-                <button onclick="togglePhase(${phaseNum})" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4 rounded-lg flex items-center justify-between font-bold">
-                  <div class="text-left">
-                    <div class="text-xl">PHASE ${phaseNum}: ${phase.name}</div>
-                    <div class="text-sm font-normal">${phase.weeks}</div>
-                  </div>
-                  <span>${isExpanded ? '▲' : '▼'}</span>
-                </button>
+  if(st.d===7){
+    const pk='p'+st.p+'w'+st.w;
+    const mk=pk+'m';
+    const ms=st.data[mk]||{};
+    h+=`<div class="bg-purple-50 border-4 border-purple-500 rounded-lg p-6 mb-4">
+<h3 class="text-2xl font-bold text-center mb-4">📊 Week ${st.w} Measurements</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div><label class="block font-bold mb-1 text-sm">Weight (lbs):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${ms.wt||''}" onchange="updMeas('wt',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Chest (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${ms.ch||''}" onchange="updMeas('ch',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Waist (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${ms.wa||''}" onchange="updMeas('wa',this.value)"/></div>
+<div><label class="block font-bold mb-1 text-sm">Arms (in):</label>
+<input type="number" step="0.1" class="w-full p-2 border-2 rounded" value="${ms.ar||''}" onchange="updMeas('ar',this.value)"/></div>
+</div>
+</div>
+<div class="bg-green-50 border-4 border-green-500 rounded-lg p-6 mb-4">
+<h3 class="text-2xl font-bold text-center mb-4">📸 Week ${st.w} Progress Photos</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+${['Front','Side','Back'].map(v=>{
+  const phk=pk+v;
+  return`<div class="border-2 border-dashed border-green-500 rounded p-4 bg-white text-center">
+<label class="font-bold block mb-2">${v}</label>
+<input type="file" accept="image/*" class="w-full text-sm mb-2" onchange="photo('${phk}',event)"/>
+${st.photos[phk]?`<img src="${st.photos[phk]}" class="max-h-32 mx-auto rounded mt-2"/>`:''}
+</div>`;
+}).join('')}
+</div>
+</div>`;
+  }
 
-                ${isExpanded ? `
-                  <div class="mt-2 space-y-2">
-                    <div class="bg-purple-50 p-3 rounded border-l-4 border-purple-500">
-                      <strong>Focus:</strong> ${phase.focus}
-                    </div>
+  h+=`<div class="flex justify-between mt-4">
+<button onclick="prev()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-gray-700">← Prev</button>
+<button onclick="next()" class="bg-pink-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-pink-700">Next →</button>
+</div>
+</div>`;
 
-                    ${Object.entries(phase.days).map(([dayNum, day]) => {
-                      const dayKey = `${phaseNum}-${dayNum}`;
-                      const isDayExpanded = expandedDay === dayKey;
-                      const isCompleted = completedWorkouts[dayKey];
+  return h;
+}
 
-                      return `
-                        <div class="border-2 border-pink-300 rounded-lg overflow-hidden">
-                          <button onclick="toggleDay('${dayKey}')" class="w-full p-3 flex items-center justify-between font-bold text-left ${isCompleted ? 'bg-green-100' : 'bg-pink-100'}">
-                            <div class="flex items-center gap-2">
-                              <button onclick="event.stopPropagation(); toggleWorkout(${phaseNum}, ${dayNum})" class="w-6 h-6 rounded border-2 flex items-center justify-center ${isCompleted ? 'bg-green-500 border-green-600' : 'bg-white border-gray-400'}">
-                                ${isCompleted ? '✓' : ''}
-                              </button>
-                              <span>DAY ${dayNum}: ${day.name}</span>
-                            </div>
-                            <span>${isDayExpanded ? '▲' : '▼'}</span>
-                          </button>
+function chView(v){st.v=v;render();}
 
-                          ${isDayExpanded ? `
-                            <div class="p-4 bg-white">
-                              ${day.type === 'cardio' ? `
-                                <div>
-                                  <div class="bg-blue-50 p-3 rounded mb-3">
-                                    <h4 class="font-bold mb-2">Cardio Options:</h4>
-                                    ${day.options.map(opt => `<div class="text-sm mb-1">• ${opt}</div>`).join('')}
-                                  </div>
-                                  ${day.coreWork ? `
-                                    <div class="bg-yellow-50 p-3 rounded mb-3">
-                                      <h4 class="font-bold mb-2">Core Work:</h4>
-                                      ${day.coreWork.map(work => `<div class="text-sm mb-1">• ${work}</div>`).join('')}
-                                    </div>
-                                  ` : ''}
-                                  ${day.circuit ? `
-                                    <div class="bg-orange-50 p-3 rounded mb-3">
-                                      <h4 class="font-bold mb-2">Circuit:</h4>
-                                      ${day.circuit.map(item => `<div class="text-sm mb-1">${item}</div>`).join('')}
-                                    </div>
-                                  ` : ''}
-                                </div>
-                              ` : ''}
+function prev(){
+  if(st.d>1)st.d--;
+  else if(st.w>1){st.w--;st.d=7;}
+  else if(st.p>1){st.p--;st.w=8;st.d=7;}
+  render();
+}
 
-                              ${day.type === 'rest' ? `
-                                <div class="bg-green-50 p-3 rounded">
-                                  <p class="text-sm">${day.notes}</p>
-                                </div>
-                              ` : ''}
+function next(){
+  if(st.d<7)st.d++;
+  else if(st.w<8){st.w++;st.d=1;}
+  else if(st.p<3){st.p++;st.w=1;st.d=1;}
+  render();
+}
 
-                              ${day.exercises ? `
-                                <div class="space-y-2">
-                                  ${day.exercises.map(ex => `
-                                    <div class="bg-gray-50 p-3 rounded">
-                                      <div class="font-bold">${ex.name}</div>
-                                      <div class="text-sm text-gray-600">${ex.sets}</div>
-                                      <div class="text-xs text-gray-500 italic">Alt: ${ex.alt}</div>
-                                    </div>
-                                  `).join('')}
-                                </div>
-                              ` : ''}
+function render(){
+  const app=document.getElementById('app');
+  if(!app)return;
+  if(st.v==='home')app.innerHTML=rHome();
+  else if(st.v==='info')app.innerHTML=rInfo();
+  else if(st.v==='stats')app.innerHTML=rStats();
+  else if(st.v==='workout')app.innerHTML=rWork();
+}
 
-                              ${day.notes ? `
-                                <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                                  <p class="text-sm"><strong>Notes:</strong> ${day.notes}</p>
-                                </div>
-                              ` : ''}
-                            </div>
-                          ` : ''}
-                        </div>
-                      `;
-                    }).join('')}
-                  </div>
-                ` : ''}
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
-    }
+window.chView=chView;
+window.updInfo=updInfo;
+window.updW=updW;
+window.updEx=updEx;
+window.updMeas=updMeas;
+window.photo=photo;
+window.prev=prev;
+window.next=next;
+window.render=render;
+window.st=st;
 
-    function setView(view) {
-      currentView = view;
-      render();
-    }
-
-    function togglePhase(phaseNum) {
-      expandedPhase = expandedPhase === phaseNum ? null : phaseNum;
-      render();
-    }
-
-    function toggleDay(dayKey) {
-      expandedDay = expandedDay === dayKey ? null : dayKey;
-      render();
-    }
-
-    function render() {
-      let html = '';
-      if (currentView === 'home') html = renderHome();
-      else if (currentView === 'exercises') html = renderExercises();
-      else if (currentView === 'program') html = renderProgram();
-      
-      document.getElementById('app').innerHTML = html;
-    }
-
-    // Initial render
-    render();
-
-    // Make functions global
-    window.setView = setView;
-    window.togglePhase = togglePhase;
-    window.toggleDay = toggleDay;
-    window.saveWeek = saveWeek;
-    window.toggleWorkout = toggleWorkout;
-  </script>
+render();
+</script>
 </body>
 </html>
