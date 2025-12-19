@@ -817,32 +817,7 @@ function next(){
   else if(st.p<3){st.p++;st.w=1;st.d=1;}
   render();
 }
-<!-- 
-===================================================================
-INSTRUCTIONS: Add these two functions to your existing code
-===================================================================
 
-1. Find the render() function in your code (near the bottom)
-2. BEFORE the render() function, add these two new functions: rExercises() and rOverview()
-3. Then MODIFY the render() function to include the two new cases
-
-The modified render() function should look like this:
-
-function render(){
-  const app=document.getElementById('app');
-  if(!app)return;
-  if(st.v==='home')app.innerHTML=rHome();
-  else if(st.v==='info')app.innerHTML=rInfo();
-  else if(st.v==='stats')app.innerHTML=rStats();
-  else if(st.v==='workout')app.innerHTML=rWork();
-  else if(st.v==='exercises')app.innerHTML=rExercises();  // ADD THIS LINE
-  else if(st.v==='overview')app.innerHTML=rOverview();    // ADD THIS LINE
-}
-
-===================================================================
-COPY THE CODE BELOW AND PASTE IT BEFORE YOUR render() FUNCTION
-===================================================================
--->
 
 <script>
 // ============================================================
@@ -1862,7 +1837,7 @@ function rOverview(){
 
   </div>`;
 }
-</script>
+
 function render(){
   const app=document.getElementById('app');
   if(!app)return;
