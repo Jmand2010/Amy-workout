@@ -817,6 +817,16 @@ function next(){
   else if(st.p<3){st.p++;st.w=1;st.d=1;}
   render();
 }
+<!-- 
+===================================================================
+INSTRUCTIONS: Add these two functions to your existing code
+===================================================================
+
+1. Find the render() function in your code (near the bottom)
+2. BEFORE the render() function, add these two new functions: rExercises() and rOverview()
+3. Then MODIFY the render() function to include the two new cases
+
+The modified render() function should look like this:
 
 function render(){
   const app=document.getElementById('app');
@@ -825,6 +835,1043 @@ function render(){
   else if(st.v==='info')app.innerHTML=rInfo();
   else if(st.v==='stats')app.innerHTML=rStats();
   else if(st.v==='workout')app.innerHTML=rWork();
+  else if(st.v==='exercises')app.innerHTML=rExercises();  // ADD THIS LINE
+  else if(st.v==='overview')app.innerHTML=rOverview();    // ADD THIS LINE
+}
+
+===================================================================
+COPY THE CODE BELOW AND PASTE IT BEFORE YOUR render() FUNCTION
+===================================================================
+-->
+
+<script>
+// ============================================================
+// EXERCISE GUIDE & FORM - Complete exercise library
+// ============================================================
+function rExercises(){
+  const exercises = {
+    // PRESSING MOVEMENTS
+    "Incline Barbell/DB Press": {
+      category: "Chest - Upper",
+      description: "A compound movement targeting the upper chest, front deltoids, and triceps.",
+      form: [
+        "Set bench to 30-45 degree incline (not too steep)",
+        "Lie back with feet flat on floor, shoulder blades squeezed together",
+        "Grip barbell slightly wider than shoulders, or hold DBs at chest level",
+        "Lower weight slowly to upper chest (nipple line or higher)",
+        "Press up and slightly back toward starting position",
+        "Keep elbows at 45-degree angle (not flared out)"
+      ],
+      breathing: "Inhale as you lower, exhale as you press up",
+      tips: "Focus on feeling it in your upper chest. If you feel too much shoulder, lower the incline angle."
+    },
+    "Barbell/DB Shoulder Press": {
+      category: "Shoulders",
+      description: "Primary shoulder builder targeting all three deltoid heads, especially front and middle delts.",
+      form: [
+        "Seated or standing with core tight, feet shoulder-width",
+        "Start with weight at shoulder height, palms forward",
+        "Press straight up overhead without leaning back",
+        "Keep core engaged to protect lower back",
+        "Lower with control back to shoulder level",
+        "Don't let elbows drop too far behind your body"
+      ],
+      breathing: "Exhale on press up, inhale on the way down",
+      tips: "Using Smith machine provides extra stability. If standing, engage your core like you're bracing for a punch."
+    },
+    "Barbell Bench Press": {
+      category: "Chest - Overall",
+      description: "The king of chest exercises, building overall chest mass, shoulders, and triceps.",
+      form: [
+        "Lie flat on bench, eyes under the bar",
+        "Feet flat on floor, squeeze shoulder blades together",
+        "Grip bar slightly wider than shoulders",
+        "Lower bar to mid-chest (nipple line) with control",
+        "Touch chest lightly, don't bounce",
+        "Press up powerfully, driving through your chest"
+      ],
+      breathing: "Inhale as bar descends, exhale forcefully as you press up",
+      tips: "Smith machine is great for safety when training alone. Focus on feeling chest work, not just moving weight."
+    },
+    "Barbell Military Press": {
+      category: "Shoulders",
+      description: "Standing or seated overhead press emphasizing front and middle deltoids.",
+      form: [
+        "Start with bar at upper chest/collarbone",
+        "Stand with feet hip-width, core braced",
+        "Press bar straight up, slightly back over head",
+        "Lock out arms overhead without hyperextending back",
+        "Lower with control back to start",
+        "Keep core tight throughout - don't arch back"
+      ],
+      breathing: "Exhale on press, inhale on descent",
+      tips: "This is harder than seated press. If your form breaks down, switch to seated version."
+    },
+    "Dips": {
+      category: "Chest & Triceps",
+      description: "Bodyweight exercise that builds tremendous chest and tricep strength.",
+      form: [
+        "Grip parallel bars, arms straight, shoulders down",
+        "Lean slightly forward for chest emphasis",
+        "Lower body by bending elbows until upper arms parallel to ground",
+        "Keep elbows at 45-degree angle, not flared wide",
+        "Press back up powerfully to starting position",
+        "Maintain forward lean throughout"
+      ],
+      breathing: "Inhale going down, exhale pressing up",
+      tips: "Use assisted dip machine or bands if needed. More forward lean = more chest. Upright = more triceps."
+    },
+    "Weighted Dips": {
+      category: "Chest & Triceps - Advanced",
+      description: "Dips with added weight for advanced strength building.",
+      form: [
+        "Use dip belt with weight plate or hold dumbbell between feet",
+        "Same form as regular dips",
+        "Controlled descent, powerful press up",
+        "Don't add weight until you can do 12+ bodyweight dips cleanly"
+      ],
+      breathing: "Inhale down, exhale up with power",
+      tips: "Start with just 5-10 lbs added. Progress slowly - this exercise can stress shoulders if rushed."
+    },
+    "Assisted Dips/Bench Dips": {
+      category: "Chest & Triceps - Beginner",
+      description: "Regression options to build toward full dips.",
+      form: [
+        "Assisted: Use machine with knee pad for support",
+        "Bench dips: Hands on bench behind you, feet extended forward",
+        "Lower body by bending elbows to 90 degrees",
+        "Press back up to straight arms",
+        "Keep shoulders down and back"
+      ],
+      breathing: "Inhale down, exhale up",
+      tips: "Perfect these before attempting full dips. Build to 15+ reps before progressing."
+    },
+    "Close-Grip Barbell Press": {
+      category: "Triceps & Chest",
+      description: "Bench press variation emphasizing triceps with hands closer together.",
+      form: [
+        "Lie on flat bench, grip bar shoulder-width or slightly narrower",
+        "Lower bar to lower chest with elbows close to sides",
+        "Keep elbows tucked, not flared",
+        "Press up focusing on tricep contraction",
+        "Don't go too narrow (wrist pain risk)"
+      ],
+      breathing: "Inhale lowering, exhale pressing",
+      tips: "Great for tricep strength. If wrists hurt, widen grip slightly."
+    },
+
+    // PULLING MOVEMENTS
+    "Barbell Rows": {
+      category: "Back - Middle",
+      description: "Fundamental back builder targeting lats, rhomboids, and middle back.",
+      form: [
+        "Stand with feet hip-width, knees slightly bent",
+        "Hinge forward at hips, back straight, core tight",
+        "Let bar hang at arm's length",
+        "Pull bar to lower chest/upper abs",
+        "Lead with elbows, squeeze shoulder blades together",
+        "Lower with control, maintain back position"
+      ],
+      breathing: "Exhale on pull, inhale on lower",
+      tips: "Don't round your back. Think 'pull elbows back' not 'pull hands up'. Smith machine works great here."
+    },
+    "Pull-ups": {
+      category: "Back - Overall",
+      description: "The ultimate back and bicep builder, developing width and strength.",
+      form: [
+        "Grip bar slightly wider than shoulders, palms away",
+        "Hang with arms fully extended",
+        "Pull body up by driving elbows down and back",
+        "Get chin over bar",
+        "Lower with control to full extension",
+        "Avoid kipping or swinging"
+      ],
+      breathing: "Exhale pulling up, inhale lowering",
+      tips: "YOUR GOAL EXERCISE! Start with negatives or assisted. Focus on lat engagement, not arm pulling."
+    },
+    "Negative Pull-ups": {
+      category: "Back - Progression",
+      description: "Eccentric training to build toward full pull-ups by focusing on the lowering phase.",
+      form: [
+        "Jump or step up to top position (chin over bar)",
+        "Lower yourself as slowly as possible (aim for 5+ seconds)",
+        "Control the descent with your lats, don't just drop",
+        "Fully extend arms at bottom",
+        "Reset and repeat"
+      ],
+      breathing: "Slow controlled breath throughout descent",
+      tips: "CRITICAL for building pull-up strength. Take 5-10 seconds to lower. When you can do 5x5 seconds, you're close to your first pull-up!"
+    },
+    "Strict Pull-ups": {
+      category: "Back - Advanced",
+      description: "Full pull-ups with perfect form, no momentum or kipping.",
+      form: [
+        "Dead hang start, arms fully extended",
+        "Pull smoothly without kicking or swinging",
+        "Chest to bar if possible",
+        "Pause at top",
+        "Lower with complete control to dead hang",
+        "Each rep starts from dead hang"
+      ],
+      breathing: "Exhale on pull, inhale at top and during lower",
+      tips: "Quality over quantity. One perfect rep beats three sloppy ones. THIS IS YOUR GOAL!"
+    },
+    "Pull-up Practice": {
+      category: "Back - Skill Work",
+      description: "Dedicated practice session for developing pull-up strength and technique.",
+      form: [
+        "Mix of negatives, assisted, and attempts at full pull-ups",
+        "Focus on form and lat engagement",
+        "Rest fully between attempts",
+        "Track progress (can you hold top longer? Control descent better?)"
+      ],
+      breathing: "Controlled throughout each variation",
+      tips: "Every session makes you stronger. Film yourself to check form. Celebrate small wins!"
+    },
+    "Lat Pulldowns": {
+      category: "Back - Width",
+      description: "Machine exercise mimicking pull-up motion, building lat width.",
+      form: [
+        "Sit with thighs secured under pad",
+        "Grip bar slightly wider than shoulders",
+        "Pull bar to upper chest, driving elbows down and back",
+        "Squeeze lats at bottom",
+        "Control the weight back up",
+        "Don't lean back excessively"
+      ],
+      breathing: "Exhale on pull down, inhale on return",
+      tips: "Great for building pull-up strength. Imagine pulling the bar apart as you pull down."
+    },
+    "Wide Grip Lat Pulldown": {
+      category: "Back - Width Emphasis",
+      description: "Lat pulldown with wider grip to target outer lats.",
+      form: [
+        "Grip bar 6-8 inches wider than shoulders",
+        "Pull to upper chest with elbows wide",
+        "Focus on lat stretch at top",
+        "Squeeze lats at bottom, pause briefly",
+        "Control the return"
+      ],
+      breathing: "Exhale pulling, inhale releasing",
+      tips: "Wider grip = more lat emphasis, less bicep. Don't go so wide you lose range of motion."
+    },
+    "Single Arm DB Row": {
+      category: "Back - Unilateral",
+      description: "One arm at a time rowing for balanced back development.",
+      form: [
+        "Place knee and hand on bench for support",
+        "Other foot on floor, torso parallel to ground",
+        "Let DB hang at arm's length",
+        "Pull DB to hip, elbow close to body",
+        "Squeeze shoulder blade back and down",
+        "Lower with control, feel the stretch"
+      ],
+      breathing: "Exhale on pull, inhale on lower",
+      tips: "Great for fixing imbalances. Focus on rowing motion, not bicep curl."
+    },
+    "DB Pullovers": {
+      category: "Back & Chest",
+      description: "Unique movement stretching and working lats and chest simultaneously.",
+      form: [
+        "Lie perpendicular on bench (upper back only), hips low",
+        "Hold one DB with both hands overhead",
+        "Lower DB behind head with slight elbow bend",
+        "Feel stretch in lats and chest",
+        "Pull DB back over chest",
+        "Keep hips low throughout"
+      ],
+      breathing: "Inhale as DB goes back, exhale pulling over",
+      tips: "Don't go too heavy. Focus on the stretch and contraction in your lats."
+    },
+    "DB Shrugs": {
+      category: "Traps",
+      description: "Isolation exercise for building the trapezius muscles.",
+      form: [
+        "Stand holding DBs at sides, arms straight",
+        "Shrug shoulders straight up toward ears",
+        "Hold peak contraction for 1 second",
+        "Lower slowly, feel the stretch",
+        "Don't roll shoulders - straight up and down"
+      ],
+      breathing: "Exhale on shrug up, inhale on lower",
+      tips: "Heavy weight works here. Control it, don't bounce."
+    },
+    "Cable Face Pulls": {
+      category: "Rear Delts & Upper Back",
+      description: "Critical exercise for shoulder health and rear delt development.",
+      form: [
+        "Set cable at face height with rope attachment",
+        "Pull rope toward face, hands going past ears",
+        "Focus on squeezing rear delts and upper back",
+        "Elbows high, pull apart the rope at peak",
+        "Control the return, maintain tension"
+      ],
+      breathing: "Exhale on pull, inhale on return",
+      tips: "IMPORTANT for shoulder health and posture. Feel it in rear delts, not arms."
+    },
+
+    // LEG EXERCISES
+    "Barbell Squats": {
+      category: "Legs - Overall",
+      description: "The king of leg exercises, building overall leg mass and strength.",
+      form: [
+        "Bar on upper traps (high bar) or rear delts (low bar)",
+        "Feet shoulder-width or slightly wider, toes slightly out",
+        "Break at hips and knees simultaneously",
+        "Descend until thighs parallel or just below",
+        "Keep chest up, core tight, back neutral",
+        "Drive through heels to stand"
+      ],
+      breathing: "Big breath at top, hold during descent, exhale on way up",
+      tips: "Smith machine is great for safety. Go deep but maintain form. Your knees can go past toes - that's normal!"
+    },
+    "Barbell Back Squats": {
+      category: "Legs - Quad Focus",
+      description: "Traditional back squat emphasizing quad development.",
+      form: [
+        "Same as regular squats",
+        "Focus on driving knees forward slightly",
+        "Maintain upright torso",
+        "Full depth if mobility allows"
+      ],
+      breathing: "Breath and brace before descending",
+      tips: "Don't let knees cave inward. Push them out."
+    },
+    "Barbell Front Squats": {
+      category: "Legs - Quad & Core",
+      description: "Squat with bar in front, emphasizing quads and core stability.",
+      form: [
+        "Bar rests on front delts/collarbone, elbows high",
+        "Cross arms or clean grip (elbows up!)",
+        "Torso stays very upright",
+        "Squat deep, elbows stay high",
+        "Drive straight up"
+      ],
+      breathing: "Brace hard before descending",
+      tips: "Easier on lower back than back squats. Keep elbows UP - that's key."
+    },
+    "Barbell RDLs": {
+      category: "Hamstrings & Glutes",
+      description: "Romanian Deadlifts - premier hamstring and glute builder.",
+      form: [
+        "Stand with feet hip-width, slight knee bend",
+        "Hold bar at arm's length in front of thighs",
+        "Push hips back, bar slides down thighs",
+        "Keep back flat, core tight",
+        "Feel stretch in hamstrings (mid-shin)",
+        "Drive hips forward to stand, squeeze glutes"
+      ],
+      breathing: "Inhale going down, exhale driving up",
+      tips: "NOT a squat! This is a hip hinge. Feel it in your hamstrings and glutes, not lower back."
+    },
+    "Bulgarian Split Squats": {
+      category: "Legs - Unilateral",
+      description: "Single leg squat with rear foot elevated, incredible for leg development.",
+      form: [
+        "Rear foot elevated on bench behind you",
+        "Front foot far enough forward for balance",
+        "Lower straight down until front thigh parallel",
+        "Keep torso upright, front knee tracks over toes",
+        "Drive through front heel to stand",
+        "All work in front leg"
+      ],
+      breathing: "Inhale down, exhale up",
+      tips: "These are HARD. Start with bodyweight. Great for glute development and fixing imbalances."
+    },
+    "Barbell/DB Lunges": {
+      category: "Legs - Functional",
+      description: "Walking or stationary lunges building legs and balance.",
+      form: [
+        "Start standing, weight in hands or on back",
+        "Step forward into lunge position",
+        "Both knees bent to 90 degrees",
+        "Back knee hovers just above ground",
+        "Push through front heel to return or step through",
+        "Keep torso upright throughout"
+      ],
+      breathing: "Inhale on descent, exhale on rise",
+      tips: "Control the descent. Don't let front knee collapse inward."
+    },
+    "Walking Lunges": {
+      category: "Legs - Dynamic",
+      description: "Continuous forward lunges covering distance.",
+      form: [
+        "Step forward into lunge",
+        "Drive through front leg to step into next lunge",
+        "Maintain upright posture throughout",
+        "Controlled rhythm, no bouncing"
+      ],
+      breathing: "Rhythmic breathing with movement",
+      tips: "Great for conditioning. Focus on quality over speed."
+    },
+
+    // ARM EXERCISES
+    "Barbell/DB Curls": {
+      category: "Biceps",
+      description: "Primary bicep builder for arm mass.",
+      form: [
+        "Stand with feet hip-width, weight at thighs",
+        "Keep elbows pinned to sides",
+        "Curl weight up, squeeze biceps at top",
+        "Lower with control, full extension at bottom",
+        "Don't swing or use momentum"
+      ],
+      breathing: "Exhale on curl, inhale on lower",
+      tips: "Control the weight - don't let it control you. Squeeze hard at the top."
+    },
+    "Barbell/EZ-Bar Curls": {
+      category: "Biceps",
+      description: "Bicep curls with EZ-bar to reduce wrist strain.",
+      form: [
+        "Same as barbell curls",
+        "EZ-bar angled grip is easier on wrists",
+        "Full range of motion",
+        "Strict form, no swinging"
+      ],
+      breathing: "Exhale on curl up, inhale lowering",
+      tips: "EZ-bar often more comfortable than straight bar."
+    },
+    "Hammer Curls": {
+      category: "Biceps & Forearms",
+      description: "Neutral grip curls hitting biceps and brachialis.",
+      form: [
+        "Hold DBs at sides, palms facing each other",
+        "Curl up keeping palms facing in (hammer grip)",
+        "Elbows stay at sides",
+        "Squeeze at top, lower with control",
+        "Can alternate arms or do both together"
+      ],
+      breathing: "Exhale on curl, inhale on lower",
+      tips: "Great for adding arm thickness and forearm strength."
+    },
+    "Concentration Curls": {
+      category: "Biceps - Isolation",
+      description: "Seated single-arm curl for peak bicep contraction.",
+      form: [
+        "Sit on bench, elbow braced against inner thigh",
+        "Let DB hang at arm's length",
+        "Curl up to shoulder, rotating pinky up slightly",
+        "Squeeze bicep hard at top",
+        "Lower slowly, full stretch at bottom"
+      ],
+      breathing: "Exhale on curl, inhale on lower",
+      tips: "Slow and controlled. Really focus on the squeeze at the top."
+    },
+    "Barbell Curl 21s": {
+      category: "Biceps - Advanced",
+      description: "High-intensity bicep protocol: 7 bottom half + 7 top half + 7 full range.",
+      form: [
+        "First 7: Curl from bottom to mid-point only",
+        "Next 7: From mid-point to top only",
+        "Final 7: Full range of motion curls",
+        "No rest between segments",
+        "Use lighter weight than normal curls"
+      ],
+      breathing: "Steady breathing throughout all 21 reps",
+      tips: "These BURN! Use about 60% of your normal curl weight. Great finisher."
+    },
+    "Tricep Pushdowns": {
+      category: "Triceps",
+      description: "Cable exercise isolating triceps.",
+      form: [
+        "Stand facing cable machine, bar at chest height",
+        "Grip bar with hands shoulder-width",
+        "Keep elbows pinned at sides",
+        "Push bar down until arms straight",
+        "Squeeze triceps at bottom",
+        "Control return to start, keep elbows still"
+      ],
+      breathing: "Exhale on push down, inhale on return",
+      tips: "Don't let elbows drift forward. All movement is at the elbow joint."
+    },
+    "Overhead Tricep Extension": {
+      category: "Triceps",
+      description: "Overhead movement for tricep stretch and growth.",
+      form: [
+        "Stand or sit holding weight overhead",
+        "Keep elbows close to head, pointing up",
+        "Lower weight behind head by bending elbows",
+        "Stretch triceps at bottom",
+        "Extend arms back to overhead position",
+        "Keep upper arms still - only forearms move"
+      ],
+      breathing: "Inhale lowering, exhale extending",
+      tips: "Great for long head of triceps. Keep elbows in tight."
+    },
+    "Cable Tricep Extensions": {
+      category: "Triceps",
+      description: "Cable-based tricep isolation for constant tension.",
+      form: [
+        "Various grip options: rope, bar, single handle",
+        "Rope allows elbows to separate at bottom for extra squeeze",
+        "Same principles as pushdowns",
+        "Full range of motion"
+      ],
+      breathing: "Exhale on extension, inhale on return",
+      tips: "Rope attachment lets you pull apart at bottom for extra contraction."
+    },
+    "Tricep Rope Pushdowns": {
+      category: "Triceps",
+      description: "Cable pushdown with rope for maximum tricep contraction.",
+      form: [
+        "Use rope attachment on high cable",
+        "Push down and apart at bottom",
+        "Pull rope ends apart and back by hips",
+        "Maximum tricep squeeze at bottom",
+        "Control return to top"
+      ],
+      breathing: "Exhale pushing down, inhale returning",
+      tips: "The 'pull apart' at bottom really hits the triceps. Turn wrists out."
+    },
+
+    // SHOULDER EXERCISES
+    "DB Lateral Raises": {
+      category: "Shoulders - Side Delts",
+      description: "Isolation exercise for side/middle deltoids, building shoulder width.",
+      form: [
+        "Stand with DBs at sides, slight bend in elbows",
+        "Raise arms out to sides until parallel to ground",
+        "Lead with elbows, not hands",
+        "Think 'pouring water from pitcher'",
+        "Lower with control",
+        "Don't shrug shoulders up"
+      ],
+      breathing: "Exhale raising arms, inhale lowering",
+      tips: "Don't go too heavy - this is about control and feeling the side delts burn."
+    },
+    "DB Shoulder Circuit": {
+      category: "Shoulders - All Heads",
+      description: "Circuit hitting all three deltoid heads: front, side, and rear raises.",
+      form: [
+        "Front Raises: Raise DBs forward to shoulder height",
+        "Side Raises: Raise DBs out to sides to shoulder height",
+        "Rear Raises: Bent over, raise DBs out to sides",
+        "12 reps each movement, minimal rest between",
+        "One complete circuit = 1 set"
+      ],
+      breathing: "Controlled breathing throughout circuit",
+      tips: "Use light weight. Focus on form and feeling each delt head work. This will burn!"
+    },
+    "Incline DB Flyes": {
+      category: "Chest - Upper",
+      description: "Isolation movement for upper chest development.",
+      form: [
+        "Lie on incline bench with DBs above chest",
+        "Slight bend in elbows maintained throughout",
+        "Lower DBs out to sides in wide arc",
+        "Feel stretch in chest",
+        "Squeeze DBs back together using chest",
+        "Don't let arms drop too far below shoulders"
+      ],
+      breathing: "Inhale lowering, exhale squeezing together",
+      tips: "Not a press - it's a 'hugging' motion. Feel the chest stretch and squeeze."
+    },
+
+    // CORE EXERCISES
+    "Plank": {
+      category: "Core - Stability",
+      description: "Fundamental core exercise building overall stability and endurance.",
+      form: [
+        "Forearms on ground, elbows under shoulders",
+        "Body in straight line from head to heels",
+        "Squeeze glutes and core",
+        "Don't let hips sag or pike up",
+        "Breathe steadily",
+        "Hold for prescribed time"
+      ],
+      breathing: "Steady, controlled breathing throughout hold",
+      tips: "Quality over time. Perfect form for 30 seconds beats sloppy form for 60 seconds."
+    },
+    "Plank with Shoulder Taps": {
+      category: "Core - Dynamic Stability",
+      description: "Advanced plank variation adding anti-rotation challenge.",
+      form: [
+        "Start in high plank (hands on ground, arms straight)",
+        "Body in straight line",
+        "Tap right hand to left shoulder, return",
+        "Tap left hand to right shoulder, return",
+        "Keep hips square - minimal rotation",
+        "20 total taps = 1 set"
+      ],
+      breathing: "Steady breathing, brace core on each tap",
+      tips: "The goal is NO hip rotation. Move slowly and controlled."
+    },
+    "Dead Bug": {
+      category: "Core - Coordination",
+      description: "Core exercise teaching proper bracing and coordination.",
+      form: [
+        "Lie on back, arms straight up, knees at 90 degrees",
+        "Press lower back into floor",
+        "Extend opposite arm and leg (right arm + left leg)",
+        "Return to start, switch sides",
+        "Keep lower back pressed to floor throughout",
+        "10 reps per side = 1 set"
+      ],
+      breathing: "Exhale as you extend, inhale returning",
+      tips: "This looks easy but challenges core stability. Keep that lower back down!"
+    },
+    "Bicycle Crunches": {
+      category: "Core - Obliques",
+      description: "Dynamic core movement targeting entire abdominal region.",
+      form: [
+        "Lie on back, hands behind head (don't pull on neck)",
+        "Lift shoulders and feet off ground",
+        "Bring right elbow toward left knee while extending right leg",
+        "Switch sides in cycling motion",
+        "Keep abs engaged throughout",
+        "Focus on twisting torso, not pulling head"
+      ],
+      breathing: "Exhale on each twist",
+      tips: "Slow and controlled is better than fast and sloppy. Feel the obliques work."
+    },
+    "Hanging Knee Raises": {
+      category: "Core - Lower Abs",
+      description: "Hanging exercise building lower ab strength.",
+      form: [
+        "Hang from pull-up bar with straight arms",
+        "Engage core, don't swing",
+        "Bend knees and raise them toward chest",
+        "Lift knees as high as possible",
+        "Lower with control, no swinging",
+        "Keep shoulders engaged (don't hang passively)"
+      ],
+      breathing: "Exhale raising knees, inhale lowering",
+      tips: "If you can't do these yet, do lying leg raises instead. Progress to these!"
+    },
+    "Hanging Leg Raises": {
+      category: "Core - Lower Abs Advanced",
+      description: "Advanced hanging ab exercise with straight legs.",
+      form: [
+        "Hang from bar, arms straight",
+        "Keep legs straight",
+        "Raise legs to parallel (or higher)",
+        "Lower with control, no swinging",
+        "Minimal knee bend throughout"
+      ],
+      breathing: "Exhale raising, inhale lowering",
+      tips: "ADVANCED. Master knee raises first. These are brutal but effective."
+    },
+    "Russian Twists with DB": {
+      category: "Core - Obliques",
+      description: "Seated rotational movement for oblique development.",
+      form: [
+        "Sit on floor, lean back slightly, feet elevated",
+        "Hold DB at chest with both hands",
+        "Rotate torso to tap DB on floor beside hip",
+        "Twist to other side and tap",
+        "Keep core engaged, control the rotation",
+        "20 total touches = 1 set"
+      ],
+      breathing: "Exhale on each twist",
+      tips: "Focus on rotating your torso, not just moving your arms."
+    },
+    "Cable Woodchoppers": {
+      category: "Core - Rotational Power",
+      description: "Dynamic rotational exercise building oblique strength and power.",
+      form: [
+        "Set cable high, stand sideways to machine",
+        "Pull cable diagonally across body from high to low",
+        "Rotate torso and pivot feet",
+        "Like chopping wood",
+        "Control the return",
+        "Do all reps one side, then switch"
+      ],
+      breathing: "Exhale on chop down, inhale on return",
+      tips: "Let the rotation come from your core, not just your arms."
+    },
+    "Weighted Decline Sit-ups": {
+      category: "Core - Upper Abs",
+      description: "Decline sit-ups with added weight for advanced ab development.",
+      form: [
+        "Secure feet on decline bench",
+        "Hold weight plate at chest",
+        "Curl up using abs, not hip flexors",
+        "Come up to about 45 degrees (don't sit all the way up)",
+        "Lower with control",
+        "Keep tension on abs throughout"
+      ],
+      breathing: "Exhale curling up, inhale lowering",
+      tips: "The decline makes it harder. Focus on abs doing the work, not momentum."
+    },
+
+    // COMPOUND/OLYMPIC MOVEMENTS
+    "DB/Barbell Clean & Press": {
+      category: "Full Body Power",
+      description: "Olympic-style movement building explosive power and total body strength.",
+      form: [
+        "Start with weight at floor or hang position",
+        "Explosive pull, shrug shoulders high",
+        "Drop under weight catching at shoulders",
+        "Stand up from catch position",
+        "Press weight overhead to complete the movement",
+        "Lower with control"
+      ],
+      breathing: "Big breath before pull, exhale on press",
+      tips: "This is technical. Use light weight to learn the movement. Very effective for power!"
+    },
+    "Push-ups": {
+      category: "Chest & Triceps",
+      description: "Classic bodyweight exercise building chest, shoulders, and triceps.",
+      form: [
+        "Hands slightly wider than shoulders, body in straight line",
+        "Lower chest to ground (or close), elbows at 45 degrees",
+        "Push back up to straight arms",
+        "Keep core tight, don't let hips sag",
+        "Full range of motion on each rep"
+      ],
+      breathing: "Inhale lowering, exhale pushing up",
+      tips: "Knee push-ups or incline push-ups are great progressions. Build to sets of 20+!"
+    }
+  };
+
+  const categories = {};
+  Object.keys(exercises).forEach(name => {
+    const cat = exercises[name].category;
+    if (!categories[cat]) categories[cat] = [];
+    categories[cat].push(name);
+  });
+
+  let html = `<div class="p-4 max-w-4xl mx-auto">
+    <div class="bg-indigo-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold">📖 Exercise Guide & Form</h2>
+      <button onclick="chView('home')" class="bg-white text-indigo-600 px-4 py-2 rounded font-bold">🏠</button>
+    </div>
+    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-lg mb-6">
+      <h3 class="text-xl font-bold mb-2">Complete Exercise Library</h3>
+      <p class="text-sm">Detailed form instructions for every exercise in your program. Master these movements!</p>
+    </div>`;
+
+  const catOrder = ['Chest - Upper', 'Chest - Overall', 'Chest & Triceps', 'Shoulders', 'Back - Overall', 'Back - Middle', 'Back - Width', 'Back - Unilateral', 'Traps', 'Rear Delts & Upper Back', 'Biceps', 'Biceps - Isolation', 'Biceps - Advanced', 'Biceps & Forearms', 'Triceps', 'Legs - Overall', 'Legs - Quad Focus', 'Legs - Quad & Core', 'Hamstrings & Glutes', 'Legs - Unilateral', 'Legs - Functional', 'Legs - Dynamic', 'Core - Stability', 'Core - Dynamic Stability', 'Core - Coordination', 'Core - Obliques', 'Core - Lower Abs', 'Core - Lower Abs Advanced', 'Core - Rotational Power', 'Core - Upper Abs', 'Full Body Power', 'Chest & Triceps - Beginner', 'Chest & Triceps - Advanced', 'Back - Progression', 'Back - Advanced', 'Back - Skill Work', 'Back - Width Emphasis'];
+
+  catOrder.forEach(cat => {
+    if (!categories[cat]) return;
+    html += `<div class="bg-white rounded-lg p-4 mb-4 border-2 border-indigo-300">
+      <h3 class="text-lg font-bold text-indigo-700 mb-3">${cat}</h3>`;
+    
+    categories[cat].forEach(exName => {
+      const ex = exercises[exName];
+      html += `<div class="mb-6 p-4 bg-gray-50 rounded border-l-4 border-indigo-500">
+        <h4 class="text-md font-bold text-gray-800 mb-2">${exName}</h4>
+        <p class="text-sm text-gray-700 mb-3 italic">${ex.description}</p>
+        <div class="mb-3">
+          <p class="font-bold text-sm text-indigo-600 mb-1">Proper Form:</p>
+          <ol class="list-decimal list-inside space-y-1 text-sm text-gray-700">
+            ${ex.form.map(step => `<li>${step}</li>`).join('')}
+          </ol>
+        </div>
+        <div class="mb-2">
+          <p class="font-bold text-sm text-green-600">💨 Breathing: <span class="font-normal text-gray-700">${ex.breathing}</span></p>
+        </div>
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-2 rounded">
+          <p class="font-bold text-sm text-yellow-700">💡 Pro Tip: <span class="font-normal text-gray-700">${ex.tips}</span></p>
+        </div>
+      </div>`;
+    });
+    
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  return html;
+}
+
+// ============================================================
+// PROGRAM OVERVIEW - Understanding the big picture
+// ============================================================
+function rOverview(){
+  return `<div class="p-4 max-w-4xl mx-auto">
+    <div class="bg-teal-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold">📅 Program Overview</h2>
+      <button onclick="chView('home')" class="bg-white text-teal-600 px-4 py-2 rounded font-bold">🏠</button>
+    </div>
+
+    <div class="bg-gradient-to-r from-teal-500 to-blue-600 text-white p-6 rounded-lg mb-6">
+      <h3 class="text-2xl font-bold mb-3">Your 24-Week Transformation Journey</h3>
+      <p class="mb-2">This program is scientifically designed in three 8-week phases to progressively build your strength, muscle, and confidence.</p>
+      <p class="text-sm">Each phase builds on the previous one, preparing your body for the next challenge.</p>
+    </div>
+
+    <!-- PHASE 1 -->
+    <div class="bg-white rounded-lg p-6 mb-6 border-4 border-blue-400">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">1</div>
+        <div>
+          <h3 class="text-2xl font-bold text-blue-700">Phase 1: Foundation</h3>
+          <p class="text-sm text-gray-600">Weeks 1-8 | Building Your Base</p>
+        </div>
+      </div>
+
+      <div class="bg-blue-50 p-4 rounded-lg mb-4">
+        <h4 class="font-bold text-blue-800 mb-2">🎯 Primary Goals:</h4>
+        <ul class="space-y-1 text-sm">
+          <li>✓ Learn proper form and technique on all exercises</li>
+          <li>✓ Build work capacity and conditioning</li>
+          <li>✓ Develop mind-muscle connection</li>
+          <li>✓ Establish consistent training habits</li>
+          <li>✓ Prepare connective tissues (tendons, ligaments) for heavier loads</li>
+        </ul>
+      </div>
+
+      <div class="space-y-4">
+        <div class="border-l-4 border-blue-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 1: Upper Push</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Chest, shoulders, and triceps</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Builds pressing strength foundation. Incline work targets upper chest (important for aesthetics). Lateral raises build shoulder width. Moderate volume (3 sets) allows technique mastery.</p>
+        </div>
+
+        <div class="border-l-4 border-green-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 2: Lower Body & Core</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Legs and core stability</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Squats and RDLs are fundamental movement patterns. Lunges build single-leg stability. Core work establishes the foundation for all lifting - a strong core protects your spine and improves performance in every exercise.</p>
+        </div>
+
+        <div class="border-l-4 border-purple-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 3: Cardio & Recovery</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Active recovery and cardiovascular health</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Improves heart health, aids recovery by increasing blood flow, and helps maintain a caloric deficit if fat loss is a goal. Choose activities that feel good for your breathing.</p>
+        </div>
+
+        <div class="border-l-4 border-red-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 4: Upper Body Pull</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Back, biceps, and rear delts</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Critical for pull-up progression! Rows build back thickness, pulldowns and negatives prepare you for full pull-ups. Face pulls protect shoulder health and improve posture. Back work is crucial for balanced development.</p>
+        </div>
+
+        <div class="border-l-4 border-purple-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 5: Cardio</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Cardiovascular endurance</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Additional cardio for heart health and calorie burn. Helps recovery between heavy training days.</p>
+        </div>
+
+        <div class="border-l-4 border-gray-500 pl-4">
+          <h4 class="font-bold text-gray-800">Days 6-7: REST</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Complete recovery</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Muscles grow during REST, not during workouts. Two full rest days ensure proper recovery, especially important with your medical conditions. Sleep, hydrate, eat well.</p>
+        </div>
+      </div>
+
+      <div class="bg-yellow-50 border-2 border-yellow-400 p-4 rounded-lg mt-4">
+        <p class="font-bold text-yellow-800 mb-2">🔑 Phase 1 Success Strategy:</p>
+        <p class="text-sm text-gray-700">Focus on FORM over weight. If an exercise doesn't feel right, use the alternatives listed. By Week 8, movements should feel natural and you'll notice increased strength. Your body is adapting at the cellular level - new neural pathways forming, muscle fibers recruiting more efficiently.</p>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="bg-white rounded-lg p-6 mb-6 border-4 border-green-400">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="bg-green-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">2</div>
+        <div>
+          <h3 class="text-2xl font-bold text-green-700">Phase 2: Strength & Hypertrophy</h3>
+          <p class="text-sm text-gray-600">Weeks 9-16 | Building Real Muscle & Strength</p>
+        </div>
+      </div>
+
+      <div class="bg-green-50 p-4 rounded-lg mb-4">
+        <h4 class="font-bold text-green-800 mb-2">🎯 Primary Goals:</h4>
+        <ul class="space-y-1 text-sm">
+          <li>✓ Increase training volume (4 sets vs 3)</li>
+          <li>✓ Build significant muscle mass</li>
+          <li>✓ Increase strength on all major lifts</li>
+          <li>✓ Continue pull-up progression toward first full rep</li>
+          <li>✓ Improve body composition (more muscle, less fat)</li>
+        </ul>
+      </div>
+
+      <div class="space-y-4">
+        <div class="border-l-4 border-green-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 1: Push</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Maximum chest, shoulder, and tricep development</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Flat bench press now leads (more weight = more strength). Volume increased to 4 sets on main movements. This drives hypertrophy. Dips are now full movements (not assisted) - major upper body builder. This day will make you STRONG.</p>
+        </div>
+
+        <div class="border-l-4 border-blue-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 2: Pull</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Back thickness, width, and pull-up progression</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Negative pull-ups lead the workout (CRITICAL for your goal). Volume increased to drive growth. Single-arm rows fix imbalances. Pullovers expand rib cage and lats. By Week 12-14, you may get your first full pull-up!</p>
+        </div>
+
+        <div class="border-l-4 border-orange-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 3: Legs & Core</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Maximum leg development and core strength</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Volume increased on squats and RDLs. Bulgarian split squats are incredibly effective for glute and quad development. Hanging knee raises start building the ab strength you need for a visible six-pack. Russian twists hit obliques.</p>
+        </div>
+
+        <div class="border-l-4 border-purple-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 4: Cardio & Core</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Active recovery with additional core work</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Lighter day between heavy sessions. Maintains cardiovascular fitness while allowing recovery.</p>
+        </div>
+
+        <div class="border-l-4 border-teal-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 5: Full Body Power</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Explosive movements and skill practice</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Clean & press builds total body power. Front squats add quad emphasis. Pull-up PRACTICE - dedicated time to work the skill. This day ties everything together and builds functional, athletic strength.</p>
+        </div>
+
+        <div class="border-l-4 border-purple-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 6: Steady Cardio</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Longer duration, moderate intensity cardio</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Builds aerobic base, aids recovery, burns calories.</p>
+        </div>
+
+        <div class="border-l-4 border-gray-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 7: REST</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Complete recovery</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> One full rest day after five hard training days. Your body needs this!</p>
+        </div>
+      </div>
+
+      <div class="bg-yellow-50 border-2 border-yellow-400 p-4 rounded-lg mt-4">
+        <p class="font-bold text-yellow-800 mb-2">🔑 Phase 2 Success Strategy:</p>
+        <p class="text-sm text-gray-700">Progressive overload is KEY - add weight or reps each week when possible. Track everything! This is where real muscle is built. You should see visible changes in your physique. Around Week 12, attempt your first full pull-up - even if you don't get it, you'll be close!</p>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="bg-white rounded-lg p-6 mb-6 border-4 border-purple-400">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="bg-purple-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">3</div>
+        <div>
+          <h3 class="text-2xl font-bold text-purple-700">Phase 3: Peak Performance</h3>
+          <p class="text-sm text-gray-600">Weeks 17-24 | Maximum Results & Goal Achievement</p>
+        </div>
+      </div>
+
+      <div class="bg-purple-50 p-4 rounded-lg mb-4">
+        <h4 class="font-bold text-purple-800 mb-2">🎯 Primary Goals:</h4>
+        <ul class="space-y-1 text-sm">
+          <li>✓ Achieve multiple strict pull-ups (GOAL: 5+)</li>
+          <li>✓ Reveal six-pack abs with defined obliques</li>
+          <li>✓ Peak strength on all major lifts</li>
+          <li>✓ Maximum muscle definition and separation</li>
+          <li>✓ Complete your transformation - become the strongest, leanest version of yourself</li>
+        </ul>
+      </div>
+
+      <div class="space-y-4">
+        <div class="border-l-4 border-red-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 1: Heavy Push</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Maximum pressing strength</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Lower reps (5-8), heavier weights, maximum sets (5 on bench). This is STRENGTH training. Military press builds shoulder power. Weighted dips if you can. This day makes you POWERFUL. Every set should feel challenging but achievable.</p>
+        </div>
+
+        <div class="border-l-4 border-blue-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 2: Heavy Pull - PULL-UP EMPHASIS</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> PULL-UP MASTERY + back strength</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> STRICT PULL-UPS lead the workout with 5 sets. This is YOUR GOAL EXERCISE! By Week 20+, you should hit sets of 5+ pull-ups. Heavy rows build thickness. Shrugs develop traps. Curls for arm development. THIS IS WHERE YOU ACHIEVE YOUR PULL-UP GOAL!</p>
+        </div>
+
+        <div class="border-l-4 border-green-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 3: Legs & Abs - SIX-PACK FOCUS</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Leg strength + MAXIMUM ab development</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Front squats, RDLs, lunges keep legs strong. Then FOUR ab exercises: hanging leg raises (lower abs), woodchoppers (obliques), weighted decline sit-ups (upper abs), plank variations (deep core). This is what reveals the six-pack!</p>
+        </div>
+
+        <div class="border-l-4 border-orange-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 4: HIIT & Core</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> High-intensity intervals + core</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> HIIT burns fat while preserving muscle - perfect for revealing your abs. Short bursts of intense work followed by rest. This accelerates fat loss in the final weeks.</p>
+        </div>
+
+        <div class="border-l-4 border-indigo-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 5: Upper Volume</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> High-volume pump work for definition</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Push-ups to failure, pullovers, shoulder circuits, dips, face pulls, curl 21s, high-rep triceps. This creates the muscle pumps that enhance definition. You'll look and feel incredible after this workout.</p>
+        </div>
+
+        <div class="border-l-4 border-teal-500 pl-4">
+          <h4 class="font-bold text-gray-800">Day 6: Steady Cardio</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Final fat-burning cardio</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Steady state cardio for consistent calorie burn and recovery. The final push to reveal everything you've built.</p>
+        </div>
+
+        <div class="border-l-4 border-green-400 pl-4">
+          <h4 class="font-bold text-gray-800">Day 7: Active Recovery</h4>
+          <p class="text-sm text-gray-700 mb-2"><strong>Focus:</strong> Light movement and recovery</p>
+          <p class="text-sm text-gray-600"><strong>Why:</strong> Yoga, walking, stretching. Keep blood flowing but allow full recovery for the next week's assault.</p>
+        </div>
+      </div>
+
+      <div class="bg-yellow-50 border-2 border-yellow-400 p-4 rounded-lg mt-4">
+        <p class="font-bold text-yellow-800 mb-2">🔑 Phase 3 Success Strategy:</p>
+        <p class="text-sm text-gray-700">This is where everything comes together! Push hard on pull-ups - you WILL get them. Ab work is intense - embrace the burn. Nutrition is critical now - abs are revealed in the kitchen. By Week 24, you'll be doing multiple sets of pull-ups and showing off that six-pack. FINISH STRONG!</p>
+      </div>
+    </div>
+
+    <!-- PROGRAM PRINCIPLES -->
+    <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg p-6 mb-6">
+      <h3 class="text-2xl font-bold mb-4">🧬 Why This Program Works</h3>
+      
+      <div class="space-y-3 text-sm">
+        <div class="bg-white bg-opacity-20 p-3 rounded">
+          <p class="font-bold mb-1">Progressive Overload</p>
+          <p>Volume and intensity increase across phases. Your body must adapt by getting stronger and building muscle.</p>
+        </div>
+        
+        <div class="bg-white bg-opacity-20 p-3 rounded">
+          <p class="font-bold mb-1">Periodization</p>
+          <p>Phases target different adaptations: foundation → hypertrophy → strength. This prevents plateaus and optimizes progress.</p>
+        </div>
+        
+        <div class="bg-white bg-opacity-20 p-3 rounded">
+          <p class="font-bold mb-1">Frequency & Recovery</p>
+          <p>Each muscle group trained 2x/week for optimal growth while allowing adequate recovery. With your medical conditions, this balance is crucial.</p>
+        </div>
+        
+        <div class="bg-white bg-opacity-20 p-3 rounded">
+          <p class="font-bold mb-1">Specificity</p>
+          <p>Want pull-ups? We train pull-ups (negatives → assisted → strict). Want abs? We do progressive ab work. You get what you train for.</p>
+        </div>
+        
+        <div class="bg-white bg-opacity-20 p-3 rounded">
+          <p class="font-bold mb-1">Compound Movements First</p>
+          <p>Big movements (squats, presses, rows, pull-ups) build the most muscle and strength. Isolation work refines and targets specific areas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- NUTRITION NOTE -->
+    <div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-6 mb-6">
+      <h3 class="text-xl font-bold text-blue-800 mb-3">🍽️ Nutrition Considerations</h3>
+      <div class="space-y-2 text-sm text-gray-700">
+        <p><strong>For muscle growth:</strong> Eat in a slight caloric surplus (200-300 calories above maintenance). Prioritize protein: 0.8-1g per pound of bodyweight daily.</p>
+        <p><strong>For fat loss (revealing abs):</strong> Moderate deficit (300-500 calories below maintenance) while keeping protein high to preserve muscle.</p>
+        <p><strong>Phase 1-2:</strong> Focus on fueling workouts and recovery. Slight surplus works well.</p>
+        <p><strong>Phase 3:</strong> If abs aren't showing by Week 20, modest calorie reduction reveals them while maintaining strength.</p>
+        <p class="font-bold text-blue-800 mt-3">Remember: You can't out-train a bad diet. Abs are built in the gym, revealed in the kitchen!</p>
+      </div>
+    </div>
+
+    <!-- FINAL MOTIVATION -->
+    <div class="bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 text-white rounded-lg p-8 text-center">
+      <h3 class="text-3xl font-bold mb-4">🌟 YOUR TRANSFORMATION AWAITS 🌟</h3>
+      <p class="text-lg mb-4">This isn't just a workout program - it's a complete transformation system.</p>
+      <p class="mb-4">Every exercise has a purpose. Every phase builds on the last. Every week brings you closer to your goals.</p>
+      <div class="bg-white bg-opacity-20 p-4 rounded-lg mb-4">
+        <p class="text-xl font-bold mb-2">By June 2026, you WILL:</p>
+        <ul class="text-left max-w-md mx-auto space-y-2">
+          <li>✓ Bang out multiple sets of strict pull-ups</li>
+          <li>✓ Perform dips with confidence and strength</li>
+          <li>✓ Rock a visible six-pack with defined obliques</li>
+          <li>✓ Have strong, wide lats and sculpted shoulders</li>
+          <li>✓ Feel stronger, healthier, and more confident than ever</li>
+        </ul>
+      </div>
+      <p class="text-2xl font-bold">Trust the process. Stay consistent. YOU'VE GOT THIS, AMY! 💪❤️</p>
+    </div>
+
+  </div>`;
+}
+</script>
+function render(){
+  const app=document.getElementById('app');
+  if(!app)return;
+  if(st.v==='home')app.innerHTML=rHome();
+  else if(st.v==='info')app.innerHTML=rInfo();
+  else if(st.v==='stats')app.innerHTML=rStats();
+  else if(st.v==='workout')app.innerHTML=rWork();
+  else if(st.v==='exercises')app.innerHTML=rExercises();  // NEW
+  else if(st.v==='overview')app.innerHTML=rOverview();    // NEW
 }
 
 window.chView=chView;
