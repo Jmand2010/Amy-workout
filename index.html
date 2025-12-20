@@ -796,7 +796,7 @@ ${renderWellness(wd)}
 <div class="font-bold">${e.n}</div>
 <div class="text-gray-500">${e.s}x${e.r}</div>
 <div class="text-gray-400 text-xs italic">Alt: ${e.a}</div>
-<button onclick="st.chart='ex:${e.n}';render()" class="text-blue-600 text-xs underline mt-1 hover:text-blue-800">📈 View Progress</button>
+<button onclick="st.chart='ex:${e.n}';st.v='stats';render()" class="text-blue-600 text-xs underline mt-1 hover:text-blue-800">📈 View Progress</button>
 </td>`;
     for(let s=1;s<=e.s;s++){
       h+=`<td class="p-1">
