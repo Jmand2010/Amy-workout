@@ -224,7 +224,7 @@ function getWellnessData(field){
     if(val){
       let numVal=parseFloat(val);
       if(field==='mood'){
-        const moodVals={excellent:5,good:4,okay:3,tired:2,sore:2,stressed:1};
+        const moodVals={excellent:6,good:5,okay:4,tired:3,sore:2,stressed:1};
         numVal=moodVals[val]||0;
       }
       if(!isNaN(numVal)&&numVal>0){
@@ -275,21 +275,76 @@ function stats(){
 
 function renderChart(title,data){
   if(!data||!data.length)return'<p class="text-center text-gray-600 py-8">No data yet. Start tracking to see your progress!</p>';
-  const max=Math.max(...data.map(x=>x.val));
-  const min=Math.min(...data.map(x=>x.val));
+  
+  const isEx=title.includes('Progress');
+  const isMood=title.includes('Mood');
+  const vals=data.map(x=>x.val);
+  const max=Math.max(...vals);
+  const min=Math.min(...vals);
   const rng=max-min||1;
-  return`<div class="mb-4 text-center"><div class="text-sm text-gray-600">Showing ${data.length} data points</div></div>
-<div class="h-64 flex items-end justify-center gap-1 px-2 overflow-x-auto">
-${data.slice(-30).map(d=>{
-  const ht=((d.val-min)/rng)*70+20;
-  return`<div class="flex-1 flex flex-col items-center" style="min-width:25px;max-width:40px">
-<div class="text-xs mb-1 font-bold text-blue-600">${d.val.toFixed(1)}</div>
-<div class="w-full bg-blue-500 rounded-t hover:bg-blue-700 cursor-pointer transition-all" style="height:${ht}%" title="${d.label}: ${d.raw||d.val}"></div>
-</div>`;
-}).join('')}
+  const avg=(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+  
+  let maxSoFar=0;
+  const enriched=data.map(d=>{
+    const isPR=isEx&&d.val>maxSoFar;
+    if(d.val>maxSoFar)maxSoFar=d.val;
+    return{...d,isPR};
+  });
+  
+  const w=Math.max(60,700/enriched.length);
+  const chartWidth=Math.max(800,enriched.length*w+100);
+  
+  return`${isEx?`<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border-2 border-blue-300 text-center">
+<div class="text-xs text-blue-600 font-bold mb-1">BEST (PR)</div>
+<div class="text-3xl font-bold text-blue-700">${max.toFixed(1)}<span class="text-lg"> lbs</span></div>
 </div>
-<div class="text-center text-sm text-gray-600 mt-4">Last ${Math.min(30,data.length)} entries</div>`;
+<div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border-2 border-purple-300 text-center">
+<div class="text-xs text-purple-600 font-bold mb-1">AVERAGE</div>
+<div class="text-3xl font-bold text-purple-700">${avg}<span class="text-lg"> lbs</span></div>
+</div>
+</div>`:''}
+<div class="text-center text-sm text-gray-600 mb-3">📈 Showing ${enriched.length} data points</div>
+<div class="relative bg-gradient-to-br from-gray-50 to-white p-4 rounded-lg border-2 border-gray-300 shadow-sm" style="height:320px;overflow-x:auto">
+<svg width="${chartWidth}" height="300" style="min-width:100%">
+<defs>
+<linearGradient id="lineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2"/>
+<stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0"/>
+</linearGradient>
+</defs>
+${[0,0.25,0.5,0.75,1].map(r=>`<line x1="50" y1="${260-r*200}" x2="${chartWidth-20}" y2="${260-r*200}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/><text x="30" y="${263-r*200}" font-size="11" fill="#6b7280" text-anchor="end">${(min+rng*r).toFixed(1)}</text>`).join('')}
+${enriched.length>1?`<path d="M${enriched.map((d,i)=>`${60+i*w},${260-((d.val-min)/rng)*200}`).join(' L')}" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 60 260 L${enriched.map((d,i)=>`${60+i*w},${260-((d.val-min)/rng)*200}`).join(' L')} L${60+(enriched.length-1)*w} 260 Z" fill="url(#lineGrad)"/>`:''}
+${enriched.map((d,i)=>{
+const x=60+i*w;
+const y=260-((d.val-min)/rng)*200;
+const col=d.isPR?'#10b981':(isMood?(d.val>=5?'#10b981':d.val>=4?'#22c55e':d.val>=3?'#eab308':'#ef4444'):'#3b82f6');
+return`<circle cx="${x}" cy="${y}" r="6" fill="${col}" stroke="white" stroke-width="2.5"/>
+${d.isPR?`<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#10b981" stroke-width="2" opacity="0.4"/>
+<text x="${x}" y="${y-18}" font-size="11" font-weight="bold" fill="#10b981" text-anchor="middle">PR!</text>`:`<text x="${x}" y="${y-12}" font-size="10.5" fill="${col}" font-weight="bold" text-anchor="middle">${d.val.toFixed(1)}</text>`}`;
+}).join('')}
+${enriched.filter((d,i)=>enriched.length<15||i%(Math.ceil(enriched.length/12))===0).map(d=>{
+const i=enriched.indexOf(d);
+const x=60+i*w;
+return`<text x="${x}" y="285" font-size="9" fill="#6b7280" text-anchor="middle">${d.label}</text>`;
+}).join('')}
+</svg>
+</div>
+${isMood?`<div class="mt-4 bg-gradient-to-r from-green-50 via-yellow-50 to-red-50 p-4 rounded-lg border-2 border-gray-300">
+<div class="text-xs font-bold text-gray-700 mb-3 text-center">🏊‍♀️ SWIM TEAM MOOD SCALE</div>
+<div class="grid grid-cols-6 gap-2 text-center text-xs">
+<div class="p-2 bg-white rounded border border-green-500"><div class="w-5 h-5 rounded-full bg-green-500 mx-auto mb-1"></div><strong>6</strong><br>Excellent</div>
+<div class="p-2 bg-white rounded border border-green-400"><div class="w-5 h-5 rounded-full bg-green-400 mx-auto mb-1"></div><strong>5</strong><br>Good</div>
+<div class="p-2 bg-white rounded border border-yellow-400"><div class="w-5 h-5 rounded-full bg-yellow-400 mx-auto mb-1"></div><strong>4</strong><br>Okay</div>
+<div class="p-2 bg-white rounded border border-yellow-500"><div class="w-5 h-5 rounded-full bg-yellow-500 mx-auto mb-1"></div><strong>3</strong><br>Tired</div>
+<div class="p-2 bg-white rounded border border-red-400"><div class="w-5 h-5 rounded-full bg-red-400 mx-auto mb-1"></div><strong>2</strong><br>Sore</div>
+<div class="p-2 bg-white rounded border border-red-500"><div class="w-5 h-5 rounded-full bg-red-500 mx-auto mb-1"></div><strong>1</strong><br>Stressed</div>
+</div>
+</div>`:''}
+${isEx?`<div class="text-center text-sm text-gray-500 mt-3">💪 <span class="text-green-600 font-bold">Green circles</span> = Personal Records!</div>`:''}`; 
 }
+
 
 function renderWellness(wd){
   return`<div class="bg-yellow-50 border-2 border-yellow-400 rounded p-4 mb-4">
@@ -327,12 +382,12 @@ function renderWellness(wd){
 <label class="block text-sm font-bold mb-1">General Mood:</label>
 <select class="w-full p-2 border-2 rounded" onchange="updW('mood',this.value)">
 <option value="">Select...</option>
-<option value="excellent"${wd.mood==='excellent'?' selected':''}>Excellent</option>
-<option value="good"${wd.mood==='good'?' selected':''}>Good</option>
-<option value="okay"${wd.mood==='okay'?' selected':''}>Okay</option>
-<option value="tired"${wd.mood==='tired'?' selected':''}>Tired</option>
-<option value="sore"${wd.mood==='sore'?' selected':''}>Sore</option>
-<option value="stressed"${wd.mood==='stressed'?' selected':''}>Stressed</option>
+<option value="excellent"${wd.mood==='excellent'?' selected':''}>6 = Excellent (feeling amazing, ready to crush it)</option>
+<option value="good"${wd.mood==='good'?' selected':''}>5 = Good (solid, normal training day)</option>
+<option value="okay"${wd.mood==='okay'?' selected':''}>4 = Okay (manageable, nothing special)</option>
+<option value="tired"${wd.mood==='tired'?' selected':''}>3 = Tired (low energy, might need recovery)</option>
+<option value="sore"${wd.mood==='sore'?' selected':''}>2 = Sore (body needs attention)</option>
+<option value="stressed"${wd.mood==='stressed'?' selected':''}>1 = Stressed (mental/physical stress high)</option>
 </select>
 </div>
 </div>
