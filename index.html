@@ -879,6 +879,9 @@ function next(){
 // ============================================================
 // EXERCISE GUIDE & FORM - Complete exercise library
 // ============================================================
+// ============================================================
+// EXERCISE GUIDE & FORM - Complete exercise library
+// ============================================================
 function rExercises(){
  const exercises = {
     "Incline Barbell/DB Press": {
@@ -1354,18 +1357,25 @@ function rExercises(){
     "Barbell Military Press": {
       category: "Shoulders",
       description: "Standing or seated overhead press emphasizing front and middle deltoids.",
+      muscles: { primary: "Anterior & Lateral Deltoids", secondary: "Triceps, Upper Trapezius" },
       form: ["Start with bar at upper chest/collarbone","Stand with feet hip-width, core braced","Press bar straight up, slightly back over head","Lock out arms overhead without hyperextending back","Lower with control back to start","Keep core tight throughout - don't arch back"],
       breathing: "Exhale on press, inhale on descent",
-      tips: "This is harder than seated press. If your form breaks down, switch to seated version."
+      tips: "This is harder than seated press. If your form breaks down, switch to seated version.",
+      videoShort: "https://www.youtube.com/embed/2yjwXTZQDDI",
+      videoLong: "https://www.youtube.com/watch?v=2yjwXTZQDDI"
     },
     "Pull-ups": {
       category: "Back - Overall",
       description: "The ultimate back and bicep builder, developing width and strength.",
+      muscles: { primary: "Latissimus Dorsi", secondary: "Biceps, Rhomboids, Rear Delts" },
       form: ["Grip bar slightly wider than shoulders, palms away","Hang with arms fully extended","Pull body up by driving elbows down and back","Get chin over bar","Lower with control to full extension","Avoid kipping or swinging"],
       breathing: "Exhale pulling up, inhale lowering",
-      tips: "YOUR GOAL EXERCISE! Start with negatives or assisted. Focus on lat engagement, not arm pulling."
+      tips: "YOUR GOAL EXERCISE! Start with negatives or assisted. Focus on lat engagement, not arm pulling.",
+      videoShort: "https://www.youtube.com/embed/eGo4IYlbE5g",
+      videoLong: "https://www.youtube.com/watch?v=eGo4IYlbE5g"
     }
   };
+
   const categories = {};
   Object.keys(exercises).forEach(name => {
     const cat = exercises[name].category;
@@ -1440,6 +1450,7 @@ function rExercises(){
         </div>
         ` : ''}
       </div>`;
+    });
     
     html += `</div>`;
   });
