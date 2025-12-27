@@ -1429,6 +1429,7 @@ function rExercises(){
         
         ${ex.videoShort ? `
         <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-lg p-4 mt-4">
+          ${ex.videoShort.includes('youtube.com') ? `
           <p class="font-bold text-sm text-indigo-900 mb-3 flex items-center gap-2">
             <span class="text-lg">📺</span> FORM VIDEO (2-3 min demo - click to play)
           </p>
@@ -1447,6 +1448,19 @@ function rExercises(){
             📚 Watch Detailed Tutorial (5-8 min, opens in new tab)
           </a>
           ` : ''}
+          ` : `
+          <p class="font-bold text-sm text-indigo-900 mb-3">📺 FORM DEMONSTRATIONS</p>
+          <a href="${ex.videoShort}" target="_blank" rel="noopener noreferrer" 
+             class="inline-block mr-2 mb-2 px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded hover:bg-purple-700 transition-colors">
+            🎥 Quick Demo & Form Tips
+          </a>
+          ${ex.videoLong ? `
+          <a href="${ex.videoLong}" target="_blank" rel="noopener noreferrer" 
+             class="inline-block mb-2 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded hover:bg-indigo-700 transition-colors">
+            📚 Detailed Tutorial
+          </a>
+          ` : ''}
+          `}
         </div>
         ` : ''}
       </div>`;
