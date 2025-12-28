@@ -811,13 +811,20 @@ function renderSleepImpact(ctx, data){
   
   const avgSleep = avg(sleep);
   const avgEnergy = avg(nextEnergy);
-  document.getElementById('analyticsInsights').innerHTML = `
-    <strong>💡 Insights:</strong><br>
-    • Avg Sleep: ${avgSleep.toFixed(1)}/10<br>
-    • Avg Next Day Energy: ${avgEnergy.toFixed(1)}/10<br>
-    • ${avgEnergy > avgSleep ? 'Sleep boosts your energy!' : 'Track more to see patterns'}
-  `;
-}
+  
+  if(sleep.filter(v => v).length === 0){
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>📊 No Data Yet:</strong><br>
+      Start tracking your daily metrics to see insights here! Once you log sleep, energy, and mood data, you'll see correlations and trends.
+    `;
+  } else {
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>💡 Insights:</strong><br>
+      • Avg Sleep: ${avgSleep.toFixed(1)}/10<br>
+      • Avg Next Day Energy: ${avgEnergy.toFixed(1)}/10<br>
+      • ${avgEnergy > avgSleep ? 'Sleep boosts your energy!' : 'Track more to see patterns'}
+    `;
+  }
 
 function renderRecoveryPerformance(ctx, data){
   document.getElementById('analyticsChartTitle').textContent = '💪 Recovery vs Performance';
