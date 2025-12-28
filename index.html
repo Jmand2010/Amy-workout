@@ -1126,13 +1126,15 @@ function getAnalyticsData(){
 function getAllExerciseNames(){
   const names = new Set();
   for(let p=1; p<=3; p++){
-    PRG[p].d.forEach(day => {
-      if(day.ex) day.ex.forEach(ex => names.add(ex.n));
-    });
+    for(let d=1; d<=7; d++){
+      const day = PRG[p].d[d];
+      if(day && day.ex){
+        day.ex.forEach(ex => names.add(ex.n));
+      }
+    }
   }
   return Array.from(names).sort();
 }
-
 function getDayOfWeekData(exName){
   const dowData = Array(7).fill().map(() => []);
   const weeks = [];
