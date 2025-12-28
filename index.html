@@ -628,9 +628,592 @@ ${wc>0?'+':''}${wc.toFixed(1)}
 <button onclick="st.chart='m:ar';render()" class="bg-green-100 p-3 rounded text-sm font-bold hover:bg-green-200">Arms</button>
 </div>
 </div>
+<div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg p-6 mb-4">
+<h3 class="text-xl font-bold mb-2">🚀 Want More Insights?</h3>
+<p class="text-sm mb-4">Compare multiple metrics, track day-of-week patterns, see muscle group volume, and more!</p>
+<button onclick="chView('analytics')" class="w-full bg-white text-purple-600 font-bold py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors">
+📊 Open Advanced Analytics
+</button>
+</div>
 </div>`;
 }
+// ============================================================
+// ADVANCED ANALYTICS
+// ============================================================
 
+function rAdvancedAnalytics(){
+  const phaseFilter = st.analyticsPhase || 'current';
+  
+  return `<div class="p-4 max-w-6xl mx-auto">
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold">📊 Advanced Analytics</h2>
+      <button onclick="chView('stats')" class="bg-white text-indigo-600 px-4 py-2 rounded font-bold hover:bg-gray-100">← Back</button>
+    </div>
+
+    <div class="bg-white rounded-lg p-4 mb-4 border-2 border-indigo-300">
+      <label class="block text-sm font-bold text-gray-700 mb-2">📅 View Data For:</label>
+      <select id="analyticsPhase" onchange="st.analyticsPhase=this.value;render()" class="w-full p-2 border-2 border-gray-300 rounded">
+        <option value="all" ${phaseFilter==='all'?'selected':''}>All Phases (24 Weeks)</option>
+        <option value="1" ${phaseFilter==='1'?'selected':''}>Phase 1: Foundation (Weeks 1-8)</option>
+        <option value="2" ${phaseFilter==='2'?'selected':''}>Phase 2: Strength (Weeks 9-16)</option>
+        <option value="3" ${phaseFilter==='3'?'selected':''}>Phase 3: Peak (Weeks 17-24)</option>
+        <option value="current" ${phaseFilter==='current'?'selected':''}>Current Phase Only</option>
+      </select>
+    </div>
+
+    <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 mb-6 border-2 border-purple-300">
+      <h3 class="text-xl font-bold text-purple-800 mb-3">⚡ Quick Insights</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <button onclick="showAnalyticsChart('sleep-impact')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+          😴 Sleep Impact Analysis
+        </button>
+        <button onclick="showAnalyticsChart('recovery-performance')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+          💪 Recovery vs Performance
+        </button>
+        <button onclick="showAnalyticsChart('body-energy')" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+          ⚖️ Body Weight & Energy
+        </button>
+        <button onclick="showAnalyticsChart('mental-performance')" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+          🧠 Mental Performance
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg p-4 mb-6 border-2 border-indigo-300">
+      <h3 class="text-lg font-bold text-indigo-700 mb-3">🎨 Custom Metric Comparison</h3>
+      <p class="text-sm text-gray-600 mb-3">Select 2-4 metrics to compare:</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+        <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer">
+          <input type="checkbox" class="metric-cb" data-key="sq" data-label="Sleep Quality" data-color="#3b82f6">
+          <span class="text-sm">Sleep Quality</span>
+        </label>
+        <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer">
+          <input type="checkbox" class="metric-cb" data-key="en" data-label="Energy" data-color="#10b981">
+          <span class="text-sm">Energy Level</span>
+        </label>
+        <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer">
+          <input type="checkbox" class="metric-cb" data-key="mood" data-label="Mood" data-color="#f59e0b">
+          <span class="text-sm">Mood</span>
+        </label>
+        <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer">
+          <input type="checkbox" class="metric-cb" data-key="soreness" data-label="Soreness" data-color="#ef4444">
+          <span class="text-sm">Soreness</span>
+        </label>
+        <label class="flex items-center space-x-2 p-2 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer">
+          <input type="checkbox" class="metric-cb" data-key="wt" data-label="Body Weight" data-color="#8b5cf6">
+          <span class="text-sm">Body Weight</span>
+        </label>
+      </div>
+      <button onclick="generateCustomComparison()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors">
+        📈 Generate Custom Chart
+      </button>
+    </div>
+
+    <div class="bg-white rounded-lg p-4 mb-6 border-2 border-indigo-300">
+      <h3 class="text-lg font-bold text-indigo-700 mb-3">🏋️ Strength Progression</h3>
+      
+      <div class="mb-4 p-3 bg-blue-50 rounded">
+        <h4 class="font-bold text-blue-900 mb-2">📅 Day-of-Week Comparison</h4>
+        <p class="text-sm text-gray-600 mb-2">Compare strength on same day across weeks</p>
+        <select id="dowExerciseSelect" class="w-full p-2 border-2 border-gray-300 rounded mb-2">
+          <option value="">Select exercise...</option>
+          ${getAllExerciseNames().map(name => `<option value="${name}">${name}</option>`).join('')}
+        </select>
+        <button onclick="showDayOfWeekComparison()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Show Day Comparison
+        </button>
+      </div>
+
+      <div class="mb-4 p-3 bg-purple-50 rounded">
+        <h4 class="font-bold text-purple-900 mb-2">💪 Volume by Muscle Group</h4>
+        <p class="text-sm text-gray-600 mb-2">Total volume per muscle group over time</p>
+        <button onclick="showMuscleGroupVolume()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+          Show Muscle Volume
+        </button>
+      </div>
+    </div>
+
+    <div id="analyticsChartArea" class="hidden bg-white rounded-lg p-6 border-2 border-gray-300">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="analyticsChartTitle" class="text-xl font-bold"></h3>
+        <button onclick="closeAnalyticsChart()" class="text-gray-500 hover:text-gray-700 font-bold text-xl">✕</button>
+      </div>
+      <canvas id="analyticsChart" style="max-height:400px"></canvas>
+      <div id="analyticsInsights" class="mt-4 p-4 bg-blue-50 rounded text-sm"></div>
+    </div>
+  </div>`;
+}
+
+let analyticsChart = null;
+
+function showAnalyticsChart(type){
+  document.getElementById('analyticsChartArea').classList.remove('hidden');
+  if(analyticsChart) analyticsChart.destroy();
+  
+  const ctx = document.getElementById('analyticsChart').getContext('2d');
+  const data = getAnalyticsData();
+  
+  switch(type){
+    case 'sleep-impact': renderSleepImpact(ctx, data); break;
+    case 'recovery-performance': renderRecoveryPerformance(ctx, data); break;
+    case 'body-energy': renderBodyEnergy(ctx, data); break;
+    case 'mental-performance': renderMentalPerformance(ctx, data); break;
+  }
+}
+
+function renderSleepImpact(ctx, data){
+  document.getElementById('analyticsChartTitle').textContent = '😴 Sleep Impact on Next Day';
+  
+  const labels = [], sleep = [], nextEnergy = [], nextMood = [];
+  
+  data.forEach((d, i) => {
+    if(d.sq){
+      labels.push(`P${d.p}W${d.w}D${d.d}`);
+      sleep.push(d.sq);
+      nextEnergy.push(data[i+1]?.en || null);
+      nextMood.push(data[i+1]?.mood || null);
+    }
+  });
+  
+  analyticsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Sleep Quality',
+        data: sleep,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.1)',
+        tension: 0.3
+      },{
+        label: 'Next Day Energy',
+        data: nextEnergy,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16,185,129,0.1)',
+        tension: 0.3
+      },{
+        label: 'Next Day Mood',
+        data: nextMood,
+        borderColor: '#f59e0b',
+        backgroundColor: 'rgba(245,158,11,0.1)',
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        y: { beginAtZero: true, max: 10, title: { display: true, text: 'Rating (1-10)' }}
+      },
+      plugins: { legend: { position: 'top' }}
+    }
+  });
+  
+  const avgSleep = avg(sleep);
+  const avgEnergy = avg(nextEnergy);
+  document.getElementById('analyticsInsights').innerHTML = `
+    <strong>💡 Insights:</strong><br>
+    • Avg Sleep: ${avgSleep.toFixed(1)}/10<br>
+    • Avg Next Day Energy: ${avgEnergy.toFixed(1)}/10<br>
+    • ${avgEnergy > avgSleep ? 'Sleep boosts your energy!' : 'Track more to see patterns'}
+  `;
+}
+
+function renderRecoveryPerformance(ctx, data){
+  document.getElementById('analyticsChartTitle').textContent = '💪 Recovery vs Performance';
+  
+  const labels = [], soreness = [], completion = [];
+  
+  data.forEach(d => {
+    if(d.soreness || d.workoutComplete !== undefined){
+      labels.push(`P${d.p}W${d.w}D${d.d}`);
+      soreness.push(d.soreness || null);
+      completion.push(d.workoutComplete ? 100 : 0);
+    }
+  });
+  
+  analyticsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Soreness',
+        data: soreness,
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239,68,68,0.1)',
+        yAxisID: 'y',
+        tension: 0.3
+      },{
+        label: 'Workout Completed',
+        data: completion,
+        borderColor: '#06b6d4',
+        backgroundColor: 'rgba(6,182,212,0.1)',
+        yAxisID: 'y1',
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, max: 10, position: 'left', title: { display: true, text: 'Soreness' }},
+        y1: { beginAtZero: true, max: 100, position: 'right', title: { display: true, text: '% Complete' }, grid: { drawOnChartArea: false }}
+      },
+      plugins: { legend: { position: 'top' }}
+    }
+  });
+  
+  document.getElementById('analyticsInsights').innerHTML = `
+    <strong>💡 Insights:</strong><br>
+    • Avg Soreness: ${avg(soreness).toFixed(1)}/10<br>
+    • Workouts Completed: ${completion.filter(c=>c===100).length}/${completion.length}
+  `;
+}
+
+function renderBodyEnergy(ctx, data){
+  document.getElementById('analyticsChartTitle').textContent = '⚖️ Body Weight & Energy';
+  
+  const labels = [], weight = [], sleep = [], energy = [];
+  
+  data.forEach(d => {
+    if(d.wt || d.sq || d.en){
+      labels.push(`P${d.p}W${d.w}D${d.d}`);
+      weight.push(d.wt || null);
+      sleep.push(d.sq || null);
+      energy.push(d.en || null);
+    }
+  });
+  
+  analyticsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Weight (lbs)',
+        data: weight,
+        borderColor: '#8b5cf6',
+        backgroundColor: 'rgba(139,92,246,0.1)',
+        yAxisID: 'y',
+        tension: 0.3
+      },{
+        label: 'Sleep',
+        data: sleep,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.1)',
+        yAxisID: 'y1',
+        tension: 0.3
+      },{
+        label: 'Energy',
+        data: energy,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16,185,129,0.1)',
+        yAxisID: 'y1',
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { position: 'left', title: { display: true, text: 'Weight (lbs)' }},
+        y1: { beginAtZero: true, max: 10, position: 'right', title: { display: true, text: 'Rating' }, grid: { drawOnChartArea: false }}
+      },
+      plugins: { legend: { position: 'top' }}
+    }
+  });
+  
+  const validWeight = weight.filter(w=>w);
+  if(validWeight.length > 1){
+    const change = validWeight[validWeight.length-1] - validWeight[0];
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>💡 Insights:</strong><br>
+      • Weight Change: ${change > 0 ? '+' : ''}${change.toFixed(1)} lbs<br>
+      • Avg Sleep: ${avg(sleep).toFixed(1)}/10<br>
+      • Avg Energy: ${avg(energy).toFixed(1)}/10
+    `;
+  }
+}
+
+function renderMentalPerformance(ctx, data){
+  document.getElementById('analyticsChartTitle').textContent = '🧠 Mental Performance';
+  
+  const labels = [], mood = [], energy = [], workoutDays = [];
+  
+  data.forEach(d => {
+    labels.push(`P${d.p}W${d.w}D${d.d}`);
+    mood.push(d.mood || null);
+    energy.push(d.en || null);
+    workoutDays.push(d.workoutComplete ? 10 : 0);
+  });
+  
+  analyticsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Mood',
+        data: mood,
+        borderColor: '#f59e0b',
+        backgroundColor: 'rgba(245,158,11,0.1)',
+        tension: 0.3
+      },{
+        label: 'Energy',
+        data: energy,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16,185,129,0.1)',
+        tension: 0.3
+      },{
+        label: 'Workout Day',
+        data: workoutDays,
+        type: 'bar',
+        backgroundColor: 'rgba(139,92,246,0.3)',
+        borderColor: '#8b5cf6'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, max: 10, title: { display: true, text: 'Rating' }}
+      },
+      plugins: { legend: { position: 'top' }}
+    }
+  });
+  
+  document.getElementById('analyticsInsights').innerHTML = `
+    <strong>💡 Insights:</strong><br>
+    • Avg Mood: ${avg(mood).toFixed(1)}/10<br>
+    • Avg Energy: ${avg(energy).toFixed(1)}/10<br>
+    • Workout Days: ${workoutDays.filter(w=>w>0).length}
+  `;
+}
+
+function generateCustomComparison(){
+  const checked = Array.from(document.querySelectorAll('.metric-cb:checked'));
+  if(checked.length < 2 || checked.length > 4){
+    alert('Select 2-4 metrics');
+    return;
+  }
+  
+  document.getElementById('analyticsChartArea').classList.remove('hidden');
+  document.getElementById('analyticsChartTitle').textContent = '🎨 Custom Comparison';
+  if(analyticsChart) analyticsChart.destroy();
+  
+  const ctx = document.getElementById('analyticsChart').getContext('2d');
+  const data = getAnalyticsData();
+  const labels = data.map(d => `P${d.p}W${d.w}D${d.d}`);
+  
+  const datasets = checked.map(cb => ({
+    label: cb.dataset.label,
+    data: data.map(d => d[cb.dataset.key] || null),
+    borderColor: cb.dataset.color,
+    backgroundColor: cb.dataset.color + '20',
+    tension: 0.3
+  }));
+  
+  analyticsChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true }},
+      plugins: { legend: { position: 'top' }}
+    }
+  });
+  
+  document.getElementById('analyticsInsights').innerHTML = `<strong>Comparing ${checked.length} metrics</strong>`;
+}
+
+function showDayOfWeekComparison(){
+  const exName = document.getElementById('dowExerciseSelect').value;
+  if(!exName){ alert('Select an exercise'); return; }
+  
+  document.getElementById('analyticsChartArea').classList.remove('hidden');
+  document.getElementById('analyticsChartTitle').textContent = `📅 ${exName} by Day of Week`;
+  if(analyticsChart) analyticsChart.destroy();
+  
+  const ctx = document.getElementById('analyticsChart').getContext('2d');
+  const dowData = getDayOfWeekData(exName);
+  
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const datasets = days.map((day, idx) => ({
+    label: day,
+    data: dowData[idx],
+    borderColor: `hsl(${idx*50}, 70%, 50%)`,
+    tension: 0.3
+  })).filter(ds => ds.data.length > 0);
+  
+  analyticsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dowData.weeks,
+      datasets
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Weight (lbs)' }}},
+      plugins: { legend: { position: 'top' }}
+    }
+  });
+  
+  document.getElementById('analyticsInsights').innerHTML = `<strong>Tracking ${exName} across weeks</strong>`;
+}
+
+function showMuscleGroupVolume(){
+  document.getElementById('analyticsChartArea').classList.remove('hidden');
+  document.getElementById('analyticsChartTitle').textContent = '💪 Volume by Muscle Group';
+  if(analyticsChart) analyticsChart.destroy();
+  
+  const ctx = document.getElementById('analyticsChart').getContext('2d');
+  const volumeData = getMuscleGroupVolumeData();
+  
+  analyticsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: volumeData.weeks,
+      datasets: volumeData.groups.map((g, idx) => ({
+        label: g.name,
+        data: g.volumes,
+        backgroundColor: `hsl(${idx*60}, 70%, 60%)`
+      }))
+    },
+    options: {
+      responsive: true,
+      scales: { 
+        x: { stacked: true },
+        y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Total Volume (sets × reps × weight)' }}
+      },
+      plugins: { legend: { position: 'top' }}
+    }
+  });
+  
+  document.getElementById('analyticsInsights').innerHTML = `<strong>Weekly volume by muscle group</strong>`;
+}
+
+function closeAnalyticsChart(){
+  document.getElementById('analyticsChartArea').classList.add('hidden');
+  if(analyticsChart) analyticsChart.destroy();
+}
+
+function getAnalyticsData(){
+  const phaseFilter = st.analyticsPhase || 'current';
+  const data = [];
+  
+  for(let p=1; p<=3; p++){
+    if(phaseFilter !== 'all' && phaseFilter !== 'current' && phaseFilter !== p.toString()) continue;
+    if(phaseFilter === 'current' && p !== st.p) continue;
+    
+    for(let w=1; w<=8; w++){
+      for(let d=1; d<=7; d++){
+        const key = `p${p}w${w}d${d}`;
+        const wd = st.data[key];
+        if(wd){
+          data.push({
+            p, w, d,
+            sq: wd.sq,
+            sl: wd.sl,
+            en: wd.en,
+            mood: wd.mood,
+            soreness: wd.soreness,
+            wt: wd.wt,
+            workoutComplete: wd.ex && wd.ex.length > 0
+          });
+        }
+      }
+    }
+  }
+  
+  return data;
+}
+
+function getAllExerciseNames(){
+  const names = new Set();
+  for(let p=1; p<=3; p++){
+    PRG[p].d.forEach(day => {
+      if(day.ex) day.ex.forEach(ex => names.add(ex.n));
+    });
+  }
+  return Array.from(names).sort();
+}
+
+function getDayOfWeekData(exName){
+  const dowData = Array(7).fill().map(() => []);
+  const weeks = [];
+  
+  for(let p=1; p<=3; p++){
+    for(let w=1; w<=8; w++){
+      weeks.push(`P${p}W${w}`);
+      for(let d=1; d<=7; d++){
+        const key = `p${p}w${w}d${d}`;
+        const wd = st.data[key];
+        if(wd && wd.ex){
+          const dayEx = PRG[p].d[d-1].ex;
+          if(dayEx){
+            const exIdx = dayEx.findIndex(e => e.n === exName);
+            if(exIdx >= 0 && wd.ex[exIdx]){
+              const ex = wd.ex[exIdx];
+              const maxWeight = Math.max(...Object.keys(ex).filter(k => k.startsWith('s') && k.endsWith('w')).map(k => parseFloat(ex[k]) || 0));
+              dowData[d-1].push(maxWeight || null);
+            } else {
+              dowData[d-1].push(null);
+            }
+          } else {
+            dowData[d-1].push(null);
+          }
+        } else {
+          dowData[d-1].push(null);
+        }
+      }
+    }
+  }
+  
+  return { weeks, ...dowData };
+}
+
+function getMuscleGroupVolumeData(){
+  const groups = [
+    { name: 'Chest', exercises: ['Bench Press', 'Incline', 'Dips', 'Flyes', 'Press'] },
+    { name: 'Back', exercises: ['Row', 'Pull', 'Lat', 'Pullover'] },
+    { name: 'Shoulders', exercises: ['Shoulder Press', 'Lateral', 'Face', 'Shrug'] },
+    { name: 'Arms', exercises: ['Curl', 'Tricep'] },
+    { name: 'Legs', exercises: ['Squat', 'Lunge', 'RDL', 'Bulgarian'] },
+    { name: 'Core', exercises: ['Plank', 'Crunch', 'Sit-up', 'Dead Bug', 'Twist', 'Raise', 'Woodchopper'] }
+  ];
+  
+  const weeks = [];
+  groups.forEach(g => g.volumes = []);
+  
+  for(let p=1; p<=3; p++){
+    for(let w=1; w<=8; w++){
+      weeks.push(`P${p}W${w}`);
+      groups.forEach(g => {
+        let weeklyVolume = 0;
+        for(let d=1; d<=7; d++){
+          const key = `p${p}w${w}d${d}`;
+          const wd = st.data[key];
+          const dayData = PRG[p].d[d-1];
+          if(wd && wd.ex && dayData && dayData.ex){
+            wd.ex.forEach((ex, idx) => {
+              const dayEx = dayData.ex[idx];
+              if(dayEx && g.exercises.some(e => dayEx.n.includes(e))){
+                for(let s=1; s<=10; s++){
+                  const w = parseFloat(ex['s'+s+'w']) || 0;
+                  const r = parseFloat(ex['s'+s+'r']) || 0;
+                  weeklyVolume += w * r;
+                }
+              }
+            });
+          }
+        }
+        g.volumes.push(weeklyVolume);
+      });
+    }
+  }
+  
+  return { weeks, groups };
+}
+
+function avg(arr){
+  const valid = arr.filter(v => v != null);
+  return valid.length ? valid.reduce((a,b) => a+b, 0) / valid.length : 0;
+}
 function rWork(){
   const ph=PRG[st.p];
   const dy=ph.d[st.d];
@@ -1767,6 +2350,7 @@ function render(){
   if(st.v==='home')app.innerHTML=rHome();
   else if(st.v==='info')app.innerHTML=rInfo();
   else if(st.v==='stats')app.innerHTML=rStats();
+  else if(st.v==='analytics')app.innerHTML=rAdvancedAnalytics();
   else if(st.v==='workout')app.innerHTML=rWork();
   else if(st.v==='exercises')app.innerHTML=rExercises();  // NEW
   else if(st.v==='overview')app.innerHTML=rOverview();    // NEW
