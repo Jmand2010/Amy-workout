@@ -869,11 +869,18 @@ function renderRecoveryPerformance(ctx, data){
     }
   });
   
-  document.getElementById('analyticsInsights').innerHTML = `
-    <strong>💡 Insights:</strong><br>
-    • Avg Soreness: ${avg(soreness).toFixed(1)}/10<br>
-    • Workouts Completed: ${completion.filter(c=>c===100).length}/${completion.length}
-  `;
+  if(soreness.filter(v => v).length === 0){
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>📊 No Data Yet:</strong><br>
+      Start tracking soreness and workout completion to see insights here!
+    `;
+  } else {
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>💡 Insights:</strong><br>
+      • Avg Soreness: ${avg(soreness).toFixed(1)}/10<br>
+      • Workouts Completed: ${completion.filter(c=>c===100).length}/${completion.length}
+    `;
+  }
 }
 
 function renderBodyEnergy(ctx, data){
@@ -928,13 +935,26 @@ function renderBodyEnergy(ctx, data){
   });
   
   const validWeight = weight.filter(w=>w);
-  if(validWeight.length > 1){
+  
+  if(validWeight.length === 0 && sleep.filter(v=>v).length === 0){
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>📊 No Data Yet:</strong><br>
+      Start tracking body weight, sleep, and energy to see insights here!
+    `;
+  } else if(validWeight.length > 1){
     const change = validWeight[validWeight.length-1] - validWeight[0];
     document.getElementById('analyticsInsights').innerHTML = `
       <strong>💡 Insights:</strong><br>
       • Weight Change: ${change > 0 ? '+' : ''}${change.toFixed(1)} lbs<br>
       • Avg Sleep: ${avg(sleep).toFixed(1)}/10<br>
       • Avg Energy: ${avg(energy).toFixed(1)}/10
+    `;
+  } else {
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>💡 Insights:</strong><br>
+      • Avg Sleep: ${avg(sleep).toFixed(1)}/10<br>
+      • Avg Energy: ${avg(energy).toFixed(1)}/10<br>
+      • Track weight over time to see trends!
     `;
   }
 }
@@ -984,12 +1004,19 @@ function renderMentalPerformance(ctx, data){
     }
   });
   
-  document.getElementById('analyticsInsights').innerHTML = `
-    <strong>💡 Insights:</strong><br>
-    • Avg Mood: ${avg(mood).toFixed(1)}/10<br>
-    • Avg Energy: ${avg(energy).toFixed(1)}/10<br>
-    • Workout Days: ${workoutDays.filter(w=>w>0).length}
-  `;
+ if(mood.filter(v=>v).length === 0){
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>📊 No Data Yet:</strong><br>
+      Start tracking mood, energy, and workouts to see insights here!
+    `;
+  } else {
+    document.getElementById('analyticsInsights').innerHTML = `
+      <strong>💡 Insights:</strong><br>
+      • Avg Mood: ${avg(mood).toFixed(1)}/10<br>
+      • Avg Energy: ${avg(energy).toFixed(1)}/10<br>
+      • Workout Days: ${workoutDays.filter(w=>w>0).length}
+    `;
+  }
 }
 
 function generateCustomComparison(){
