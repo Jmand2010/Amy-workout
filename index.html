@@ -2074,11 +2074,15 @@ function rExercises(){
             🎥 Quick Demo & Form Tips
           </a>
           ${ex.videoLong ? `
-          <a href="${ex.videoLong}" target="_blank" rel="noopener noreferrer" 
-             class="inline-block mb-2 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded hover:bg-indigo-700 transition-colors">
-            📚 Detailed Tutorial
-          </a>
-          ` : ''}
+<a href="${ex.videoLong}" target="_blank" rel="noopener noreferrer" 
+   class="inline-block mt-3 mr-2 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded hover:bg-indigo-700 transition-colors">
+  📚 Watch Detailed Tutorial (5-8 min)
+</a>
+` : ''}
+<a href="https://weighttraining.guide/exercises/${exName.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-').replace(/[^a-z0-9-]/g, '')}/" target="_blank" rel="noopener noreferrer" 
+   class="inline-block mt-3 px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded hover:bg-teal-700 transition-colors">
+  📖 Detailed Exercise Guide
+</a>
           `}
         </div>
         ` : ''}
