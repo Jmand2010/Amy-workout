@@ -2061,33 +2061,51 @@ function rExercises(){
               allowfullscreen>
             </iframe>
           </div>
-          ${ex.videoLong ? `
-          <a href="${ex.videoLong}" target="_blank" rel="noopener noreferrer" 
-             class="inline-block mt-3 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded hover:bg-indigo-700 transition-colors">
-            📚 Watch Detailed Tutorial (5-8 min, opens in new tab)
-          </a>
-          ` : ''}
+          <div class="flex flex-wrap gap-2 mt-4">
+            <a href="${ex.videoShort.replace('/embed/', '/watch?v=')}" target="_blank" rel="noopener noreferrer" 
+               class="px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded hover:bg-purple-700 transition-colors">
+              🎥 Short Demo
+            </a>
+            ${ex.videoLong ? `
+            <a href="${ex.videoLong}" target="_blank" rel="noopener noreferrer" 
+               class="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded hover:bg-indigo-700 transition-colors">
+              📚 Detailed Tutorial
+            </a>
+            ` : ''}
+            <a href="https://weighttraining.guide/exercises/${exName.toLowerCase().replace(/barbell\/db/gi, 'dumbbell').replace(/\bdb\b/gi, 'dumbbell').replace(/\//g, '-').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}/" target="_blank" rel="noopener noreferrer" 
+               class="px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded hover:bg-teal-700 transition-colors">
+              📖 Exercise Guide
+            </a>
+          </div>
           ` : `
           <p class="font-bold text-sm text-indigo-900 mb-3">📺 FORM DEMONSTRATIONS</p>
-          <a href="${ex.videoShort}" target="_blank" rel="noopener noreferrer" 
-             class="inline-block mr-2 mb-2 px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded hover:bg-purple-700 transition-colors">
-            🎥 Quick Demo & Form Tips
-          </a>
-          ${ex.videoLong ? `
-<a href="${ex.videoLong}" target="_blank" rel="noopener noreferrer" 
-   class="inline-block mt-3 mr-2 px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded hover:bg-indigo-700 transition-colors">
-  📚 Watch Detailed Tutorial (5-8 min)
-</a>
-` : ''}
-<a href="https://weighttraining.guide/exercises/${exName.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-').replace(/[^a-z0-9-]/g, '')}/" target="_blank" rel="noopener noreferrer" 
-   class="inline-block mt-3 px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded hover:bg-teal-700 transition-colors">
-  📖 Detailed Exercise Guide
-</a>
+          <div class="flex flex-wrap gap-2">
+            <a href="${ex.videoShort}" target="_blank" rel="noopener noreferrer" 
+               class="px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded hover:bg-purple-700 transition-colors">
+              🎥 Quick Demo
+            </a>
+            ${ex.videoLong ? `
+            <a href="${ex.videoLong}" target="_blank" rel="noopener noreferrer" 
+               class="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded hover:bg-indigo-700 transition-colors">
+              📚 Detailed Tutorial
+            </a>
+            ` : ''}
+            <a href="https://weighttraining.guide/exercises/${exName.toLowerCase().replace(/barbell\/db/gi, 'dumbbell').replace(/\bdb\b/gi, 'dumbbell').replace(/\//g, '-').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}/" target="_blank" rel="noopener noreferrer" 
+               class="px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded hover:bg-teal-700 transition-colors">
+              📖 Exercise Guide
+            </a>
+          </div>
           `}
         </div>
         ` : ''}
       </div>`;
     });
+    
+    html += `</div>`;
+  });
+  html += `</div>`;
+  return html;
+}
     
     html += `</div>`;
   });
