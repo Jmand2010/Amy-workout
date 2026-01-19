@@ -1501,536 +1501,1114 @@ function next(){
 // ============================================================
 // EXERCISE GUIDE & FORM - Complete exercise library
 // ============================================================
+// MAIN FUNCTION: Generates the complete exercise library HTML page
 function rExercises(){
+ // EXERCISES DATABASE: Contains all exercise information
  const exercises = {
     "Incline Barbell/Dumbbell Press": {
-      category: "Chest - Upper",
-      description: "A compound movement targeting the upper chest, front deltoids, and triceps.",
-      muscles: { primary: "Upper Pectoralis Major, Anterior Deltoids", secondary: "Triceps Brachii, Serratus Anterior" },
-      form: ["Set bench to 30-45 degree incline (not too steep)","Lie back with feet flat on floor, shoulder blades squeezed together","Grip barbell slightly wider than shoulders, or hold DBs at chest level","Lower weight slowly to upper chest (nipple line or higher)","Press up and slightly back toward starting position","Keep elbows at 45-degree angle (not flared out)"],
-      breathing: "Inhale as you lower, exhale as you press up",
-      tips: "Focus on feeling it in your upper chest. If you feel too much shoulder, lower the incline angle.",
-      videoShort: "https://www.youtube.com/embed/SrqOu55lrYU",
-      videoLong: "https://www.youtube.com/watch?v=SrqOu55lrYU"
+      category: "Chest - Upper", // Groups exercise by muscle category
+      description: "A compound movement targeting the upper chest, front deltoids, and triceps.", // Brief overview
+      muscles: { 
+        primary: "Upper Pectoralis Major, Anterior Deltoids", // Main muscles doing the work
+        secondary: "Triceps Brachii, Serratus Anterior" // Supporting muscles
+      },
+      form: [ // Step-by-step form instructions (array of strings)
+        "Set bench to 30-45 degree incline (not too steep)",
+        "Lie back with feet flat on floor, shoulder blades squeezed together",
+        "Grip barbell slightly wider than shoulders, or hold DBs at chest level",
+        "Lower weight slowly to upper chest (nipple line or higher)",
+        "Press up and slightly back toward starting position",
+        "Keep elbows at 45-degree angle (not flared out)"
+      ],
+      breathing: "Inhale as you lower, exhale as you press up", // Breathing pattern
+      tips: "Focus on feeling it in your upper chest. If you feel too much shoulder, lower the incline angle.", // Pro tips
+      videoShort: "https://www.youtube.com/embed/SrqOu55lrYU", // EMBEDDED video (shows in iframe on page)
+      videoFormDemo: "https://www.youtube.com/watch?v=SrqOu55lrYU", // NEW: URL for "Form Demo" button
+      videoLong: "https://www.youtube.com/watch?v=SrqOu55lrYU", // URL for "Detailed Tutorial" button
+      guideSearch: "incline-dumbbell-press" // NEW: Search term for Exercise Guide link
     },
     "Barbell/Dumbbell Shoulder Press": {
       category: "Shoulders",
       description: "Primary shoulder builder targeting all three deltoid heads, especially front and middle delts.",
-      muscles: { primary: "Anterior & Lateral Deltoids", secondary: "Triceps Brachii, Upper Trapezius, Serratus Anterior" },
-      form: ["Seated or standing with core tight, feet shoulder-width","Start with weight at shoulder height, palms forward","Press straight up overhead without leaning back","Keep core engaged to protect lower back","Lower with control back to shoulder level","Don't let elbows drop too far behind your body"],
+      muscles: { 
+        primary: "Anterior & Lateral Deltoids", 
+        secondary: "Triceps Brachii, Upper Trapezius, Serratus Anterior" 
+      },
+      form: [
+        "Seated or standing with core tight, feet shoulder-width",
+        "Start with weight at shoulder height, palms forward",
+        "Press straight up overhead without leaning back",
+        "Keep core engaged to protect lower back",
+        "Lower with control back to shoulder level",
+        "Don't let elbows drop too far behind your body"
+      ],
       breathing: "Exhale on press up, inhale on the way down",
       tips: "Using Smith machine provides extra stability. If standing, engage your core like you're bracing for a punch.",
-      videoShort: "https://www.youtube.com/embed/qEwKCR5JCog",
-      videoLong: "https://www.youtube.com/watch?v=qEwKCR5JCog"
+      videoShort: "https://www.youtube.com/embed/qEwKCR5JCog", // EMBEDDED video
+      videoFormDemo: "https://www.youtube.com/watch?v=qEwKCR5JCog", // Form Demo button URL
+      videoLong: "https://www.youtube.com/watch?v=qEwKCR5JCog", // Detailed Tutorial button URL
+      guideSearch: "dumbbell-shoulder-press" // Exercise Guide search term
     },
     "Assisted Dips/Bench Dips": {
       category: "Chest & Triceps - Beginner",
       description: "Regression options to build toward full dips.",
-      muscles: { primary: "Triceps Brachii, Lower Chest", secondary: "Anterior Deltoids" },
-      form: ["Assisted: Use machine with knee pad for support","Bench dips: Hands on bench behind you, feet extended forward","Lower body by bending elbows to 90 degrees","Press back up to straight arms","Keep shoulders down and back"],
+      muscles: { 
+        primary: "Triceps Brachii, Lower Chest", 
+        secondary: "Anterior Deltoids" 
+      },
+      form: [
+        "Assisted: Use machine with knee pad for support",
+        "Bench dips: Hands on bench behind you, feet extended forward",
+        "Lower body by bending elbows to 90 degrees",
+        "Press back up to straight arms",
+        "Keep shoulders down and back"
+      ],
       breathing: "Inhale down, exhale up",
       tips: "Perfect these before attempting full dips. Build to 15+ reps before progressing.",
       videoShort: "https://www.youtube.com/embed/0326dy_-CzM",
-      videoLong: "https://www.youtube.com/watch?v=0326dy_-CzM"
+      videoFormDemo: "https://www.youtube.com/watch?v=0326dy_-CzM",
+      videoLong: "https://www.youtube.com/watch?v=0326dy_-CzM",
+      guideSearch: "bench-dip"
     },
     "Dumbbell Lateral Raises": {
       category: "Shoulders - Side Delts",
       description: "Isolation exercise for side/middle deltoids, building shoulder width.",
-      muscles: { primary: "Lateral (Middle) Deltoids", secondary: "Anterior Deltoids, Supraspinatus" },
-      form: ["Stand with DBs at sides, slight bend in elbows","Raise arms out to sides until parallel to ground","Lead with elbows, not hands","Think 'pouring water from pitcher'","Lower with control","Don't shrug shoulders up"],
+      muscles: { 
+        primary: "Lateral (Middle) Deltoids", 
+        secondary: "Anterior Deltoids, Supraspinatus" 
+      },
+      form: [
+        "Stand with DBs at sides, slight bend in elbows",
+        "Raise arms out to sides until parallel to ground",
+        "Lead with elbows, not hands",
+        "Think 'pouring water from pitcher'",
+        "Lower with control",
+        "Don't shrug shoulders up"
+      ],
       breathing: "Exhale raising arms, inhale lowering",
       tips: "Don't go too heavy - this is about control and feeling the side delts burn.",
       videoShort: "https://www.youtube.com/embed/3VcKaXpzqRo",
-      videoLong: "https://www.youtube.com/watch?v=3VcKaXpzqRo"
+      videoFormDemo: "https://www.youtube.com/watch?v=3VcKaXpzqRo",
+      videoLong: "https://www.youtube.com/watch?v=3VcKaXpzqRo",
+      guideSearch: "dumbbell-lateral-raise"
     },
     "Tricep Push-down": {
       category: "Triceps",
       description: "Cable exercise isolating triceps.",
-      muscles: { primary: "Triceps Brachii (all three heads)", secondary: "Anconeus" },
-      form: ["Stand facing cable machine, bar at chest height","Grip bar with hands shoulder-width","Keep elbows pinned at sides","Push bar down until arms straight","Squeeze triceps at bottom","Control return to start, keep elbows still"],
+      muscles: { 
+        primary: "Triceps Brachii (all three heads)", 
+        secondary: "Anconeus" 
+      },
+      form: [
+        "Stand facing cable machine, bar at chest height",
+        "Grip bar with hands shoulder-width",
+        "Keep elbows pinned at sides",
+        "Push bar down until arms straight",
+        "Squeeze triceps at bottom",
+        "Control return to start, keep elbows still"
+      ],
       breathing: "Exhale on push down, inhale on return",
       tips: "Don't let elbows drift forward. All movement is at the elbow joint.",
       videoShort: "https://www.youtube.com/embed/2-LAMcpzODU",
-      videoLong: "https://www.youtube.com/watch?v=2-LAMcpzODU"
+      videoFormDemo: "https://www.youtube.com/watch?v=2-LAMcpzODU",
+      videoLong: "https://www.youtube.com/watch?v=2-LAMcpzODU",
+      guideSearch: "triceps-pushdown"
     },
     "Push-ups": {
       category: "Chest & Triceps",
       description: "Classic bodyweight exercise building chest, shoulders, and triceps.",
-      muscles: { primary: "Pectoralis Major, Triceps Brachii", secondary: "Anterior Deltoids, Serratus Anterior, Core" },
-      form: ["Hands slightly wider than shoulders, body in straight line","Lower chest to ground (or close), elbows at 45 degrees","Push back up to straight arms","Keep core tight, don't let hips sag","Full range of motion on each rep"],
+      muscles: { 
+        primary: "Pectoralis Major, Triceps Brachii", 
+        secondary: "Anterior Deltoids, Serratus Anterior, Core" 
+      },
+      form: [
+        "Hands slightly wider than shoulders, body in straight line",
+        "Lower chest to ground (or close), elbows at 45 degrees",
+        "Push back up to straight arms",
+        "Keep core tight, don't let hips sag",
+        "Full range of motion on each rep"
+      ],
       breathing: "Inhale lowering, exhale pushing up",
       tips: "Knee push-ups or incline push-ups are great progressions. Build to sets of 20+!",
       videoShort: "https://www.youtube.com/embed/IODxDxX7oi4",
-      videoLong: "https://www.youtube.com/watch?v=IODxDxX7oi4"
+      videoFormDemo: "https://www.youtube.com/watch?v=IODxDxX7oi4",
+      videoLong: "https://www.youtube.com/watch?v=IODxDxX7oi4",
+      guideSearch: "push-ups"
     },
     "Barbell Squats": {
       category: "Legs - Overall",
       description: "The king of leg exercises, building overall leg mass and strength.",
-      muscles: { primary: "Quadriceps, Gluteus Maximus", secondary: "Hamstrings, Erector Spinae, Core" },
-      form: ["Bar on upper traps (high bar) or rear delts (low bar)","Feet shoulder-width or slightly wider, toes slightly out","Break at hips and knees simultaneously","Descend until thighs parallel or just below","Keep chest up, core tight, back neutral","Drive through heels to stand"],
+      muscles: { 
+        primary: "Quadriceps, Gluteus Maximus", 
+        secondary: "Hamstrings, Erector Spinae, Core" 
+      },
+      form: [
+        "Bar on upper traps (high bar) or rear delts (low bar)",
+        "Feet shoulder-width or slightly wider, toes slightly out",
+        "Break at hips and knees simultaneously",
+        "Descend until thighs parallel or just below",
+        "Keep chest up, core tight, back neutral",
+        "Drive through heels to stand"
+      ],
       breathing: "Big breath at top, hold during descent, exhale on way up",
       tips: "Smith machine is great for safety. Go deep but maintain form. Your knees can go past toes - that's normal!",
       videoShort: "https://www.youtube.com/embed/ultWZbUMPL8",
-      videoLong: "https://www.youtube.com/watch?v=ultWZbUMPL8"
+      videoFormDemo: "https://www.youtube.com/watch?v=ultWZbUMPL8",
+      videoLong: "https://www.youtube.com/watch?v=ultWZbUMPL8",
+      guideSearch: "barbell-squat"
     },
     "Barbell Romanian Dead Lifts": {
       category: "Hamstrings & Glutes",
       description: "Romanian Deadlifts - premier hamstring and glute builder.",
-      muscles: { primary: "Hamstrings, Gluteus Maximus", secondary: "Erector Spinae, Latissimus Dorsi" },
-      form: ["Stand with feet hip-width, slight knee bend","Hold bar at arm's length in front of thighs","Push hips back, bar slides down thighs","Keep back flat, core tight","Feel stretch in hamstrings (mid-shin)","Drive hips forward to stand, squeeze glutes"],
+      muscles: { 
+        primary: "Hamstrings, Gluteus Maximus", 
+        secondary: "Erector Spinae, Latissimus Dorsi" 
+      },
+      form: [
+        "Stand with feet hip-width, slight knee bend",
+        "Hold bar at arm's length in front of thighs",
+        "Push hips back, bar slides down thighs",
+        "Keep back flat, core tight",
+        "Feel stretch in hamstrings (mid-shin)",
+        "Drive hips forward to stand, squeeze glutes"
+      ],
       breathing: "Inhale going down, exhale driving up",
       tips: "NOT a squat! This is a hip hinge. Feel it in your hamstrings and glutes, not lower back.",
       videoShort: "https://www.youtube.com/embed/jEy_czb3RKA",
-      videoLong: "https://www.youtube.com/watch?v=jEy_czb3RKA"
+      videoFormDemo: "https://www.youtube.com/watch?v=jEy_czb3RKA",
+      videoLong: "https://www.youtube.com/watch?v=jEy_czb3RKA",
+      guideSearch: "romanian-deadlift"
     },
     "Barbell/Dumbbell Lunges": {
       category: "Legs - Functional",
       description: "Walking or stationary lunges building legs and balance.",
-      muscles: { primary: "Quadriceps, Gluteus Maximus", secondary: "Hamstrings, Calves, Core" },
-      form: ["Start standing, weight in hands or on back","Step forward into lunge position","Both knees bent to 90 degrees","Back knee hovers just above ground","Push through front heel to return or step through","Keep torso upright throughout"],
+      muscles: { 
+        primary: "Quadriceps, Gluteus Maximus", 
+        secondary: "Hamstrings, Calves, Core" 
+      },
+      form: [
+        "Start standing, weight in hands or on back",
+        "Step forward into lunge position",
+        "Both knees bent to 90 degrees",
+        "Back knee hovers just above ground",
+        "Push through front heel to return or step through",
+        "Keep torso upright throughout"
+      ],
       breathing: "Inhale on descent, exhale on rise",
       tips: "Control the descent. Don't let front knee collapse inward.",
       videoShort: "https://www.youtube.com/embed/QOVaHwm-Q6U",
-      videoLong: "https://www.youtube.com/watch?v=QOVaHwm-Q6U"
+      videoFormDemo: "https://www.youtube.com/watch?v=QOVaHwm-Q6U",
+      videoLong: "https://www.youtube.com/watch?v=QOVaHwm-Q6U",
+      guideSearch: "dumbbell-lunge"
     },
     "Plank": {
       category: "Core - Stability",
       description: "Fundamental core exercise building overall stability and endurance.",
-      muscles: { primary: "Rectus Abdominis, Transverse Abdominis", secondary: "Obliques, Erector Spinae, Glutes" },
-      form: ["Forearms on ground, elbows under shoulders","Body in straight line from head to heels","Squeeze glutes and core","Don't let hips sag or pike up","Breathe steadily","Hold for prescribed time"],
+      muscles: { 
+        primary: "Rectus Abdominis, Transverse Abdominis", 
+        secondary: "Obliques, Erector Spinae, Glutes" 
+      },
+      form: [
+        "Forearms on ground, elbows under shoulders",
+        "Body in straight line from head to heels",
+        "Squeeze glutes and core",
+        "Don't let hips sag or pike up",
+        "Breathe steadily",
+        "Hold for prescribed time"
+      ],
       breathing: "Steady, controlled breathing throughout hold",
       tips: "Quality over time. Perfect form for 30 seconds beats sloppy form for 60 seconds.",
       videoShort: "https://www.youtube.com/embed/ASdvN_XEl_c",
-      videoLong: "https://www.youtube.com/watch?v=ASdvN_XEl_c"
+      videoFormDemo: "https://www.youtube.com/watch?v=ASdvN_XEl_c",
+      videoLong: "https://www.youtube.com/watch?v=ASdvN_XEl_c",
+      guideSearch: "plank"
     },
     "Dead Bug": {
       category: "Core - Coordination",
       description: "Core exercise teaching proper bracing and coordination.",
-      muscles: { primary: "Transverse Abdominis, Rectus Abdominis", secondary: "Hip Flexors" },
-      form: ["Lie on back, arms straight up, knees at 90 degrees","Press lower back into floor","Extend opposite arm and leg (right arm + left leg)","Return to start, switch sides","Keep lower back pressed to floor throughout","10 reps per side = 1 set"],
+      muscles: { 
+        primary: "Transverse Abdominis, Rectus Abdominis", 
+        secondary: "Hip Flexors" 
+      },
+      form: [
+        "Lie on back, arms straight up, knees at 90 degrees",
+        "Press lower back into floor",
+        "Extend opposite arm and leg (right arm + left leg)",
+        "Return to start, switch sides",
+        "Keep lower back pressed to floor throughout",
+        "10 reps per side = 1 set"
+      ],
       breathing: "Exhale as you extend, inhale returning",
       tips: "This looks easy but challenges core stability. Keep that lower back down!",
       videoShort: "https://www.youtube.com/embed/g_BYB0R-4Ws",
-      videoLong: "https://www.youtube.com/watch?v=g_BYB0R-4Ws"
+      videoFormDemo: "https://www.youtube.com/watch?v=g_BYB0R-4Ws",
+      videoLong: "https://www.youtube.com/watch?v=g_BYB0R-4Ws",
+      guideSearch: "dead-bug"
     },
     "Bicycle Crunches": {
       category: "Core - Obliques",
       description: "Dynamic core movement targeting entire abdominal region.",
-      muscles: { primary: "Rectus Abdominis, Obliques", secondary: "Hip Flexors" },
-      form: ["Lie on back, hands behind head (don't pull on neck)","Lift shoulders and feet off ground","Bring right elbow toward left knee while extending right leg","Switch sides in cycling motion","Keep abs engaged throughout","Focus on twisting torso, not pulling head"],
+      muscles: { 
+        primary: "Rectus Abdominis, Obliques", 
+        secondary: "Hip Flexors" 
+      },
+      form: [
+        "Lie on back, hands behind head (don't pull on neck)",
+        "Lift shoulders and feet off ground",
+        "Bring right elbow toward left knee while extending right leg",
+        "Switch sides in cycling motion",
+        "Keep abs engaged throughout",
+        "Focus on twisting torso, not pulling head"
+      ],
       breathing: "Exhale on each twist",
       tips: "Slow and controlled is better than fast and sloppy. Feel the obliques work.",
       videoShort: "https://www.youtube.com/embed/9FGilxCbdz8",
-      videoLong: "https://www.youtube.com/watch?v=9FGilxCbdz8"
+      videoFormDemo: "https://www.youtube.com/watch?v=9FGilxCbdz8",
+      videoLong: "https://www.youtube.com/watch?v=9FGilxCbdz8",
+      guideSearch: "bicycle-crunch"
     },
     "Barbell Rows": {
       category: "Back - Middle",
       description: "Fundamental back builder targeting lats, rhomboids, and middle back.",
-      muscles: { primary: "Latissimus Dorsi, Rhomboids, Middle Trapezius", secondary: "Posterior Deltoids, Biceps, Erector Spinae" },
-      form: ["Stand with feet hip-width, knees slightly bent","Hinge forward at hips, back straight, core tight","Let bar hang at arm's length","Pull bar to lower chest/upper abs","Lead with elbows, squeeze shoulder blades together","Lower with control, maintain back position"],
+      muscles: { 
+        primary: "Latissimus Dorsi, Rhomboids, Middle Trapezius", 
+        secondary: "Posterior Deltoids, Biceps, Erector Spinae" 
+      },
+      form: [
+        "Stand with feet hip-width, knees slightly bent",
+        "Hinge forward at hips, back straight, core tight",
+        "Let bar hang at arm's length",
+        "Pull bar to lower chest/upper abs",
+        "Lead with elbows, squeeze shoulder blades together",
+        "Lower with control, maintain back position"
+      ],
       breathing: "Exhale on pull, inhale on lower",
       tips: "Don't round your back. Think 'pull elbows back' not 'pull hands up'. Smith machine works great here.",
       videoShort: "https://www.youtube.com/embed/FWJR5Ve8bnQ",
-      videoLong: "https://www.youtube.com/watch?v=FWJR5Ve8bnQ"
+      videoFormDemo: "https://www.youtube.com/watch?v=FWJR5Ve8bnQ",
+      videoLong: "https://www.youtube.com/watch?v=FWJR5Ve8bnQ",
+      guideSearch: "barbell-row"
     },
     "Negative Pull-ups": {
       category: "Back - Progression",
       description: "Eccentric training to build toward full pull-ups by focusing on the lowering phase.",
-      muscles: { primary: "Latissimus Dorsi", secondary: "Biceps, Rhomboids, Rear Delts" },
-      form: ["Jump or step up to top position (chin over bar)","Lower yourself as slowly as possible (aim for 5+ seconds)","Control the descent with your lats, don't just drop","Fully extend arms at bottom","Reset and repeat"],
+      muscles: { 
+        primary: "Latissimus Dorsi", 
+        secondary: "Biceps, Rhomboids, Rear Delts" 
+      },
+      form: [
+        "Jump or step up to top position (chin over bar)",
+        "Lower yourself as slowly as possible (aim for 5+ seconds)",
+        "Control the descent with your lats, don't just drop",
+        "Fully extend arms at bottom",
+        "Reset and repeat"
+      ],
       breathing: "Slow controlled breath throughout descent",
       tips: "CRITICAL for building pull-up strength. Take 5-10 seconds to lower. When you can do 5x5 seconds, you're close to your first pull-up!",
       videoShort: "https://exrx.net/WeightExercises/LatissimusDorsi/BWPullup",
-      videoLong: "https://fitnessdrum.com/negative-pull-ups/"
+      videoFormDemo: "https://exrx.net/WeightExercises/LatissimusDorsi/BWPullup",
+      videoLong: "https://fitnessdrum.com/negative-pull-ups/",
+      guideSearch: "negative-pull-up"
     },
     "Lat Pulldowns": {
       category: "Back - Width",
       description: "Machine exercise mimicking pull-up motion, building lat width.",
-      muscles: { primary: "Latissimus Dorsi", secondary: "Biceps Brachii, Rhomboids, Posterior Deltoids" },
-      form: ["Sit with thighs secured under pad","Grip bar slightly wider than shoulders","Pull bar to upper chest, driving elbows down and back","Squeeze lats at bottom","Control the weight back up","Don't lean back excessively"],
+      muscles: { 
+        primary: "Latissimus Dorsi", 
+        secondary: "Biceps Brachii, Rhomboids, Posterior Deltoids" 
+      },
+      form: [
+        "Sit with thighs secured under pad",
+        "Grip bar slightly wider than shoulders",
+        "Pull bar to upper chest, driving elbows down and back",
+        "Squeeze lats at bottom",
+        "Control the weight back up",
+        "Don't lean back excessively"
+      ],
       breathing: "Exhale on pull down, inhale on return",
       tips: "Great for building pull-up strength. Imagine pulling the bar apart as you pull down.",
       videoShort: "https://www.youtube.com/embed/CAwf7n6Luuc",
-      videoLong: "https://www.youtube.com/watch?v=CAwf7n6Luuc"
+      videoFormDemo: "https://www.youtube.com/watch?v=CAwf7n6Luuc",
+      videoLong: "https://www.youtube.com/watch?v=CAwf7n6Luuc",
+      guideSearch: "lat-pulldown"
     },
     "Barbell/Dumbbell Curls": {
       category: "Biceps",
       description: "Primary bicep builder for arm mass.",
-      muscles: { primary: "Biceps Brachii", secondary: "Brachialis, Brachioradialis" },
-      form: ["Stand with feet hip-width, weight at thighs","Keep elbows pinned to sides","Curl weight up, squeeze biceps at top","Lower with control, full extension at bottom","Don't swing or use momentum"],
+      muscles: { 
+        primary: "Biceps Brachii", 
+        secondary: "Brachialis, Brachioradialis" 
+      },
+      form: [
+        "Stand with feet hip-width, weight at thighs",
+        "Keep elbows pinned to sides",
+        "Curl weight up, squeeze biceps at top",
+        "Lower with control, full extension at bottom",
+        "Don't swing or use momentum"
+      ],
       breathing: "Exhale on curl, inhale on lower",
       tips: "Control the weight - don't let it control you. Squeeze hard at the top.",
       videoShort: "https://www.youtube.com/embed/ykJmrZ5v0Oo",
-      videoLong: "https://www.youtube.com/watch?v=ykJmrZ5v0Oo"
+      videoFormDemo: "https://www.youtube.com/watch?v=ykJmrZ5v0Oo",
+      videoLong: "https://www.youtube.com/watch?v=ykJmrZ5v0Oo",
+      guideSearch: "barbell-curl"
     },
     "Cable Face Pulls": {
       category: "Rear Delts & Upper Back",
       description: "Critical exercise for shoulder health and rear delt development.",
-      muscles: { primary: "Posterior Deltoids, Rhomboids", secondary: "Middle Trapezius, Rotator Cuff" },
-      form: ["Set cable at face height with rope attachment","Pull rope toward face, hands going past ears","Focus on squeezing rear delts and upper back","Elbows high, pull apart the rope at peak","Control the return, maintain tension"],
+      muscles: { 
+        primary: "Posterior Deltoids, Rhomboids", 
+        secondary: "Middle Trapezius, Rotator Cuff" 
+      },
+      form: [
+        "Set cable at face height with rope attachment",
+        "Pull rope toward face, hands going past ears",
+        "Focus on squeezing rear delts and upper back",
+        "Elbows high, pull apart the rope at peak",
+        "Control the return, maintain tension"
+      ],
       breathing: "Exhale on pull, inhale on return",
       tips: "IMPORTANT for shoulder health and posture. Feel it in rear delts, not arms.",
       videoShort: "https://www.youtube.com/embed/rep-qVOkqgk",
-      videoLong: "https://www.youtube.com/watch?v=rep-qVOkqgk"
+      videoFormDemo: "https://www.youtube.com/watch?v=rep-qVOkqgk",
+      videoLong: "https://www.youtube.com/watch?v=rep-qVOkqgk",
+      guideSearch: "face-pull"
     },
     "Hammer Curls": {
       category: "Biceps & Forearms",
       description: "Neutral grip curls hitting biceps and brachialis.",
-      muscles: { primary: "Brachialis, Biceps Brachii", secondary: "Brachioradialis (forearm)" },
-      form: ["Hold DBs at sides, palms facing each other","Curl up keeping palms facing in (hammer grip)","Elbows stay at sides","Squeeze at top, lower with control","Can alternate arms or do both together"],
+      muscles: { 
+        primary: "Brachialis, Biceps Brachii", 
+        secondary: "Brachioradialis (forearm)" 
+      },
+      form: [
+        "Hold DBs at sides, palms facing each other",
+        "Curl up keeping palms facing in (hammer grip)",
+        "Elbows stay at sides",
+        "Squeeze at top, lower with control",
+        "Can alternate arms or do both together"
+      ],
       breathing: "Exhale on curl, inhale on lower",
       tips: "Great for adding arm thickness and forearm strength.",
       videoShort: "https://www.youtube.com/embed/TwD-YGVP4Bk",
-      videoLong: "https://www.youtube.com/watch?v=TwD-YGVP4Bk"
+      videoFormDemo: "https://www.youtube.com/watch?v=TwD-YGVP4Bk",
+      videoLong: "https://www.youtube.com/watch?v=TwD-YGVP4Bk",
+      guideSearch: "hammer-curl"
     },
     "Barbell Bench Press": {
       category: "Chest - Overall",
       description: "The king of chest exercises, building overall chest mass, shoulders, and triceps.",
-      muscles: { primary: "Pectoralis Major (entire chest)", secondary: "Anterior Deltoids, Triceps Brachii" },
-      form: ["Lie flat on bench, eyes under the bar","Feet flat on floor, squeeze shoulder blades together","Grip bar slightly wider than shoulders","Lower bar to mid-chest (nipple line) with control","Touch chest lightly, don't bounce","Press up powerfully, driving through your chest"],
+      muscles: { 
+        primary: "Pectoralis Major (entire chest)", 
+        secondary: "Anterior Deltoids, Triceps Brachii" 
+      },
+      form: [
+        "Lie flat on bench, eyes under the bar",
+        "Feet flat on floor, squeeze shoulder blades together",
+        "Grip bar slightly wider than shoulders",
+        "Lower bar to mid-chest (nipple line) with control",
+        "Touch chest lightly, don't bounce",
+        "Press up powerfully, driving through your chest"
+      ],
       breathing: "Inhale as bar descends, exhale forcefully as you press up",
       tips: "Smith machine is great for safety when training alone. Focus on feeling chest work, not just moving weight.",
       videoShort: "https://www.youtube.com/embed/rT7DgCr-3pg",
-      videoLong: "https://www.youtube.com/watch?v=rT7DgCr-3pg"
+      videoFormDemo: "https://www.youtube.com/watch?v=rT7DgCr-3pg",
+      videoLong: "https://www.youtube.com/watch?v=rT7DgCr-3pg",
+      guideSearch: "barbell-bench-press"
     },
     "Dips": {
       category: "Chest & Triceps",
       description: "Bodyweight exercise that builds tremendous chest and tricep strength.",
-      muscles: { primary: "Lower Pectoralis Major, Triceps Brachii", secondary: "Anterior Deltoids, Rhomboids" },
-      form: ["Grip parallel bars, arms straight, shoulders down","Lean slightly forward for chest emphasis","Lower body by bending elbows until upper arms parallel to ground","Keep elbows at 45-degree angle, not flared wide","Press back up powerfully to starting position","Maintain forward lean throughout"],
+      muscles: { 
+        primary: "Lower Pectoralis Major, Triceps Brachii", 
+        secondary: "Anterior Deltoids, Rhomboids" 
+      },
+      form: [
+        "Grip parallel bars, arms straight, shoulders down",
+        "Lean slightly forward for chest emphasis",
+        "Lower body by bending elbows until upper arms parallel to ground",
+        "Keep elbows at 45-degree angle, not flared wide",
+        "Press back up powerfully to starting position",
+        "Maintain forward lean throughout"
+      ],
       breathing: "Inhale going down, exhale pressing up",
       tips: "Use assisted dip machine or bands if needed. More forward lean = more chest. Upright = more triceps.",
       videoShort: "https://www.youtube.com/embed/2z8JmcrW-As",
-      videoLong: "https://www.youtube.com/watch?v=2z8JmcrW-As"
+      videoFormDemo: "https://www.youtube.com/watch?v=2z8JmcrW-As",
+      videoLong: "https://www.youtube.com/watch?v=2z8JmcrW-As",
+      guideSearch: "dips"
     },
     "Overhead Tricep Extension": {
       category: "Triceps",
       description: "Overhead movement for tricep stretch and growth.",
-      muscles: { primary: "Triceps Brachii (especially long head)", secondary: "Core stabilizers" },
-      form: ["Stand or sit holding weight overhead","Keep elbows close to head, pointing up","Lower weight behind head by bending elbows","Stretch triceps at bottom","Extend arms back to overhead position","Keep upper arms still - only forearms move"],
+      muscles: { 
+        primary: "Triceps Brachii (especially long head)", 
+        secondary: "Core stabilizers" 
+      },
+      form: [
+        "Stand or sit holding weight overhead",
+        "Keep elbows close to head, pointing up",
+        "Lower weight behind head by bending elbows",
+        "Stretch triceps at bottom",
+        "Extend arms back to overhead position",
+        "Keep upper arms still - only forearms move"
+      ],
       breathing: "Inhale lowering, exhale extending",
       tips: "Great for long head of triceps. Keep elbows in tight.",
       videoShort: "https://www.youtube.com/embed/YbX7Wd8jQ-Q",
-      videoLong: "https://www.youtube.com/watch?v=YbX7Wd8jQ-Q"
+      videoFormDemo: "https://www.youtube.com/watch?v=YbX7Wd8jQ-Q",
+      videoLong: "https://www.youtube.com/watch?v=YbX7Wd8jQ-Q",
+      guideSearch: "overhead-tricep-extension"
     },
     "Single Arm Dumbbell Row": {
       category: "Back - Unilateral",
       description: "One arm at a time rowing for balanced back development.",
-      muscles: { primary: "Latissimus Dorsi, Rhomboids", secondary: "Biceps, Posterior Deltoids, Erector Spinae" },
-      form: ["Place knee and hand on bench for support","Other foot on floor, torso parallel to ground","Let DB hang at arm's length","Pull DB to hip, elbow close to body","Squeeze shoulder blade back and down","Lower with control, feel the stretch"],
+      muscles: { 
+        primary: "Latissimus Dorsi, Rhomboids", 
+        secondary: "Biceps, Posterior Deltoids, Erector Spinae" 
+      },
+      form: [
+        "Place knee and hand on bench for support",
+        "Other foot on floor, torso parallel to ground",
+        "Let DB hang at arm's length",
+        "Pull DB to hip, elbow close to body",
+        "Squeeze shoulder blade back and down",
+        "Lower with control, feel the stretch"
+      ],
       breathing: "Exhale on pull, inhale on lower",
       tips: "Great for fixing imbalances. Focus on rowing motion, not bicep curl.",
       videoShort: "https://www.youtube.com/embed/roCP6wCXPqo",
-      videoLong: "https://www.youtube.com/watch?v=roCP6wCXPqo"
+      videoFormDemo: "https://www.youtube.com/watch?v=roCP6wCXPqo",
+      videoLong: "https://www.youtube.com/watch?v=roCP6wCXPqo",
+      guideSearch: "single-arm-dumbbell-row"
     },
     "Dumbbell Pullovers": {
       category: "Back & Chest",
       description: "Unique movement stretching and working lats and chest simultaneously.",
-      muscles: { primary: "Latissimus Dorsi, Serratus Anterior", secondary: "Pectoralis Major, Triceps (long head)" },
-      form: ["Lie perpendicular on bench (upper back only), hips low","Hold one DB with both hands overhead","Lower DB behind head with slight elbow bend","Feel stretch in lats and chest","Pull DB back over chest","Keep hips low throughout"],
+      muscles: { 
+        primary: "Latissimus Dorsi, Serratus Anterior", 
+        secondary: "Pectoralis Major, Triceps (long head)" 
+      },
+      form: [
+        "Lie perpendicular on bench (upper back only), hips low",
+        "Hold one DB with both hands overhead",
+        "Lower DB behind head with slight elbow bend",
+        "Feel stretch in lats and chest",
+        "Pull DB back over chest",
+        "Keep hips low throughout"
+      ],
       breathing: "Inhale as DB goes back, exhale pulling over",
       tips: "Don't go too heavy. Focus on the stretch and contraction in your lats.",
       videoShort: "https://www.youtube.com/embed/-xa-6cQaZKY",
-      videoLong: "https://www.youtube.com/watch?v=-xa-6cQaZKY"
+      videoFormDemo: "https://www.youtube.com/watch?v=-xa-6cQaZKY",
+      videoLong: "https://www.youtube.com/watch?v=-xa-6cQaZKY",
+      guideSearch: "dumbbell-pullover"
     },
     "Barbell Back Squats": {
       category: "Legs - Quad Focus",
       description: "Traditional back squat emphasizing quad development.",
-      muscles: { primary: "Quadriceps", secondary: "Gluteus Maximus, Hamstrings, Core" },
-      form: ["Same as regular squats","Focus on driving knees forward slightly","Maintain upright torso","Full depth if mobility allows"],
+      muscles: { 
+        primary: "Quadriceps", 
+        secondary: "Gluteus Maximus, Hamstrings, Core" 
+      },
+      form: [
+        "Same as regular squats",
+        "Focus on driving knees forward slightly",
+        "Maintain upright torso",
+        "Full depth if mobility allows"
+      ],
       breathing: "Breath and brace before descending",
       tips: "Don't let knees cave inward. Push them out.",
       videoShort: "https://www.youtube.com/embed/ultWZbUMPL8",
-      videoLong: "https://www.youtube.com/watch?v=vmNPOjaGrVE"
+      videoFormDemo: "https://www.youtube.com/watch?v=ultWZbUMPL8",
+      videoLong: "https://www.youtube.com/watch?v=vmNPOjaGrVE",
+      guideSearch: "barbell-squat"
     },
     "Bulgarian Split Squats": {
       category: "Legs - Unilateral",
       description: "Single leg squat with rear foot elevated, incredible for leg development.",
-      muscles: { primary: "Quadriceps, Gluteus Maximus", secondary: "Hamstrings, Core (for balance)" },
-      form: ["Rear foot elevated on bench behind you","Front foot far enough forward for balance","Lower straight down until front thigh parallel","Keep torso upright, front knee tracks over toes","Drive through front heel to stand","All work in front leg"],
+      muscles: { 
+        primary: "Quadriceps, Gluteus Maximus", 
+        secondary: "Hamstrings, Core (for balance)" 
+      },
+      form: [
+        "Rear foot elevated on bench behind you",
+        "Front foot far enough forward for balance",
+        "Lower straight down until front thigh parallel",
+        "Keep torso upright, front knee tracks over toes",
+        "Drive through front heel to stand",
+        "All work in front leg"
+      ],
       breathing: "Inhale down, exhale up",
       tips: "These are HARD. Start with bodyweight. Great for glute development and fixing imbalances.",
       videoShort: "https://www.youtube.com/embed/2C-uNgKwPLE",
-      videoLong: "https://www.youtube.com/watch?v=2C-uNgKwPLE"
+      videoFormDemo: "https://www.youtube.com/watch?v=2C-uNgKwPLE",
+      videoLong: "https://www.youtube.com/watch?v=2C-uNgKwPLE",
+      guideSearch: "bulgarian-split-squat"
     },
     "Hanging Knee Raises": {
       category: "Core - Lower Abs",
       description: "Hanging exercise building lower ab strength.",
-      muscles: { primary: "Lower Rectus Abdominis", secondary: "Hip Flexors, Obliques" },
-      form: ["Hang from pull-up bar with straight arms","Engage core, don't swing","Bend knees and raise them toward chest","Lift knees as high as possible","Lower with control, no swinging","Keep shoulders engaged (don't hang passively)"],
+      muscles: { 
+        primary: "Lower Rectus Abdominis", 
+        secondary: "Hip Flexors, Obliques" 
+      },
+      form: [
+        "Hang from pull-up bar with straight arms",
+        "Engage core, don't swing",
+        "Bend knees and raise them toward chest",
+        "Lift knees as high as possible",
+        "Lower with control, no swinging",
+        "Keep shoulders engaged (don't hang passively)"
+      ],
       breathing: "Exhale raising knees, inhale lowering",
       tips: "If you can't do these yet, do lying leg raises instead. Progress to these!",
       videoShort: "https://www.youtube.com/embed/hdng3Nm1x_E",
-      videoLong: "https://www.youtube.com/watch?v=hdng3Nm1x_E"
+      videoFormDemo: "https://www.youtube.com/watch?v=hdng3Nm1x_E",
+      videoLong: "https://www.youtube.com/watch?v=hdng3Nm1x_E",
+      guideSearch: "hanging-knee-raise"
     },
     "Russian Twists with Dumbbell": {
       category: "Core - Obliques",
       description: "Seated rotational movement for oblique development.",
-      muscles: { primary: "Obliques (Internal & External)", secondary: "Rectus Abdominis, Hip Flexors" },
-      form: ["Sit on floor, lean back slightly, feet elevated","Hold DB at chest with both hands","Rotate torso to tap DB on floor beside hip","Twist to other side and tap","Keep core engaged, control the rotation","20 total touches = 1 set"],
+      muscles: { 
+        primary: "Obliques (Internal & External)", 
+        secondary: "Rectus Abdominis, Hip Flexors" 
+      },
+      form: [
+        "Sit on floor, lean back slightly, feet elevated",
+        "Hold DB at chest with both hands",
+        "Rotate torso to tap DB on floor beside hip",
+        "Twist to other side and tap",
+        "Keep core engaged, control the rotation",
+        "20 total touches = 1 set"
+      ],
       breathing: "Exhale on each twist",
       tips: "Focus on rotating your torso, not just moving your arms.",
       videoShort: "https://www.youtube.com/embed/wkD8rjkodUI",
-      videoLong: "https://www.youtube.com/watch?v=wkD8rjkodUI"
+      videoFormDemo: "https://www.youtube.com/watch?v=wkD8rjkodUI",
+      videoLong: "https://www.youtube.com/watch?v=wkD8rjkodUI",
+      guideSearch: "russian-twist"
     },
     "Dumbbell/Barbell Clean & Press": {
       category: "Full Body Power",
       description: "Olympic-style movement building explosive power and total body strength.",
-      muscles: { primary: "Shoulders, Quadriceps, Glutes", secondary: "Upper Back, Core, Triceps, Hamstrings" },
-      form: ["Start with weight at floor or hang position","Explosive pull, shrug shoulders high","Drop under weight catching at shoulders","Stand up from catch position","Press weight overhead to complete the movement","Lower with control"],
+      muscles: { 
+        primary: "Shoulders, Quadriceps, Glutes", 
+        secondary: "Upper Back, Core, Triceps, Hamstrings" 
+      },
+      form: [
+        "Start with weight at floor or hang position",
+        "Explosive pull, shrug shoulders high",
+        "Drop under weight catching at shoulders",
+        "Stand up from catch position",
+        "Press weight overhead to complete the movement",
+        "Lower with control"
+      ],
       breathing: "Big breath before pull, exhale on press",
       tips: "This is technical. Use light weight to learn the movement. Very effective for power!",
       videoShort: "https://www.youtube.com/embed/KwYJTpQ_x5A",
-      videoLong: "https://www.youtube.com/watch?v=KwYJTpQ_x5A"
+      videoFormDemo: "https://www.youtube.com/watch?v=KwYJTpQ_x5A",
+      videoLong: "https://www.youtube.com/watch?v=KwYJTpQ_x5A",
+      guideSearch: "clean-and-press"
     },
     "Barbell Front Squats": {
       category: "Legs - Quad & Core",
       description: "Squat with bar in front, emphasizing quads and core stability.",
-      muscles: { primary: "Quadriceps", secondary: "Core, Upper Back, Gluteus Maximus" },
-      form: ["Bar rests on front delts/collarbone, elbows high","Cross arms or clean grip (elbows up!)","Torso stays very upright","Squat deep, elbows stay high","Drive straight up"],
+      muscles: { 
+        primary: "Quadriceps", 
+        secondary: "Core, Upper Back, Gluteus Maximus" 
+      },
+      form: [
+        "Bar rests on front delts/collarbone, elbows high",
+        "Cross arms or clean grip (elbows up!)",
+        "Torso stays very upright",
+        "Squat deep, elbows stay high",
+        "Drive straight up"
+      ],
       breathing: "Brace hard before descending",
       tips: "Easier on lower back than back squats. Keep elbows UP - that's key.",
       videoShort: "https://www.youtube.com/embed/uYumuL_G_V0",
-      videoLong: "https://www.youtube.com/watch?v=uYumuL_G_V0"
+      videoFormDemo: "https://www.youtube.com/watch?v=uYumuL_G_V0",
+      videoLong: "https://www.youtube.com/watch?v=uYumuL_G_V0",
+      guideSearch: "barbell-front-squat"
     },
     "Pull-up Practice": {
       category: "Back - Skill Work",
       description: "Dedicated practice session for developing pull-up strength and technique.",
-      muscles: { primary: "Latissimus Dorsi", secondary: "Biceps, Upper Back" },
-      form: ["Mix of negatives, assisted, and attempts at full pull-ups","Focus on form and lat engagement","Rest fully between attempts","Track progress (can you hold top longer? Control descent better?)"],
+      muscles: { 
+        primary: "Latissimus Dorsi", 
+        secondary: "Biceps, Upper Back" 
+      },
+      form: [
+        "Mix of negatives, assisted, and attempts at full pull-ups",
+        "Focus on form and lat engagement",
+        "Rest fully between attempts",
+        "Track progress (can you hold top longer? Control descent better?)"
+      ],
       breathing: "Controlled throughout each variation",
       tips: "Every session makes you stronger. Film yourself to check form. Celebrate small wins!",
       videoShort: "https://www.youtube.com/embed/mRznU6pzez0",
-      videoLong: "https://www.youtube.com/watch?v=mRznU6pzez0"
+      videoFormDemo: "https://www.youtube.com/watch?v=mRznU6pzez0",
+      videoLong: "https://www.youtube.com/watch?v=mRznU6pzez0",
+      guideSearch: "pull-up"
     },
     "Walking Lunges": {
       category: "Legs - Dynamic",
       description: "Continuous forward lunges covering distance.",
-      muscles: { primary: "Quadriceps, Gluteus Maximus", secondary: "Hamstrings, Calves, Core" },
-      form: ["Step forward into lunge","Drive through front leg to step into next lunge","Maintain upright posture throughout","Controlled rhythm, no bouncing"],
+      muscles: { 
+        primary: "Quadriceps, Gluteus Maximus", 
+        secondary: "Hamstrings, Calves, Core" 
+      },
+      form: [
+        "Step forward into lunge",
+        "Drive through front leg to step into next lunge",
+        "Maintain upright posture throughout",
+        "Controlled rhythm, no bouncing"
+      ],
       breathing: "Rhythmic breathing with movement",
       tips: "Great for conditioning. Focus on quality over speed.",
       videoShort: "https://www.youtube.com/embed/L8fvypPrzzs",
-      videoLong: "https://www.youtube.com/watch?v=L8fvypPrzzs"
+      videoFormDemo: "https://www.youtube.com/watch?v=L8fvypPrzzs",
+      videoLong: "https://www.youtube.com/watch?v=L8fvypPrzzs",
+      guideSearch: "walking-lunge"
     },
     "Weighted Dips": {
       category: "Chest & Triceps - Advanced",
       description: "Dips with added weight for advanced strength building.",
-      muscles: { primary: "Lower Pectoralis Major, Triceps Brachii", secondary: "Anterior Deltoids, Core" },
-      form: ["Use dip belt with weight plate or hold dumbbell between feet","Same form as regular dips","Controlled descent, powerful press up","Don't add weight until you can do 12+ bodyweight dips cleanly"],
+      muscles: { 
+        primary: "Lower Pectoralis Major, Triceps Brachii", 
+        secondary: "Anterior Deltoids, Core" 
+      },
+      form: [
+        "Use dip belt with weight plate or hold dumbbell between feet",
+        "Same form as regular dips",
+        "Controlled descent, powerful press up",
+        "Don't add weight until you can do 12+ bodyweight dips cleanly"
+      ],
       breathing: "Inhale down, exhale up with power",
       tips: "Start with just 5-10 lbs added. Progress slowly - this exercise can stress shoulders if rushed.",
       videoShort: "https://www.youtube.com/embed/2z8JmcrW-As",
-      videoLong: "https://www.youtube.com/watch?v=xUB6G-dm7DQ"
+      videoFormDemo: "https://www.youtube.com/watch?v=xUB6G-dm7DQ",
+      videoLong: "https://www.youtube.com/watch?v=xUB6G-dm7DQ",
+      guideSearch: "weighted-dips"
     },
     "Incline Dumbbell Fly": {
       category: "Chest - Upper",
       description: "Isolation movement for upper chest development.",
-      muscles: { primary: "Upper Pectoralis Major", secondary: "Anterior Deltoids" },
-      form: ["Lie on incline bench with DBs above chest","Slight bend in elbows maintained throughout","Lower DBs out to sides in wide arc","Feel stretch in chest","Squeeze DBs back together using chest","Don't let arms drop too far below shoulders"],
+      muscles: { 
+        primary: "Upper Pectoralis Major", 
+        secondary: "Anterior Deltoids" 
+      },
+      form: [
+        "Lie on incline bench with DBs above chest",
+        "Slight bend in elbows maintained throughout",
+        "Lower DBs out to sides in wide arc",
+        "Feel stretch in chest",
+        "Squeeze DBs back together using chest",
+        "Don't let arms drop too far below shoulders"
+      ],
       breathing: "Inhale lowering, exhale squeezing together",
       tips: "Not a press - it's a 'hugging' motion. Feel the chest stretch and squeeze.",
       videoShort: "https://exrx.net/WeightExercises/PectoralClavicular/DBInclineFly",
-      videoLong: "https://weighttraining.guide/exercises/incline-dumbbell-fly/"
+      videoFormDemo: "https://exrx.net/WeightExercises/PectoralClavicular/DBInclineFly",
+      videoLong: "https://weighttraining.guide/exercises/incline-dumbbell-fly/",
+      guideSearch: "incline-dumbbell-fly"
     },
     "Close-Grip Barbell Press": {
       category: "Triceps & Chest",
       description: "Bench press variation emphasizing triceps with hands closer together.",
-      muscles: { primary: "Triceps Brachii", secondary: "Inner Pectoralis Major, Anterior Deltoids" },
-      form: ["Lie on flat bench, grip bar shoulder-width or slightly narrower","Lower bar to lower chest with elbows close to sides","Keep elbows tucked, not flared","Press up focusing on tricep contraction","Don't go too narrow (wrist pain risk)"],
+      muscles: { 
+        primary: "Triceps Brachii", 
+        secondary: "Inner Pectoralis Major, Anterior Deltoids" 
+      },
+      form: [
+        "Lie on flat bench, grip bar shoulder-width or slightly narrower",
+        "Lower bar to lower chest with elbows close to sides",
+        "Keep elbows tucked, not flared",
+        "Press up focusing on tricep contraction",
+        "Don't go too narrow (wrist pain risk)"
+      ],
       breathing: "Inhale lowering, exhale pressing",
       tips: "Great for tricep strength. If wrists hurt, widen grip slightly.",
       videoShort: "https://www.youtube.com/embed/nEF0bv2FW94",
-      videoLong: "https://www.youtube.com/watch?v=nEF0bv2FW94"
+      videoFormDemo: "https://www.youtube.com/watch?v=nEF0bv2FW94",
+      videoLong: "https://www.youtube.com/watch?v=nEF0bv2FW94",
+      guideSearch: "close-grip-bench-press"
     },
     "Cable Tricep Extensions": {
       category: "Triceps",
       description: "Cable-based tricep isolation for constant tension.",
-      muscles: { primary: "Triceps Brachii", secondary: "Forearms" },
-      form: ["Various grip options: rope, bar, single handle","Rope allows elbows to separate at bottom for extra squeeze","Same principles as pushdowns","Full range of motion"],
+      muscles: { 
+        primary: "Triceps Brachii", 
+        secondary: "Forearms" 
+      },
+      form: [
+        "Various grip options: rope, bar, single handle",
+        "Rope allows elbows to separate at bottom for extra squeeze",
+        "Same principles as pushdowns",
+        "Full range of motion"
+      ],
       breathing: "Exhale on extension, inhale on return",
       tips: "Rope attachment lets you pull apart at bottom for extra contraction.",
       videoShort: "https://www.youtube.com/embed/2-LAMcpzODU",
-      videoLong: "https://www.youtube.com/watch?v=kiuVA0gs3EI"
+      videoFormDemo: "https://www.youtube.com/watch?v=kiuVA0gs3EI",
+      videoLong: "https://www.youtube.com/watch?v=kiuVA0gs3EI",
+      guideSearch: "cable-tricep-extension"
     },
     "Strict Pull-ups": {
       category: "Back - Advanced",
       description: "Full pull-ups with perfect form, no momentum or kipping.",
-      muscles: { primary: "Latissimus Dorsi, Teres Major", secondary: "Biceps, Middle Trapezius, Rhomboids" },
-      form: ["Dead hang start, arms fully extended","Pull smoothly without kicking or swinging","Chest to bar if possible","Pause at top","Lower with complete control to dead hang","Each rep starts from dead hang"],
+      muscles: { 
+        primary: "Latissimus Dorsi, Teres Major", 
+        secondary: "Biceps, Middle Trapezius, Rhomboids" 
+      },
+      form: [
+        "Dead hang start, arms fully extended",
+        "Pull smoothly without kicking or swinging",
+        "Chest to bar if possible",
+        "Pause at top",
+        "Lower with complete control to dead hang",
+        "Each rep starts from dead hang"
+      ],
       breathing: "Exhale on pull, inhale at top and during lower",
       tips: "Quality over quantity. One perfect rep beats three sloppy ones. THIS IS YOUR GOAL!",
       videoShort: "https://www.youtube.com/embed/eGo4IYlbE5g",
-      videoLong: "https://www.youtube.com/watch?v=HuJJsTE8_vA"
+      videoFormDemo: "https://www.youtube.com/watch?v=HuJJsTE8_vA",
+      videoLong: "https://www.youtube.com/watch?v=HuJJsTE8_vA",
+      guideSearch: "pull-up"
     },
     "Wide Grip Lat Pulldown": {
       category: "Back - Width Emphasis",
       description: "Lat pulldown with wider grip to target outer lats.",
-      muscles: { primary: "Latissimus Dorsi (outer fibers)", secondary: "Teres Major, Rhomboids" },
-      form: ["Grip bar 6-8 inches wider than shoulders","Pull to upper chest with elbows wide","Focus on lat stretch at top","Squeeze lats at bottom, pause briefly","Control the return"],
+      muscles: { 
+        primary: "Latissimus Dorsi (outer fibers)", 
+        secondary: "Teres Major, Rhomboids" 
+      },
+      form: [
+        "Grip bar 6-8 inches wider than shoulders",
+        "Pull to upper chest with elbows wide",
+        "Focus on lat stretch at top",
+        "Squeeze lats at bottom, pause briefly",
+        "Control the return"
+      ],
       breathing: "Exhale pulling, inhale releasing",
       tips: "Wider grip = more lat emphasis, less bicep. Don't go so wide you lose range of motion.",
       videoShort: "https://www.youtube.com/embed/CAwf7n6Luuc",
-      videoLong: "https://www.youtube.com/watch?v=X5-G2TKXVZc"
+      videoFormDemo: "https://www.youtube.com/watch?v=X5-G2TKXVZc",
+      videoLong: "https://www.youtube.com/watch?v=X5-G2TKXVZc",
+      guideSearch: "wide-grip-lat-pulldown"
     },
     "Dumbbell Shrugs": {
       category: "Traps",
       description: "Isolation exercise for building the trapezius muscles.",
-      muscles: { primary: "Upper Trapezius", secondary: "Levator Scapulae" },
-      form: ["Stand holding DBs at sides, arms straight","Shrug shoulders straight up toward ears","Hold peak contraction for 1 second","Lower slowly, feel the stretch","Don't roll shoulders - straight up and down"],
+      muscles: { 
+        primary: "Upper Trapezius", 
+        secondary: "Levator Scapulae" 
+      },
+      form: [
+        "Stand holding DBs at sides, arms straight",
+        "Shrug shoulders straight up toward ears",
+        "Hold peak contraction for 1 second",
+        "Lower slowly, feel the stretch",
+        "Don't roll shoulders - straight up and down"
+      ],
       breathing: "Exhale on shrug up, inhale on lower",
       tips: "Heavy weight works here. Control it, don't bounce.",
       videoShort: "https://www.youtube.com/embed/cJRVVxmytaM",
-      videoLong: "https://www.youtube.com/watch?v=cJRVVxmytaM"
+      videoFormDemo: "https://www.youtube.com/watch?v=cJRVVxmytaM",
+      videoLong: "https://www.youtube.com/watch?v=cJRVVxmytaM",
+      guideSearch: "dumbbell-shrug"
     },
     "Barbell/EZ-Bar Curls": {
       category: "Biceps",
       description: "Bicep curls with EZ-bar to reduce wrist strain.",
-      muscles: { primary: "Biceps Brachii", secondary: "Brachialis, Forearms" },
-      form: ["Same as barbell curls","EZ-bar angled grip is easier on wrists","Full range of motion","Strict form, no swinging"],
+      muscles: { 
+        primary: "Biceps Brachii", 
+        secondary: "Brachialis, Forearms" 
+      },
+      form: [
+        "Same as barbell curls",
+        "EZ-bar angled grip is easier on wrists",
+        "Full range of motion",
+        "Strict form, no swinging"
+      ],
       breathing: "Exhale on curl up, inhale lowering",
       tips: "EZ-bar often more comfortable than straight bar.",
       videoShort: "https://www.youtube.com/embed/kwG2ipFRgfo",
-      videoLong: "https://www.youtube.com/watch?v=kwG2ipFRgfo"
+      videoFormDemo: "https://www.youtube.com/watch?v=kwG2ipFRgfo",
+      videoLong: "https://www.youtube.com/watch?v=kwG2ipFRgfo",
+      guideSearch: "ez-bar-curl"
     },
     "Concentration Curls": {
       category: "Biceps - Isolation",
       description: "Seated single-arm curl for peak bicep contraction.",
-      muscles: { primary: "Biceps Brachii (peak)", secondary: "Brachialis" },
-      form: ["Sit on bench, elbow braced against inner thigh","Let DB hang at arm's length","Curl up to shoulder, rotating pinky up slightly","Squeeze bicep hard at top","Lower slowly, full stretch at bottom"],
+      muscles: { 
+        primary: "Biceps Brachii (peak)", 
+        secondary: "Brachialis" 
+      },
+      form: [
+        "Sit on bench, elbow braced against inner thigh",
+        "Let DB hang at arm's length",
+        "Curl up to shoulder, rotating pinky up slightly",
+        "Squeeze bicep hard at top",
+        "Lower slowly, full stretch at bottom"
+      ],
       breathing: "Exhale on curl, inhale on lower",
       tips: "Slow and controlled. Really focus on the squeeze at the top.",
       videoShort: "https://exrx.net/WeightExercises/Brachialis/DBConcentrationCurl",
-      videoLong: "https://weighttraining.guide/exercises/concentration-curl/"
+      videoFormDemo: "https://exrx.net/WeightExercises/Brachialis/DBConcentrationCurl",
+      videoLong: "https://weighttraining.guide/exercises/concentration-curl/",
+      guideSearch: "concentration-curl"
     },
     "Hanging Leg Raises": {
       category: "Core - Lower Abs Advanced",
       description: "Advanced hanging ab exercise with straight legs.",
-      muscles: { primary: "Lower Rectus Abdominis", secondary: "Hip Flexors, Grip Strength" },
-      form: ["Hang from bar, arms straight","Keep legs straight","Raise legs to parallel (or higher)","Lower with control, no swinging","Minimal knee bend throughout"],
+      muscles: { 
+        primary: "Lower Rectus Abdominis", 
+        secondary: "Hip Flexors, Grip Strength" 
+      },
+      form: [
+        "Hang from bar, arms straight",
+        "Keep legs straight",
+        "Raise legs to parallel (or higher)",
+        "Lower with control, no swinging",
+        "Minimal knee bend throughout"
+      ],
       breathing: "Exhale raising, inhale lowering",
       tips: "ADVANCED. Master knee raises first. These are brutal but effective.",
       videoShort: "https://www.youtube.com/embed/Pr1ieGZ5atk",
-      videoLong: "https://www.youtube.com/watch?v=Pr1ieGZ5atk"
+      videoFormDemo: "https://www.youtube.com/watch?v=Pr1ieGZ5atk",
+      videoLong: "https://www.youtube.com/watch?v=Pr1ieGZ5atk",
+      guideSearch: "hanging-leg-raise"
     },
     "Cable Woodchoppers": {
       category: "Core - Rotational Power",
       description: "Dynamic rotational exercise building oblique strength and power.",
-      muscles: { primary: "Obliques", secondary: "Transverse Abdominis, Shoulders" },
-      form: ["Set cable high, stand sideways to machine","Pull cable diagonally across body from high to low","Rotate torso and pivot feet","Like chopping wood","Control the return","Do all reps one side, then switch"],
+      muscles: { 
+        primary: "Obliques", 
+        secondary: "Transverse Abdominis, Shoulders" 
+      },
+      form: [
+        "Set cable high, stand sideways to machine",
+        "Pull cable diagonally across body from high to low",
+        "Rotate torso and pivot feet",
+        "Like chopping wood",
+        "Control the return",
+        "Do all reps one side, then switch"
+      ],
       breathing: "Exhale on chop down, inhale on return",
       tips: "Let the rotation come from your core, not just your arms.",
       videoShort: "https://www.youtube.com/embed/pAplQXk3dkU",
-      videoLong: "https://www.youtube.com/watch?v=pAplQXk3dkU"
+      videoFormDemo: "https://www.youtube.com/watch?v=pAplQXk3dkU",
+      videoLong: "https://www.youtube.com/watch?v=pAplQXk3dkU",
+      guideSearch: "cable-woodchopper"
     },
     "Weighted Decline Sit-ups": {
       category: "Core - Upper Abs",
       description: "Decline sit-ups with added weight for advanced ab development.",
-      muscles: { primary: "Rectus Abdominis (upper region)", secondary: "Hip Flexors, Obliques" },
-      form: ["Secure feet on decline bench","Hold weight plate at chest","Curl up using abs, not hip flexors","Come up to about 45 degrees (don't sit all the way up)","Lower with control","Keep tension on abs throughout"],
+      muscles: { 
+        primary: "Rectus Abdominis (upper region)", 
+        secondary: "Hip Flexors, Obliques" 
+      },
+      form: [
+        "Secure feet on decline bench",
+        "Hold weight plate at chest",
+        "Curl up using abs, not hip flexors",
+        "Come up to about 45 degrees (don't sit all the way up)",
+        "Lower with control",
+        "Keep tension on abs throughout"
+      ],
       breathing: "Exhale curling up, inhale lowering",
       tips: "The decline makes it harder. Focus on abs doing the work, not momentum.",
       videoShort: "https://exrx.net/WeightExercises/HipFlexors/WtDeclineSitup",
-      videoLong: "https://exrx.net/WeightExercises/RectusAbdominis/WtSitUp"
+      videoFormDemo: "https://exrx.net/WeightExercises/RectusAbdominis/WtSitUp",
+      videoLong: "https://exrx.net/WeightExercises/RectusAbdominis/WtSitUp",
+      guideSearch: "decline-sit-up"
     },
     "Plank with Shoulder Taps": {
       category: "Core - Dynamic Stability",
       description: "Advanced plank variation adding anti-rotation challenge.",
-      muscles: { primary: "Rectus Abdominis, Obliques (anti-rotation)", secondary: "Shoulders, Glutes" },
-      form: ["Start in high plank (hands on ground, arms straight)","Body in straight line","Tap right hand to left shoulder, return","Tap left hand to right shoulder, return","Keep hips square - minimal rotation","20 total taps = 1 set"],
+      muscles: { 
+        primary: "Rectus Abdominis, Obliques (anti-rotation)", 
+        secondary: "Shoulders, Glutes" 
+      },
+      form: [
+        "Start in high plank (hands on ground, arms straight)",
+        "Body in straight line",
+        "Tap right hand to left shoulder, return",
+        "Tap left hand to right shoulder, return",
+        "Keep hips square - minimal rotation",
+        "20 total taps = 1 set"
+      ],
       breathing: "Steady breathing, brace core on each tap",
       tips: "The goal is NO hip rotation. Move slowly and controlled.",
       videoShort: "https://exrx.net/Plyometrics/ShoulderTapPushUp",
-      videoLong: "https://spotebi.com/exercise-guide/plank-shoulder-taps/"
+      videoFormDemo: "https://exrx.net/Plyometrics/ShoulderTapPushUp",
+      videoLong: "https://spotebi.com/exercise-guide/plank-shoulder-taps/",
+      guideSearch: "plank-shoulder-tap"
     },
     "Dumbbell Shoulder Circuit": {
       category: "Shoulders - All Heads",
       description: "Circuit hitting all three deltoid heads: front, side, and rear raises.",
-      muscles: { primary: "All Three Deltoid Heads (Anterior, Lateral, Posterior)", secondary: "Upper Trapezius, Rotator Cuff" },
-      form: ["Front Raises: Raise DBs forward to shoulder height","Side Raises: Raise DBs out to sides to shoulder height","Rear Raises: Bent over, raise DBs out to sides","12 reps each movement, minimal rest between","One complete circuit = 1 set"],
+      muscles: { 
+        primary: "All Three Deltoid Heads (Anterior, Lateral, Posterior)", 
+        secondary: "Upper Trapezius, Rotator Cuff" 
+      },
+      form: [
+        "Front Raises: Raise DBs forward to shoulder height",
+        "Side Raises: Raise DBs out to sides to shoulder height",
+        "Rear Raises: Bent over, raise DBs out to sides",
+        "12 reps each movement, minimal rest between",
+        "One complete circuit = 1 set"
+      ],
       breathing: "Controlled breathing throughout circuit",
       tips: "Use light weight. Focus on form and feeling each delt head work. This will burn!",
       videoShort: "https://www.youtube.com/embed/q5sNYB1Q6aM",
-      videoLong: "https://www.youtube.com/watch?v=q5sNYB1Q6aM"
+      videoFormDemo: "https://www.youtube.com/watch?v=q5sNYB1Q6aM",
+      videoLong: "https://www.youtube.com/watch?v=q5sNYB1Q6aM",
+      guideSearch: "shoulder-circuit"
     },
     "Barbell Curl 21s": {
       category: "Biceps - Advanced",
       description: "High-intensity bicep protocol: 7 bottom half + 7 top half + 7 full range.",
-      muscles: { primary: "Biceps Brachii (all parts)", secondary: "Brachialis, Forearms" },
-      form: ["First 7: Curl from bottom to mid-point only","Next 7: From mid-point to top only","Final 7: Full range of motion curls","No rest between segments","Use lighter weight than normal curls"],
+      muscles: { 
+        primary: "Biceps Brachii (all parts)", 
+        secondary: "Brachialis, Forearms" 
+      },
+      form: [
+        "First 7: Curl from bottom to mid-point only",
+        "Next 7: From mid-point to top only",
+        "Final 7: Full range of motion curls",
+        "No rest between segments",
+        "Use lighter weight than normal curls"
+      ],
       breathing: "Steady breathing throughout all 21 reps",
       tips: "These BURN! Use about 60% of your normal curl weight. Great finisher.",
       videoShort: "https://chunkfitness.com/exercises/arm-exercises/bicep-exercises/3-part-curls-21s-barbell",
-      videoLong: "https://superhumanfitness.com/exercises/arms/biceps/bicep-21s"
+      videoFormDemo: "https://chunkfitness.com/exercises/arm-exercises/bicep-exercises/3-part-curls-21s-barbell",
+      videoLong: "https://superhumanfitness.com/exercises/arms/biceps/bicep-21s",
+      guideSearch: "barbell-curl-21s"
     },
     "Tricep Rope Pushdowns": {
       category: "Triceps",
       description: "Cable pushdown with rope for maximum tricep contraction.",
-      muscles: { primary: "Triceps Brachii (all heads)", secondary: "Forearms" },
-      form: ["Use rope attachment on high cable","Push down and apart at bottom","Pull rope ends apart and back by hips","Maximum tricep squeeze at bottom","Control return to top"],
+      muscles: { 
+        primary: "Triceps Brachii (all heads)", 
+        secondary: "Forearms" 
+      },
+      form: [
+        "Use rope attachment on high cable",
+        "Push down and apart at bottom",
+        "Pull rope ends apart and back by hips",
+        "Maximum tricep squeeze at bottom",
+        "Control return to top"
+      ],
       breathing: "Exhale pushing down, inhale returning",
       tips: "The 'pull apart' at bottom really hits the triceps. Turn wrists out.",
       videoShort: "https://www.youtube.com/embed/kiuVA0gs3EI",
-      videoLong: "https://www.youtube.com/watch?v=kiuVA0gs3EI"
+      videoFormDemo: "https://www.youtube.com/watch?v=kiuVA0gs3EI",
+      videoLong: "https://www.youtube.com/watch?v=kiuVA0gs3EI",
+      guideSearch: "tricep-rope-pushdown"
     },
     "Barbell Military Press": {
       category: "Shoulders",
       description: "Standing or seated overhead press emphasizing front and middle deltoids.",
-      muscles: { primary: "Anterior & Lateral Deltoids", secondary: "Triceps, Upper Trapezius" },
-      form: ["Start with bar at upper chest/collarbone","Stand with feet hip-width, core braced","Press bar straight up, slightly back over head","Lock out arms overhead without hyperextending back","Lower with control back to start","Keep core tight throughout - don't arch back"],
+      muscles: { 
+        primary: "Anterior & Lateral Deltoids", 
+        secondary: "Triceps, Upper Trapezius" 
+      },
+      form: [
+        "Start with bar at upper chest/collarbone",
+        "Stand with feet hip-width, core braced",
+        "Press bar straight up, slightly back over head",
+        "Lock out arms overhead without hyperextending back",
+        "Lower with control back to start",
+        "Keep core tight throughout - don't arch back"
+      ],
       breathing: "Exhale on press, inhale on descent",
       tips: "This is harder than seated press. If your form breaks down, switch to seated version.",
       videoShort: "https://www.youtube.com/embed/2yjwXTZQDDI",
-      videoLong: "https://www.youtube.com/watch?v=2yjwXTZQDDI"
+      videoFormDemo: "https://www.youtube.com/watch?v=2yjwXTZQDDI",
+      videoLong: "https://www.youtube.com/watch?v=2yjwXTZQDDI",
+      guideSearch: "military-press"
     },
     "Pull-ups": {
       category: "Back - Overall",
       description: "The ultimate back and bicep builder, developing width and strength.",
-      muscles: { primary: "Latissimus Dorsi", secondary: "Biceps, Rhomboids, Rear Delts" },
-      form: ["Grip bar slightly wider than shoulders, palms away","Hang with arms fully extended","Pull body up by driving elbows down and back","Get chin over bar","Lower with control to full extension","Avoid kipping or swinging"],
+      muscles: { 
+        primary: "Latissimus Dorsi", 
+        secondary: "Biceps, Rhomboids, Rear Delts" 
+      },
+      form: [
+        "Grip bar slightly wider than shoulders, palms away",
+        "Hang with arms fully extended",
+        "Pull body up by driving elbows down and back",
+        "Get chin over bar",
+        "Lower with control to full extension",
+        "Avoid kipping or swinging"
+      ],
       breathing: "Exhale pulling up, inhale lowering",
       tips: "YOUR GOAL EXERCISE! Start with negatives or assisted. Focus on lat engagement, not arm pulling.",
       videoShort: "https://www.youtube.com/embed/eGo4IYlbE5g",
-      videoLong: "https://www.youtube.com/watch?v=eGo4IYlbE5g"
+      videoFormDemo: "https://www.youtube.com/watch?v=eGo4IYlbE5g",
+      videoLong: "https://www.youtube.com/watch?v=eGo4IYlbE5g",
+      guideSearch: "pull-up"
     }
-  };
+  }; // END OF EXERCISES DATABASE
 
+  // CATEGORY GROUPING: Organize exercises by their category for display
   const categories = {};
   Object.keys(exercises).forEach(name => {
-    const cat = exercises[name].category;
-    if (!categories[cat]) categories[cat] = [];
-    categories[cat].push(name);
+    const cat = exercises[name].category; // Get the category name
+    if (!categories[cat]) categories[cat] = []; // Create new category array if doesn't exist
+    categories[cat].push(name); // Add exercise name to its category
   });
 
+  // START HTML BUILD: Create the page structure
   let html = `<div class="p-4 max-w-4xl mx-auto">
+    <!-- HEADER SECTION: Title and home button -->
     <div class="bg-indigo-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
       <h2 class="text-2xl font-bold">📖 Exercise Guide & Form</h2>
       <button onclick="chView('home')" class="bg-white text-indigo-600 px-4 py-2 rounded font-bold">🏠</button>
     </div>
+    <!-- INTRO BOX: Brief description of the page -->
     <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-lg mb-6">
       <h3 class="text-xl font-bold mb-2">Complete Exercise Library</h3>
       <p class="text-sm">Detailed form instructions for every exercise in your program. Master these movements!</p>
     </div>`;
 
+  // CATEGORY ORDER: Define the exact sequence categories should appear
   const catOrder = ['Chest - Upper', 'Chest - Overall', 'Chest & Triceps', 'Shoulders', 'Back - Overall', 'Back - Middle', 'Back - Width', 'Back - Unilateral', 'Traps', 'Rear Delts & Upper Back', 'Biceps', 'Biceps - Isolation', 'Biceps - Advanced', 'Biceps & Forearms', 'Triceps', 'Legs - Overall', 'Legs - Quad Focus', 'Legs - Quad & Core', 'Hamstrings & Glutes', 'Legs - Unilateral', 'Legs - Functional', 'Legs - Dynamic', 'Core - Stability', 'Core - Dynamic Stability', 'Core - Coordination', 'Core - Obliques', 'Core - Lower Abs', 'Core - Lower Abs Advanced', 'Core - Rotational Power', 'Core - Upper Abs', 'Full Body Power', 'Chest & Triceps - Beginner', 'Chest & Triceps - Advanced', 'Back - Progression', 'Back - Advanced', 'Back - Skill Work', 'Back - Width Emphasis'];
 
+  // LOOP THROUGH CATEGORIES: Build HTML for each category and its exercises
   catOrder.forEach(cat => {
-    if (!categories[cat]) return;
-    html += `<div class="bg-white rounded-lg p-4 mb-4 border-2 border-indigo-300">
-      <h3 class="text-lg font-bold text-indigo-700 mb-3">${cat}</h3>`;
+    if (!categories[cat]) return; // Skip if category doesn't exist
     
+    // CATEGORY CONTAINER: Start a new section for this category
+    html += `<div class="bg-white rounded-lg p-4 mb-4 border-2 border-indigo-300">
+      <h3 class="text-lg font-bold text-indigo-700 mb-3">${cat}</h3>`; // Category title
+    
+    // LOOP THROUGH EXERCISES: Build card for each exercise in this category
     categories[cat].forEach(exName => {
-      const ex = exercises[exName];
+      const ex = exercises[exName]; // Get exercise object
+      
+      // EXERCISE CARD: Container for single exercise
       html += `<div class="mb-6 p-4 bg-gradient-to-br from-gray-50 to-white rounded-lg border-2 border-indigo-200 shadow-sm">
+        <!-- EXERCISE TITLE -->
         <h4 class="text-lg font-bold text-gray-900 mb-2">${exName}</h4>
+        <!-- EXERCISE DESCRIPTION -->
         <p class="text-sm text-gray-700 mb-3 italic">${ex.description}</p>
         
+        <!-- MUSCLES WORKED SECTION: Shows primary and secondary muscles -->
         ${ex.muscles ? `<div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3 rounded">
           <p class="font-bold text-sm text-blue-900 mb-1">💪 MUSCLES WORKED:</p>
           <p class="text-sm text-gray-800"><strong class="text-blue-700">Primary:</strong> ${ex.muscles.primary}</p>
           <p class="text-sm text-gray-800"><strong class="text-purple-700">Secondary:</strong> ${ex.muscles.secondary}</p>
         </div>` : ''}
         
+        <!-- FORM INSTRUCTIONS: Step-by-step numbered list -->
         <div class="mb-3">
           <p class="font-bold text-sm text-indigo-700 mb-2">📋 PROPER FORM:</p>
           <ol class="list-decimal list-inside space-y-1 text-sm text-gray-700 pl-2">
@@ -2038,19 +2616,24 @@ function rExercises(){
           </ol>
         </div>
         
+        <!-- BREATHING PATTERN: How to breathe during the exercise -->
         <div class="mb-3 bg-green-50 border-l-4 border-green-500 p-2 rounded">
           <p class="font-bold text-sm text-green-700">💨 BREATHING: <span class="font-normal text-gray-800">${ex.breathing}</span></p>
         </div>
         
+        <!-- PRO TIPS: Helpful advice and coaching cues -->
         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded mb-3">
           <p class="font-bold text-sm text-yellow-800">💡 PRO TIP: <span class="font-normal text-gray-800">${ex.tips}</span></p>
         </div>
         
+        <!-- VIDEO SECTION: Embedded video and button links -->
         ${ex.videoShort ? `
         <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-lg p-4 mt-4">
           <p class="font-bold text-sm text-indigo-900 mb-3 flex items-center gap-2">
             <span class="text-lg">📺</span> FORM VIDEO
           </p>
+          
+          <!-- EMBEDDED VIDEO: If YouTube, show iframe player. Otherwise show link -->
           ${ex.videoShort.includes('youtube.com') ? `
           <div class="relative mb-4" style="padding-bottom:56.25%; height:0; overflow:hidden; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1)">
             <iframe 
@@ -2062,44 +2645,47 @@ function rExercises(){
             </iframe>
           </div>
           ` : `
+          <!-- NON-YOUTUBE VIDEO: Show clickable link -->
           <div class="mb-4 p-3 bg-blue-50 rounded">
             <a href="${ex.videoShort}" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:text-blue-900 font-semibold">
               🎥 Click to view form demonstration →
             </a>
           </div>
           `}
+          
+          <!-- ACTION BUTTONS: Three buttons for different video/guide resources -->
           <div class="flex flex-wrap gap-2">
-            <a href="${ex.videoShort.includes('youtube.com') ? ex.videoShort.replace('/embed/', '/watch?v=') : ex.videoShort}" target="_blank" rel="noopener noreferrer" 
+            <!-- BUTTON 1: Form Demo - Uses NEW videoFormDemo field -->
+            <a href="${ex.videoFormDemo}" target="_blank" rel="noopener noreferrer" 
                class="px-4 py-2 bg-purple-600 text-white text-sm font-bold rounded hover:bg-purple-700 transition-colors">
               🎥 Form Demo
             </a>
+            
+            <!-- BUTTON 2: Detailed Tutorial - Uses existing videoLong field (only shows if videoLong exists) -->
             ${ex.videoLong ? `
             <a href="${ex.videoLong}" target="_blank" rel="noopener noreferrer" 
                class="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded hover:bg-indigo-700 transition-colors">
               📚 Detailed Tutorial
             </a>
             ` : ''}
-            <a href="https://weighttraining.guide/exercises/${exName.toLowerCase()
-              .replace(/weighted\s+/gi, '')
-              .replace(/barbell\/db\s+/gi, '')
-              .replace(/barbell\s+/gi, '')
-              .replace(/\bdb\s+/gi, '')
-              .replace(/dumbbell\s+/gi, '')
-              .replace(/\s*\/\s*/g, '-')
-              .replace(/\s+/g, '-')
-              .replace(/[^a-z0-9-]/g, '')}/" target="_blank" rel="noopener noreferrer" 
+            
+            <!-- BUTTON 3: Exercise Guide - Uses NEW guideSearch field to build URL -->
+            <a href="https://weighttraining.guide/exercises/${ex.guideSearch}/" target="_blank" rel="noopener noreferrer" 
                class="px-4 py-2 bg-teal-600 text-white text-sm font-bold rounded hover:bg-teal-700 transition-colors">
               📖 Exercise Guide
             </a>
           </div>
         </div>
         ` : ''}
-      </div>`;
+      </div>`; // END EXERCISE CARD
     });
     
-    html += `</div>`;
+    html += `</div>`; // END CATEGORY CONTAINER
   });
-  html += `</div>`;
+  
+  html += `</div>`; // END MAIN CONTAINER
+  
+  // RETURN: Send completed HTML back to be displayed
   return html;
 }
     
