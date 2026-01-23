@@ -1,554 +1,577 @@
 <!DOCTYPE html>
+<!-- HTML5 doctype declaration -->
 <html lang="en">
+<!-- HTML root element, language set to English -->
 <head>
+<!-- Document head section begins -->
 <meta charset="UTF-8">
+<!-- Character encoding set to UTF-8 for proper text display -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Responsive viewport configuration for mobile devices -->
 <title>Amy's Workout</title>
+<!-- Page title shown in browser tab -->
 <meta name="apple-mobile-web-app-capable" content="yes">
+<!-- Enables full-screen mode when added to iOS home screen -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Loads Tailwind CSS framework from CDN -->
 <script type="module">
+<!-- Module script tag for Firebase ES6 imports -->
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+<!-- Import Firebase app initialization function -->
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+<!-- Import Firebase authentication functions -->
 import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+<!-- Import Firebase Realtime Database functions -->
 
 const firebaseConfig = {
+<!-- Firebase project configuration object -->
   apiKey: "AIzaSyDu-ypnZu4ojzJAR8N1wpWkvhXqmxyNyUY",
+  <!-- API key for Firebase authentication -->
   authDomain: "amy-workout-app.firebaseapp.com",
+  <!-- Domain for Firebase authentication -->
   databaseURL: "https://amy-workout-app-default-rtdb.firebaseio.com",
+  <!-- URL for Firebase Realtime Database -->
   projectId: "amy-workout-app",
+  <!-- Firebase project ID -->
   storageBucket: "amy-workout-app.firebasestorage.app",
+  <!-- Firebase storage bucket URL -->
   messagingSenderId: "127656923512",
+  <!-- Firebase Cloud Messaging sender ID -->
   appId: "1:127656923512:web:e3143e94bef691d930788d"
+  <!-- Firebase application ID -->
 };
 
 const app = initializeApp(firebaseConfig);
+<!-- Initialize Firebase with configuration -->
 const auth = getAuth(app);
+<!-- Get Firebase Authentication instance -->
 const db = getDatabase(app);
+<!-- Get Firebase Database instance -->
 let uid = null;
+<!-- User ID variable, initially null -->
 
 signInAnonymously(auth);
+<!-- Sign in user anonymously -->
 onAuthStateChanged(auth, async (u) => {
+<!-- Listen for authentication state changes -->
   if (u) {
+  <!-- Check if user is authenticated -->
     uid = u.uid;
+    <!-- Store user ID -->
     try {
+    <!-- Begin error handling block -->
       const snap = await get(ref(db, 'users/' + uid));
+      <!-- Fetch user data from database -->
       if (snap.exists()) window.loadAppData(snap.val());
+      <!-- Load data if it exists -->
     } catch(e){}
+    <!-- Catch and ignore errors -->
   }
 });
 
 window.saveAppData = async (data) => {
+<!-- Global function to save app data -->
   if (uid) {
+  <!-- Only save if user is authenticated -->
     try { await set(ref(db, 'users/' + uid), data); } catch(e){}
+    <!-- Save data to Firebase, ignore errors -->
   }
 };
 </script>
+<!-- Close Firebase module script -->
 </head>
+<!-- Close head section -->
 <body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen">
+<!-- Body with pink to purple gradient background, full screen height -->
 <div id="app"></div>
+<!-- Main app container div -->
 <script>
+<!-- Main application script begins -->
 const PRG = {
+<!-- Program data structure object -->
 1:{n:"Foundation",d:{
+<!-- Phase 1: Foundation, 'd' contains days -->
 1:{n:"Upper Push",ex:[
+<!-- Day 1: Upper Push workout, 'ex' contains exercises -->
 {n:"Incline Barbell/DB Press",s:3,r:"8-12",a:"Smith Machine, Incline DB, Machine Press"},
+<!-- Exercise: name, sets (s), reps (r), alternatives (a) -->
 {n:"Barbell/DB Shoulder Press",s:3,r:"10-12",a:"Smith Machine, DB Press, Machine Press"},
+<!-- Exercise 2 with same structure -->
 {n:"Assisted Dips/Bench Dips",s:3,r:"5-8",a:"Machine Dips, Band-Assisted, Push-ups"},
+<!-- Exercise 3 with same structure -->
 {n:"DB Lateral Raises",s:3,r:"12-15",a:"Cable Laterals, Machine Laterals"},
+<!-- Exercise 4 with same structure -->
 {n:"Tricep Pushdowns",s:3,r:"10-12",a:"Overhead Extensions, Close-Grip Press"},
+<!-- Exercise 5 with same structure -->
 {n:"Push-ups",s:3,r:"max",a:"Knee Push-ups, Incline Push-ups"}
+<!-- Exercise 6 with same structure -->
 ]},
 2:{n:"Lower Body & Core",ex:[
+<!-- Day 2: Lower Body & Core workout -->
 {n:"Barbell Squats",s:3,r:"10-12",a:"Smith Machine, Goblet Squats, Leg Press"},
+<!-- Exercise 1 -->
 {n:"Barbell RDLs",s:3,r:"10-12",a:"DB RDLs, Machine RDLs, Stiff-Leg DL"},
+<!-- Exercise 2 -->
 {n:"Barbell/DB Lunges",s:3,r:"8-10",a:"Smith Lunges, Walking Lunges, Split Squats"},
+<!-- Exercise 3 -->
 {n:"Plank",s:3,r:"30-45s",a:"Knee Plank, RKC Plank"},
+<!-- Exercise 4 -->
 {n:"Dead Bug",s:3,r:"10",a:"Leg Lowers, Lying Leg Raises"},
+<!-- Exercise 5 -->
 {n:"Bicycle Crunches",s:3,r:"15-20",a:"Regular Crunches, Cable Crunches"}
+<!-- Exercise 6 -->
 ]},
 3:{n:"Cardio & Recovery",t:"c"},
+<!-- Day 3: Cardio day, 't' type is 'c' for cardio -->
 4:{n:"Upper Body Pull",ex:[
+<!-- Day 4: Upper Body Pull workout -->
 {n:"Barbell Rows",s:4,r:"10-12",a:"DB Rows, Smith Rows, Cable Rows, Machine Rows"},
+<!-- Exercise 1 -->
 {n:"Negative Pull-ups",s:3,r:"3-5",a:"Assisted Pull-ups, Band Pull-ups, Lat Pulldowns"},
+<!-- Exercise 2 -->
 {n:"Lat Pulldowns",s:3,r:"8-10",a:"Wide Grip, Close Grip, Neutral Grip"},
+<!-- Exercise 3 -->
 {n:"Barbell/DB Curls",s:3,r:"10-12",a:"EZ-Bar Curls, Cable Curls, Machine Curls"},
+<!-- Exercise 4 -->
 {n:"Cable Face Pulls",s:3,r:"15",a:"Band Pulls, DB Reverse Flyes"},
+<!-- Exercise 5 -->
 {n:"Hammer Curls",s:3,r:"10-12",a:"Cable Rope Curls, Cross-Body Curls"}
+<!-- Exercise 6 -->
 ]},
 5:{n:"Cardio",t:"c"},
+<!-- Day 5: Cardio day -->
 6:{n:"REST",t:"r"},
+<!-- Day 6: Rest day, 't' type is 'r' for rest -->
 7:{n:"REST",t:"r"}
+<!-- Day 7: Rest day -->
 }},
 2:{n:"Strength & Hypertrophy",d:{
+<!-- Phase 2: Strength & Hypertrophy -->
 1:{n:"Push",ex:[
+<!-- Day 1: Push workout -->
 {n:"Barbell Bench Press",s:4,r:"6-10",a:"DB Bench, Smith Machine, Machine Press"},
+<!-- Exercise 1 -->
 {n:"Barbell/DB Shoulder Press",s:4,r:"8-10",a:"Smith Press, Machine Press"},
+<!-- Exercise 2 -->
 {n:"Incline Barbell/DB Press",s:3,r:"8-12",a:"Smith Incline, Machine Incline"},
+<!-- Exercise 3 -->
 {n:"Dips",s:4,r:"6-10",a:"Assisted Dips, Bench Dips, Machine Dips"},
+<!-- Exercise 4 -->
 {n:"DB Lateral Raises",s:4,r:"12-15",a:"Cable Laterals, Machine Laterals"},
+<!-- Exercise 5 -->
 {n:"Overhead Tricep Extension",s:3,r:"10-12",a:"Close-Grip Bench, Cable Extensions"},
+<!-- Exercise 6 -->
 {n:"Push-ups",s:3,r:"max",a:"Decline Push-ups, Weighted Push-ups"}
+<!-- Exercise 7 -->
 ]},
 2:{n:"Pull",ex:[
+<!-- Day 2: Pull workout -->
 {n:"Negative Pull-ups",s:4,r:"4-6",a:"Assisted Pull-ups (lighter band)"},
+<!-- Exercise 1 -->
 {n:"Barbell Rows",s:4,r:"8-10",a:"DB Rows, Smith, T-Bar, Machine"},
+<!-- Exercise 2 -->
 {n:"Single Arm DB Row",s:3,r:"10",a:"Cable Row, Machine Row"},
+<!-- Exercise 3 -->
 {n:"DB Pullovers",s:3,r:"10-12",a:"Cable Pullovers, Machine"},
+<!-- Exercise 4 -->
 {n:"Barbell Curls",s:4,r:"8-12",a:"EZ-Bar, DB, Cable, Machine"},
+<!-- Exercise 5 -->
 {n:"Hammer Curls",s:3,r:"10-12",a:"Cable Rope, Cross-Body"}
+<!-- Exercise 6 -->
 ]},
 3:{n:"Legs & Core",ex:[
+<!-- Day 3: Legs & Core workout -->
 {n:"Barbell Back Squats",s:4,r:"8-10",a:"Smith Machine, Goblet Squats, Leg Press"},
+<!-- Exercise 1 -->
 {n:"Barbell RDLs",s:4,r:"8-10",a:"DB RDLs, Machine"},
+<!-- Exercise 2 -->
 {n:"Bulgarian Split Squats",s:3,r:"10",a:"Lunges, Step-ups, Smith"},
+<!-- Exercise 3 -->
 {n:"Hanging Knee Raises",s:4,r:"10-15",a:"Lying Leg Raises, Machine"},
+<!-- Exercise 4 -->
 {n:"Russian Twists with DB",s:3,r:"20",a:"Bicycle Crunches, Cable Twists"},
+<!-- Exercise 5 -->
 {n:"Plank",s:3,r:"60s",a:"RKC Plank, Side Planks"}
+<!-- Exercise 6 -->
 ]},
 4:{n:"Cardio & Core",t:"c"},
+<!-- Day 4: Cardio & Core -->
 5:{n:"Full Body Power",ex:[
+<!-- Day 5: Full Body Power workout -->
 {n:"DB/Barbell Clean & Press",s:4,r:"6-8",a:"Barbell version, Kettlebell"},
+<!-- Exercise 1 -->
 {n:"Barbell Front Squats",s:3,r:"8-10",a:"Goblet Squats, Back Squats"},
+<!-- Exercise 2 -->
 {n:"Barbell Bench Press",s:3,r:"8-10",a:"DB Bench, Smith"},
+<!-- Exercise 3 -->
 {n:"Pull-up Practice",s:4,r:"max",a:"Assisted, Negatives, Full Pull-ups"},
+<!-- Exercise 4 -->
 {n:"Dips",s:3,r:"max",a:"Assisted, Bench Dips"},
+<!-- Exercise 5 -->
 {n:"Walking Lunges",s:3,r:"12",a:"Barbell Lunges, DB Lunges"}
+<!-- Exercise 6 -->
 ]},
 6:{n:"Steady Cardio",t:"c"},
+<!-- Day 6: Steady Cardio -->
 7:{n:"REST",t:"r"}
+<!-- Day 7: Rest -->
 }},
 3:{n:"Peak Performance",d:{
+<!-- Phase 3: Peak Performance -->
 1:{n:"Heavy Push",ex:[
+<!-- Day 1: Heavy Push workout -->
 {n:"Barbell Bench Press",s:5,r:"5-8",a:"Smith Machine, DB Bench"},
+<!-- Exercise 1 -->
 {n:"Barbell Military Press",s:4,r:"6-8",a:"DB Press, Smith, Machine"},
+<!-- Exercise 2 -->
 {n:"Weighted Dips",s:4,r:"6-10",a:"Bodyweight Dips, Assisted"},
+<!-- Exercise 3 -->
 {n:"Incline DB Flyes",s:3,r:"10-12",a:"Cable Flyes, Machine"},
+<!-- Exercise 4 -->
 {n:"Close-Grip Barbell Press",s:3,r:"8-10",a:"DB Press, Smith"},
+<!-- Exercise 5 -->
 {n:"Cable Tricep Extensions",s:3,r:"12-15",a:"Rope Extensions, Bar Extensions, Machine"}
+<!-- Exercise 6 -->
 ]},
 2:{n:"Heavy Pull - PULL-UP EMPHASIS",ex:[
+<!-- Day 2: Heavy Pull with Pull-up Focus -->
 {n:"Strict Pull-ups",s:5,r:"max (GOAL: 5+)",a:"Weighted Pull-ups if able"},
+<!-- Exercise 1 -->
 {n:"Barbell Rows",s:4,r:"6-8",a:"T-Bar Rows, DB Rows, Smith, Machine"},
+<!-- Exercise 2 -->
 {n:"Wide Grip Lat Pulldown",s:4,r:"8-10",a:"Close Grip, Neutral Grip"},
+<!-- Exercise 3 -->
 {n:"DB Shrugs",s:4,r:"12-15",a:"Barbell Shrugs, Smith, Machine"},
+<!-- Exercise 4 -->
 {n:"Barbell/EZ-Bar Curls",s:4,r:"8-10",a:"DB Curls, Cable, Machine"},
+<!-- Exercise 5 -->
 {n:"Concentration Curls",s:3,r:"10-12",a:"Cable Curls, Preacher Curls"}
+<!-- Exercise 6 -->
 ]},
 3:{n:"Legs & Abs - SIX-PACK",ex:[
+<!-- Day 3: Legs & Abs with Six-Pack Focus -->
 {n:"Barbell Front Squats",s:4,r:"8-10",a:"Goblet, Back Squats, Smith, Leg Press"},
+<!-- Exercise 1 -->
 {n:"Barbell RDLs",s:4,r:"8-10",a:"DB RDLs, Stiff-Leg DL, Machine"},
+<!-- Exercise 2 -->
 {n:"Walking Lunges",s:4,r:"12",a:"Split Squats, Smith, Machine"},
+<!-- Exercise 3 -->
 {n:"Hanging Leg Raises",s:4,r:"12-15",a:"Knee Raises, Lying Leg Raises"},
+<!-- Exercise 4 -->
 {n:"Cable Woodchoppers",s:3,r:"12",a:"Med Ball Chops, DB Chops"},
+<!-- Exercise 5 -->
 {n:"Weighted Decline Sit-ups",s:4,r:"15-20",a:"Regular Decline, Crunches"},
+<!-- Exercise 6 -->
 {n:"Plank with Shoulder Taps",s:3,r:"20",a:"Regular Plank, Side Plank"}
+<!-- Exercise 7 -->
 ]},
 4:{n:"HIIT & Core",t:"c"},
+<!-- Day 4: HIIT & Core -->
 5:{n:"Upper Volume",ex:[
+<!-- Day 5: Upper Volume workout -->
 {n:"Push-ups",s:5,r:"max",a:"Weighted, Decline"},
+<!-- Exercise 1 -->
 {n:"DB Pullovers",s:4,r:"12-15",a:"Cable, Barbell"},
+<!-- Exercise 2 -->
 {n:"DB Shoulder Circuit",s:3,r:"12 each",a:"Front/Side/Rear Raises"},
+<!-- Exercise 3 -->
 {n:"Dips",s:4,r:"max",a:"Weighted if able, Assisted"},
+<!-- Exercise 4 -->
 {n:"Cable Face Pulls",s:4,r:"15-20",a:"Band, DB Reverse Flyes"},
+<!-- Exercise 5 -->
 {n:"Barbell Curl 21s",s:3,r:"21",a:"7 bottom+7 top+7 full"},
+<!-- Exercise 6 -->
 {n:"Tricep Rope Pushdowns",s:4,r:"15-20",a:"Bar, Machine"}
+<!-- Exercise 7 -->
 ]},
 6:{n:"Steady Cardio",t:"c"},
+<!-- Day 6: Steady Cardio -->
 7:{n:"Active Recovery",t:"r"}
+<!-- Day 7: Active Recovery -->
 }}
 };
 
 let st={v:'home',p:1,w:1,d:1,data:{},info:{name:'',age:'',sw:'',tw:'',goals:''},photos:{},chart:null};
+<!-- State object: v=view, p=phase, w=week, d=day, data=workout data, info=user info, photos=progress photos, chart=current chart -->
 
 window.loadAppData=d=>{
+<!-- Function to load app data from Firebase -->
   if(d.data)st.data=d.data;
+  <!-- Load workout data if exists -->
   if(d.info)st.info=d.info;
+  <!-- Load user info if exists -->
   if(d.photos)st.photos=d.photos;
+  <!-- Load photos if exist -->
   render();
+  <!-- Trigger UI re-render -->
 };
 
 const sv=()=>{if(window.saveAppData)window.saveAppData({data:st.data,info:st.info,photos:st.photos});};
+<!-- Save function: saves state to Firebase if saveAppData exists -->
 const gk=()=>'p'+st.p+'w'+st.w+'d'+st.d;
+<!-- Get key function: generates storage key like "p1w2d3" for current phase/week/day -->
 const gwd=()=>st.data[gk()]||{};
+<!-- Get workout data function: returns workout data for current day or empty object -->
 
 function updInfo(f,v){st.info[f]=v;sv();render();}
+<!-- Update info function: updates user info field, saves, re-renders -->
 function updW(f,v){const k=gk();if(!st.data[k])st.data[k]={};st.data[k][f]=v;sv();render();}
+<!-- Update workout function: creates workout object if needed, updates field, saves, re-renders -->
 function updEx(i,s,t,v){const k=gk();if(!st.data[k])st.data[k]={};if(!st.data[k].ex)st.data[k].ex={};if(!st.data[k].ex[i])st.data[k].ex[i]={};st.data[k].ex[i]['s'+s+t]=v;sv();render();}
+<!-- Update exercise function: i=exercise index, s=set number, t=type (w/r/c), v=value; creates nested structure, saves, re-renders -->
 function updMeas(f,v){const k='p'+st.p+'w'+st.w+'m';if(!st.data[k])st.data[k]={};st.data[k][f]=v;sv();render();}
+<!-- Update measurements function: uses 'm' suffix for measurement key, updates field, saves, re-renders -->
 
 function photo(k,e){
+<!-- Photo upload function: k=storage key, e=event -->
   const f=e.target.files[0];
+  <!-- Get first file from input -->
   if(!f)return;
+  <!-- Exit if no file -->
   const r=new FileReader();
+  <!-- Create FileReader instance -->
   r.onload=ev=>{st.photos[k]=ev.target.result;sv();render();};
+  <!-- On load: save base64 data to photos, save to Firebase, re-render -->
   r.readAsDataURL(f);
+  <!-- Read file as data URL (base64) -->
 }
 
 function getExHistory(exName){
+<!-- Get exercise history function: retrieves all logged data for a specific exercise -->
   const hist=[];
+  <!-- Initialize history array -->
   Object.keys(st.data).forEach(k=>{
+  <!-- Loop through all data keys -->
     const m=k.match(/p(\d)w(\d+)d(\d+)/);
+    <!-- Regex match to extract phase, week, day from key -->
     if(!m||!st.data[k].ex)return;
+    <!-- Skip if not workout key or no exercises -->
     const p=parseInt(m[1]),w=parseInt(m[2]),d=parseInt(m[3]);
+    <!-- Parse phase, week, day as integers -->
     const ph=PRG[p];
+    <!-- Get program data for this phase -->
     if(!ph||!ph.d[d]||!ph.d[d].ex)return;
+    <!-- Skip if program doesn't have this day -->
     ph.d[d].ex.forEach((e,i)=>{
+    <!-- Loop through exercises in program -->
       if(e.n===exName&&st.data[k].ex[i]){
+      <!-- If exercise name matches and user has data for it -->
         const ex=st.data[k].ex[i];
+        <!-- Get user's exercise data -->
         let maxW=0;
+        <!-- Initialize max weight tracker -->
         for(let s=1;s<=5;s++){
+        <!-- Loop through sets 1-5 -->
           const wt=parseFloat(ex['s'+s+'w'])||0;
+          <!-- Get weight for this set, default 0 -->
           if(wt>maxW)maxW=wt;
+          <!-- Update max if higher -->
         }
         if(maxW>0){
+        <!-- Only add if weight was recorded -->
           hist.push({
+          <!-- Add to history array -->
             p:p,
+            <!-- Phase -->
             w:w,
+            <!-- Week -->
             d:d,
+            <!-- Day -->
             val:maxW,
+            <!-- Max weight value -->
             label:'P'+p+'W'+w+'D'+d
+            <!-- Display label -->
           });
         }
       }
     });
   });
   return hist.sort((a,b)=>(a.p*100+a.w*10+a.d)-(b.p*100+b.w*10+b.d));
+  <!-- Sort chronologically and return -->
 }
 
+<!-- END OF PART 1 - Continue to Part 2 -->
+
 function getWellnessData(field){
+// Get wellness data for specific field across all workout days
   const data=[];
+  // Initialize empty array
   Object.keys(st.data).forEach(k=>{
+  // Loop all data keys
     const m=k.match(/p(\d)w(\d+)d(\d+)/);
+    // Extract phase/week/day
     if(!m)return;
+    // Skip if not workout key
     const p=parseInt(m[1]),w=parseInt(m[2]),d=parseInt(m[3]);
+    // Parse numbers
     const val=st.data[k][field];
+    // Get field value
     if(val){
+    // If value exists
       let numVal=parseFloat(val);
+      // Convert to number
       if(field==='mood'){
+      // Special mood handling
         const moodVals={excellent:6,good:5,okay:4,tired:3,sore:2,stressed:1};
+        // Mood to number map
         numVal=moodVals[val]||0;
+        // Convert mood
       }
       if(!isNaN(numVal)&&numVal>0){
-        data.push({
-          p:p,
-          w:w,
-          d:d,
-          val:numVal,
-          label:'P'+p+'W'+w+'D'+d,
-          raw:val
-        });
+      // Validate number
+        data.push({p:p,w:w,d:d,val:numVal,label:'P'+p+'W'+w+'D'+d,raw:val});
+        // Add data point
       }
     }
   });
   return data.sort((a,b)=>(a.p*100+a.w*10+a.d)-(b.p*100+b.w*10+b.d));
+  // Sort chronologically
 }
 
 function getMeasurementData(field){
+// Get weekly measurements
   const data=[];
+  // Initialize array
   for(let p=1;p<=3;p++){
+  // Loop phases
     for(let w=1;w<=8;w++){
+    // Loop weeks
       const k='p'+p+'w'+w+'m';
+      // Create measurement key
       if(st.data[k]&&st.data[k][field]){
+      // If measurement exists
         const val=parseFloat(st.data[k][field]);
+        // Convert to number
         if(!isNaN(val)&&val>0){
-          data.push({
-            p:p,
-            w:w,
-            val:val,
-            label:'P'+p+'W'+w
-          });
+        // Validate
+          data.push({p:p,w:w,val:val,label:'P'+p+'W'+w});
+          // Add measurement
         }
       }
     }
   }
   return data;
+  // Return data
 }
 
 function stats(){
+// Calculate overall statistics
   let tw=0,tl=0,tr=0,wts=[];
+  // Total workouts, load, reps, weights
   Object.keys(st.data).forEach(k=>{
+  // Loop data
     const d=st.data[k];
+    // Get data
     if(d.wt)wts.push(parseFloat(d.wt));
+    // Add weight
     if(d.ex){tw++;Object.values(d.ex).forEach(e=>{for(let i=1;i<=5;i++){const w=parseFloat(e['s'+i+'w'])||0,r=parseFloat(e['s'+i+'r'])||0;if(w&&r){tl+=w*r;tr+=r;}}});}
+    // Count workouts, calculate volume
   });
   return{tw,tl,tr,wts};
+  // Return stats object
 }
 
 function renderChart(title,data){
+// Render SVG chart
   if(!data||!data.length)return'<p class="text-center text-gray-600 py-8">No data yet. Start tracking to see your progress!</p>';
-  
+  // No data message
   const isEx=title.includes('Progress');
+  // Check if exercise chart
   const isMood=title.includes('Mood');
+  // Check if mood chart
   const vals=data.map(x=>x.val);
+  // Extract values
   const max=Math.max(...vals);
+  // Find max
   const min=Math.min(...vals);
+  // Find min
   const rng=max-min||1;
+  // Calculate range
   const avg=(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
-  
+  // Calculate average
   let maxSoFar=0;
-  const enriched=data.map(d=>{
-    const isPR=isEx&&d.val>maxSoFar;
-    if(d.val>maxSoFar)maxSoFar=d.val;
-    return{...d,isPR};
-  });
-  
+  // PR tracker
+  const enriched=data.map(d=>{const isPR=isEx&&d.val>maxSoFar;if(d.val>maxSoFar)maxSoFar=d.val;return{...d,isPR};});
+  // Add PR flags
   const w=Math.max(60,700/enriched.length);
+  // Bar width
   const chartWidth=Math.max(800,enriched.length*w+100);
-  
-  return`${isEx?`<div class="grid grid-cols-2 gap-3 mb-4">
-<div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border-2 border-blue-300 text-center">
-<div class="text-xs text-blue-600 font-bold mb-1">BEST (PR)</div>
-<div class="text-3xl font-bold text-blue-700">${max.toFixed(1)}<span class="text-lg"> lbs</span></div>
-</div>
-<div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border-2 border-purple-300 text-center">
-<div class="text-xs text-purple-600 font-bold mb-1">AVERAGE</div>
-<div class="text-3xl font-bold text-purple-700">${avg}<span class="text-lg"> lbs</span></div>
-</div>
-</div>`:''}
+  // Chart width
+  return`${isEx?`<div class="grid grid-cols-2 gap-3 mb-4"><div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border-2 border-blue-300 text-center"><div class="text-xs text-blue-600 font-bold mb-1">BEST (PR)</div><div class="text-3xl font-bold text-blue-700">${max.toFixed(1)}<span class="text-lg"> lbs</span></div></div><div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border-2 border-purple-300 text-center"><div class="text-xs text-purple-600 font-bold mb-1">AVERAGE</div><div class="text-3xl font-bold text-purple-700">${avg}<span class="text-lg"> lbs</span></div></div></div>`:''}
+  // Stats cards for exercise charts
 <div class="text-center text-sm text-gray-600 mb-3">📈 Showing ${enriched.length} data points</div>
+  // Data point count
 <div class="relative bg-gradient-to-br from-gray-50 to-white p-4 rounded-lg border-2 border-gray-300 shadow-sm" style="height:320px;overflow-x:auto">
+  // Chart container
 <svg width="${chartWidth}" height="300" style="min-width:100%">
-<defs>
-<linearGradient id="lineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-<stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2"/>
-<stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0"/>
-</linearGradient>
-</defs>
+  // SVG element
+<defs><linearGradient id="lineGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2"/><stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0"/></linearGradient></defs>
+  // Gradient definition
 ${[0,0.25,0.5,0.75,1].map(r=>`<line x1="50" y1="${260-r*200}" x2="${chartWidth-20}" y2="${260-r*200}" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,4"/><text x="30" y="${263-r*200}" font-size="11" fill="#6b7280" text-anchor="end">${(min+rng*r).toFixed(1)}</text>`).join('')}
-${enriched.length>1?`<path d="M${enriched.map((d,i)=>`${60+i*w},${260-((d.val-min)/rng)*200}`).join(' L')}" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M 60 260 L${enriched.map((d,i)=>`${60+i*w},${260-((d.val-min)/rng)*200}`).join(' L')} L${60+(enriched.length-1)*w} 260 Z" fill="url(#lineGrad)"/>`:''}
-${enriched.map((d,i)=>{
-const x=60+i*w;
-const y=260-((d.val-min)/rng)*200;
-const col=d.isPR?'#10b981':(isMood?(d.val>=5?'#10b981':d.val>=4?'#22c55e':d.val>=3?'#eab308':'#ef4444'):'#3b82f6');
-return`<circle cx="${x}" cy="${y}" r="6" fill="${col}" stroke="white" stroke-width="2.5"/>
-${d.isPR?`<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#10b981" stroke-width="2" opacity="0.4"/>
-<text x="${x}" y="${y-18}" font-size="11" font-weight="bold" fill="#10b981" text-anchor="middle">PR!</text>`:`<text x="${x}" y="${y-12}" font-size="10.5" fill="${col}" font-weight="bold" text-anchor="middle">${d.val.toFixed(1)}</text>`}`;
-}).join('')}
-${enriched.filter((d,i)=>enriched.length<15||i%(Math.ceil(enriched.length/12))===0).map(d=>{
-const i=enriched.indexOf(d);
-const x=60+i*w;
-return`<text x="${x}" y="285" font-size="9" fill="#6b7280" text-anchor="middle">${d.label}</text>`;
-}).join('')}
-</svg>
-</div>
-${isMood?`<div class="mt-4 bg-gradient-to-r from-green-50 via-yellow-50 to-red-50 p-4 rounded-lg border-2 border-gray-300">
-<div class="text-xs font-bold text-gray-700 mb-3 text-center">🏊‍♀️ SWIM TEAM MOOD SCALE</div>
-<div class="grid grid-cols-6 gap-2 text-center text-xs">
-<div class="p-2 bg-white rounded border border-green-500"><div class="w-5 h-5 rounded-full bg-green-500 mx-auto mb-1"></div><strong>6</strong><br>Excellent</div>
-<div class="p-2 bg-white rounded border border-green-400"><div class="w-5 h-5 rounded-full bg-green-400 mx-auto mb-1"></div><strong>5</strong><br>Good</div>
-<div class="p-2 bg-white rounded border border-yellow-400"><div class="w-5 h-5 rounded-full bg-yellow-400 mx-auto mb-1"></div><strong>4</strong><br>Okay</div>
-<div class="p-2 bg-white rounded border border-yellow-500"><div class="w-5 h-5 rounded-full bg-yellow-500 mx-auto mb-1"></div><strong>3</strong><br>Tired</div>
-<div class="p-2 bg-white rounded border border-red-400"><div class="w-5 h-5 rounded-full bg-red-400 mx-auto mb-1"></div><strong>2</strong><br>Sore</div>
-<div class="p-2 bg-white rounded border border-red-500"><div class="w-5 h-5 rounded-full bg-red-500 mx-auto mb-1"></div><strong>1</strong><br>Stressed</div>
-</div>
-</div>`:''}
+  // Gridlines
+${enriched.length>1?`<path d="M${enriched.map((d,i)=>`${60+i*w},${260-((d.val-min)/rng)*200}`).join(' L')}" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 60 260 L${enriched.map((d,i)=>`${60+i*w},${260-((d.val-min)/rng)*200}`).join(' L')} L${60+(enriched.length-1)*w} 260 Z" fill="url(#lineGrad)"/>`:''}
+  // Line and area
+${enriched.map((d,i)=>{const x=60+i*w;const y=260-((d.val-min)/rng)*200;const col=d.isPR?'#10b981':(isMood?(d.val>=5?'#10b981':d.val>=4?'#22c55e':d.val>=3?'#eab308':'#ef4444'):'#3b82f6');return`<circle cx="${x}" cy="${y}" r="6" fill="${col}" stroke="white" stroke-width="2.5"/>${d.isPR?`<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#10b981" stroke-width="2" opacity="0.4"/><text x="${x}" y="${y-18}" font-size="11" font-weight="bold" fill="#10b981" text-anchor="middle">PR!</text>`:`<text x="${x}" y="${y-12}" font-size="10.5" fill="${col}" font-weight="bold" text-anchor="middle">${d.val.toFixed(1)}</text>`}`;}).join('')}
+  // Data points
+${enriched.filter((d,i)=>enriched.length<15||i%(Math.ceil(enriched.length/12))===0).map(d=>{const i=enriched.indexOf(d);const x=60+i*w;return`<text x="${x}" y="285" font-size="9" fill="#6b7280" text-anchor="middle">${d.label}</text>`;}).join('')}
+  // Labels
+</svg></div>
+  // Close SVG and container
+${isMood?`<div class="mt-4 bg-gradient-to-r from-green-50 via-yellow-50 to-red-50 p-4 rounded-lg border-2 border-gray-300"><div class="text-xs font-bold text-gray-700 mb-3 text-center">🏊‍♀️ SWIM TEAM MOOD SCALE</div><div class="grid grid-cols-6 gap-2 text-center text-xs"><div class="p-2 bg-white rounded border border-green-500"><div class="w-5 h-5 rounded-full bg-green-500 mx-auto mb-1"></div><strong>6</strong><br>Excellent</div><div class="p-2 bg-white rounded border border-green-400"><div class="w-5 h-5 rounded-full bg-green-400 mx-auto mb-1"></div><strong>5</strong><br>Good</div><div class="p-2 bg-white rounded border border-yellow-400"><div class="w-5 h-5 rounded-full bg-yellow-400 mx-auto mb-1"></div><strong>4</strong><br>Okay</div><div class="p-2 bg-white rounded border border-yellow-500"><div class="w-5 h-5 rounded-full bg-yellow-500 mx-auto mb-1"></div><strong>3</strong><br>Tired</div><div class="p-2 bg-white rounded border border-red-400"><div class="w-5 h-5 rounded-full bg-red-400 mx-auto mb-1"></div><strong>2</strong><br>Sore</div><div class="p-2 bg-white rounded border border-red-500"><div class="w-5 h-5 rounded-full bg-red-500 mx-auto mb-1"></div><strong>1</strong><br>Stressed</div></div></div>`:''}
+  // Mood scale legend
 ${isEx?`<div class="text-center text-sm text-gray-500 mt-3">💪 <span class="text-green-600 font-bold">Green circles</span> = Personal Records!</div>`:''}`; 
+  // PR legend
 }
 
-
 function renderWellness(wd){
+// Render wellness tracking inputs
   return`<div class="bg-yellow-50 border-2 border-yellow-400 rounded p-4 mb-4">
+<!-- Wellness container -->
 <h3 class="font-bold mb-3 flex items-center gap-2"><span class="text-xl">📊</span> Daily Wellness Check</h3>
+<!-- Title -->
 <div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block text-sm font-bold mb-1">Sleep (hours):</label>
-<input type="number" step="0.5" placeholder="Hours" class="w-full p-2 border-2 rounded" value="${wd.sl||''}" onchange="updW('sl',this.value)"/>
-</div>
-<div>
-<label class="block text-sm font-bold mb-1">Sleep Quality (1-10):</label>
-<input type="number" min="1" max="10" placeholder="1-10" class="w-full p-2 border-2 rounded" value="${wd.sq||''}" onchange="updW('sq',this.value)"/>
-</div>
-<div>
-<label class="block text-sm font-bold mb-1">Energy Level (1-10):</label>
-<input type="number" min="1" max="10" placeholder="1-10" class="w-full p-2 border-2 rounded" value="${wd.en||''}" onchange="updW('en',this.value)"/>
-</div>
-<div>
-<label class="block text-sm font-bold mb-1">Body Weight (lbs):</label>
-<input type="number" step="0.1" placeholder="Weight" class="w-full p-2 border-2 rounded" value="${wd.wt||''}" onchange="updW('wt',this.value)"/>
-</div>
-<div>
-<label class="block text-sm font-bold mb-1">Workout Date:</label>
-<input type="date" class="w-full p-2 border-2 rounded" value="${wd.dt||''}" onchange="updW('dt',this.value)"/>
-</div>
-<div>
-<label class="block text-sm font-bold mb-1">Start Time:</label>
-<input type="time" class="w-full p-2 border-2 rounded" value="${wd.st||''}" onchange="updW('st',this.value)"/>
-</div>
-<div>
-<label class="block text-sm font-bold mb-1">End Time:</label>
-<input type="time" class="w-full p-2 border-2 rounded" value="${wd.et||''}" onchange="updW('et',this.value)"/>
-</div>
-<div>
-<label class="block text-sm font-bold mb-1">General Mood:</label>
-<select class="w-full p-2 border-2 rounded" onchange="updW('mood',this.value)">
-<option value="">Select...</option>
-<option value="excellent"${wd.mood==='excellent'?' selected':''}>6 = Excellent (feeling amazing, ready to crush it)</option>
-<option value="good"${wd.mood==='good'?' selected':''}>5 = Good (solid, normal training day)</option>
-<option value="okay"${wd.mood==='okay'?' selected':''}>4 = Okay (manageable, nothing special)</option>
-<option value="tired"${wd.mood==='tired'?' selected':''}>3 = Tired (low energy, might need recovery)</option>
-<option value="sore"${wd.mood==='sore'?' selected':''}>2 = Sore (body needs attention)</option>
-<option value="stressed"${wd.mood==='stressed'?' selected':''}>1 = Stressed (mental/physical stress high)</option>
-</select>
-</div>
-</div>
-</div>`;
+<!-- 2 column grid -->
+<div><label class="block text-sm font-bold mb-1">Sleep (hours):</label><input type="number" step="0.5" placeholder="Hours" class="w-full p-2 border-2 rounded" value="${wd.sl||''}" onchange="updW('sl',this.value)"/></div>
+<!-- Sleep hours input -->
+<div><label class="block text-sm font-bold mb-1">Sleep Quality (1-10):</label><input type="number" min="1" max="10" placeholder="1-10" class="w-full p-2 border-2 rounded" value="${wd.sq||''}" onchange="updW('sq',this.value)"/></div>
+<!-- Sleep quality input -->
+<div><label class="block text-sm font-bold mb-1">Energy Level (1-10):</label><input type="number" min="1" max="10" placeholder="1-10" class="w-full p-2 border-2 rounded" value="${wd.en||''}" onchange="updW('en',this.value)"/></div>
+<!-- Energy input -->
+<div><label class="block text-sm font-bold mb-1">Body Weight (lbs):</label><input type="number" step="0.1" placeholder="Weight" class="w-full p-2 border-2 rounded" value="${wd.wt||''}" onchange="updW('wt',this.value)"/></div>
+<!-- Weight input -->
+<div><label class="block text-sm font-bold mb-1">Workout Date:</label><input type="date" class="w-full p-2 border-2 rounded" value="${wd.dt||''}" onchange="updW('dt',this.value)"/></div>
+<!-- Date input -->
+<div><label class="block text-sm font-bold mb-1">Start Time:</label><input type="time" class="w-full p-2 border-2 rounded" value="${wd.st||''}" onchange="updW('st',this.value)"/></div>
+<!-- Start time input -->
+<div><label class="block text-sm font-bold mb-1">End Time:</label><input type="time" class="w-full p-2 border-2 rounded" value="${wd.et||''}" onchange="updW('et',this.value)"/></div>
+<!-- End time input -->
+<div><label class="block text-sm font-bold mb-1">General Mood:</label><select class="w-full p-2 border-2 rounded" onchange="updW('mood',this.value)"><option value="">Select...</option><option value="excellent"${wd.mood==='excellent'?' selected':''}>6 = Excellent (feeling amazing, ready to crush it)</option><option value="good"${wd.mood==='good'?' selected':''}>5 = Good (solid, normal training day)</option><option value="okay"${wd.mood==='okay'?' selected':''}>4 = Okay (manageable, nothing special)</option><option value="tired"${wd.mood==='tired'?' selected':''}>3 = Tired (low energy, might need recovery)</option><option value="sore"${wd.mood==='sore'?' selected':''}>2 = Sore (body needs attention)</option><option value="stressed"${wd.mood==='stressed'?' selected':''}>1 = Stressed (mental/physical stress high)</option></select></div>
+<!-- Mood dropdown -->
+</div></div>`;
+  // Close grid and container
 }
 
 function rHome(){
+// Render home page
   const s=stats();
+  // Get stats
   const cw=(st.p-1)*8+st.w;
+  // Current week
   const prg=(cw/24)*100;
-  return`<div class="p-4 max-w-4xl mx-auto">
-<div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-lg mb-4">
-<h1 class="text-3xl font-bold mb-2">Amy's 24-Week Transformation</h1>
-<p class="text-lg">December 2025 → June 2026</p>
-<p class="mt-2">Age: 54 | Training: 4:00-5:00 AM</p>
-</div>
-<div class="bg-white rounded-lg p-4 mb-4 border-2 border-purple-400">
-<h2 class="text-xl font-bold mb-3">Progress</h2>
-<div class="text-center mb-3">
-<div class="text-2xl font-bold text-purple-600">Week ${cw} of 24</div>
-<div class="text-sm text-gray-600">Phase ${st.p}: ${PRG[st.p].n}</div>
-</div>
-<div class="w-full bg-gray-200 rounded-full h-4 mb-2">
-<div class="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full" style="width:${prg}%"></div>
-</div>
-<div class="text-center text-sm text-gray-600">${Math.round(prg)}% Complete</div>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-<div class="bg-blue-50 p-4 rounded-lg text-center">
-<div class="text-2xl font-bold text-blue-600">${s.tw}</div>
-<div class="text-xs text-gray-600">Workouts</div>
-</div>
-<div class="bg-green-50 p-4 rounded-lg text-center">
-<div class="text-2xl font-bold text-green-600">${Math.round(s.tl).toLocaleString()}</div>
-<div class="text-xs text-gray-600">Lbs Lifted</div>
-</div>
-<div class="bg-purple-50 p-4 rounded-lg text-center">
-<div class="text-2xl font-bold text-purple-600">${s.tr.toLocaleString()}</div>
-<div class="text-xs text-gray-600">Reps</div>
-</div>
-<div class="bg-pink-50 p-4 rounded-lg text-center">
-<div class="text-2xl font-bold text-pink-600">${s.wts.length}</div>
-<div class="text-xs text-gray-600">Weigh-ins</div>
-</div>
-</div>
-
-<div class="bg-green-50 border-2 border-green-500 rounded-lg p-4 mb-4">
-<h2 class="text-xl font-bold text-green-700 mb-3">Your Goals:</h2>
-<ul class="space-y-2 text-sm">
-<li>✓ Achieve strict pull-ups (multiple sets)</li>
-<li>✓ Perform dips with confidence</li>
-<li>✓ Develop visible six-pack abs with toned obliques</li>
-<li>✓ Build strong, defined lats and upper body</li>
-<li>✓ Full body restoration</li>
-</ul>
-</div>
-
-<div class="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6">
-<h2 class="text-lg font-bold text-red-700 mb-2">⚠️ HOCOM & Tracheobronchomalacia Considerations</h2>
-<ul class="space-y-1 text-xs">
-<li>• <strong>Always listen to your body</strong> - You know when to rest</li>
-<li>• <strong>Monitor breathing quality</strong> - Stop immediately if breathing becomes difficult</li>
-<li>• <strong>Heart rate awareness</strong> - If HR won't elevate properly, reduce intensity</li>
-<li>• <strong>Choose cardio that feels best</strong> - Stationary bike often easiest for breathing</li>
-<li>• <strong>Recovery is critical</strong> - These conditions make rest even more important</li>
-<li>• <strong>Avoid Valsalva maneuver</strong> - Don't hold breath during heavy lifts</li>
-</ul>
-</div>
-
-<div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6">
-<h3 class="font-bold text-blue-700 mb-3">📊 Tracking & Measurements</h3>
-<div class="text-sm space-y-2">
-<div><strong>Weekly (Every Sunday):</strong> Body weight, Progress photos (front/side/back), All workout performance</div>
-<div><strong>Every 4 Weeks:</strong> Body measurements (chest, waist, arms), Assessment & adjustments</div>
-</div>
-</div>
-
-<div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6">
-<h3 class="font-bold text-blue-700 mb-3">📊 Expected Milestones</h3>
-<div class="text-sm space-y-1">
-<div><strong>Week 4:</strong> Strength increase, movement patterns natural</div>
-<div><strong>Week 8:</strong> Solid foundation, feeling stronger</div>
-<div><strong>Week 12:</strong> First full pull-up attempt!</div>
-<div><strong>Week 16:</strong> Multiple pull-ups possible</div>
-<div><strong>Week 20:</strong> Sets of 5+ pull-ups, abs showing</div>
-<div><strong>Week 24:</strong> Visible six-pack, strong & ripped!</div>
-</div>
-</div>
-
-<div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6">
-<h3 class="font-bold text-yellow-700 mb-3">⚠️ Important Reminders</h3>
-<ul class="space-y-1 text-xs">
-<li>• Warm up 5-10 minutes before each workout</li>
-<li>• Use Smith machine for safety when training alone</li>
-<li>• Progressive overload: Increase weight or reps each week when possible</li>
-<li>• Sleep 7-9 hours nightly for recovery</li>
-<li>• Drink 80+ oz of water daily</li>
-<li>• Listen to your breathing - it's your guide</li>
-<li>• You and your husband can do most exercises together!</li>
-</ul>
-</div>
-
-<div class="bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg p-6 mb-6 text-center">
-<h3 class="text-2xl font-bold mb-3">🌟 YOU'VE GOT THIS, AMY! 🌟</h3>
-<p class="mb-3">By June 2026, you WILL be:</p>
-<ul class="text-left max-w-md mx-auto space-y-2">
-<li>✓ Doing multiple strict pull-ups</li>
-<li>✓ Banging out sets of dips</li>
-<li>✓ Showing off a defined six-pack</li>
-<li>✓ Rocking strong, toned lats and arms</li>
-<li>✓ Feeling stronger and more confident than ever</li>
-</ul>
-<p class="text-xl font-bold mt-4">Let's make this happen! 💪❤️</p>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-<button onclick="chView('exercises')" class="bg-indigo-600 text-white p-4 rounded-lg font-bold hover:bg-indigo-700">📖 Exercise Guide & Form</button>
-<button onclick="chView('overview')" class="bg-teal-600 text-white p-4 rounded-lg font-bold hover:bg-teal-700">📅 Program Overview</button>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<button onclick="chView('info')" class="bg-blue-600 text-white p-4 rounded-lg font-bold hover:bg-blue-700">📋 Personal Info</button>
-<button onclick="chView('workout')" class="bg-pink-600 text-white p-4 rounded-lg font-bold hover:bg-pink-700">💪 Workout</button>
-<button onclick="chView('stats')" class="bg-purple-600 text-white p-4 rounded-lg font-bold hover:bg-purple-700">📊 Stats</button>
-</div>
-</div>`;
+  // Progress %
+  return`<div class="p-4 max-w-4xl mx-auto"><div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-lg mb-4"><h1 class="text-3xl font-bold mb-2">Amy's 24-Week Transformation</h1><p class="text-lg">December 2025 → June 2026</p><p class="mt-2">Age: 54 | Training: 4:00-5:00 AM</p></div><div class="bg-white rounded-lg p-4 mb-4 border-2 border-purple-400"><h2 class="text-xl font-bold mb-3">Progress</h2><div class="text-center mb-3"><div class="text-2xl font-bold text-purple-600">Week ${cw} of 24</div><div class="text-sm text-gray-600">Phase ${st.p}: ${PRG[st.p].n}</div></div><div class="w-full bg-gray-200 rounded-full h-4 mb-2"><div class="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full" style="width:${prg}%"></div></div><div class="text-center text-sm text-gray-600">${Math.round(prg)}% Complete</div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"><div class="bg-blue-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-blue-600">${s.tw}</div><div class="text-xs text-gray-600">Workouts</div></div><div class="bg-green-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-green-600">${Math.round(s.tl).toLocaleString()}</div><div class="text-xs text-gray-600">Lbs Lifted</div></div><div class="bg-purple-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-purple-600">${s.tr.toLocaleString()}</div><div class="text-xs text-gray-600">Reps</div></div><div class="bg-pink-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-pink-600">${s.wts.length}</div><div class="text-xs text-gray-600">Weigh-ins</div></div></div><div class="bg-green-50 border-2 border-green-500 rounded-lg p-4 mb-4"><h2 class="text-xl font-bold text-green-700 mb-3">Your Goals:</h2><ul class="space-y-2 text-sm"><li>✓ Achieve strict pull-ups (multiple sets)</li><li>✓ Perform dips with confidence</li><li>✓ Develop visible six-pack abs with toned obliques</li><li>✓ Build strong, defined lats and upper body</li><li>✓ Full body restoration</li></ul></div><div class="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6"><h2 class="text-lg font-bold text-red-700 mb-2">⚠️ HOCOM & Tracheobronchomalacia Considerations</h2><ul class="space-y-1 text-xs"><li>• <strong>Always listen to your body</strong> - You know when to rest</li><li>• <strong>Monitor breathing quality</strong> - Stop immediately if breathing becomes difficult</li><li>• <strong>Heart rate awareness</strong> - If HR won't elevate properly, reduce intensity</li><li>• <strong>Choose cardio that feels best</strong> - Stationary bike often easiest for breathing</li><li>• <strong>Recovery is critical</strong> - These conditions make rest even more important</li><li>• <strong>Avoid Valsalva maneuver</strong> - Don't hold breath during heavy lifts</li></ul></div><div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-blue-700 mb-3">📊 Tracking & Measurements</h3><div class="text-sm space-y-2"><div><strong>Weekly (Every Sunday):</strong> Body weight, Progress photos (front/side/back), All workout performance</div><div><strong>Every 4 Weeks:</strong> Body measurements (chest, waist, arms), Assessment & adjustments</div></div></div><div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-blue-700 mb-3">📊 Expected Milestones</h3><div class="text-sm space-y-1"><div><strong>Week 4:</strong> Strength increase, movement patterns natural</div><div><strong>Week 8:</strong> Solid foundation, feeling stronger</div><div><strong>Week 12:</strong> First full pull-up attempt!</div><div><strong>Week 16:</strong> Multiple pull-ups possible</div><div><strong>Week 20:</strong> Sets of 5+ pull-ups, abs showing</div><div><strong>Week 24:</strong> Visible six-pack, strong & ripped!</div></div></div><div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-yellow-700 mb-3">⚠️ Important Reminders</h3><ul class="space-y-1 text-xs"><li>• Warm up 5-10 minutes before each workout</li><li>• Use Smith machine for safety when training alone</li><li>• Progressive overload: Increase weight or reps each week when possible</li><li>• Sleep 7-9 hours nightly for recovery</li><li>• Drink 80+ oz of water daily</li><li>• Listen to your breathing - it's your guide</li><li>• You and your husband can do most exercises together!</li></ul></div><div class="bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg p-6 mb-6 text-center"><h3 class="text-2xl font-bold mb-3">🌟 YOU'VE GOT THIS, AMY! 🌟</h3><p class="mb-3">By June 2026, you WILL be:</p><ul class="text-left max-w-md mx-auto space-y-2"><li>✓ Doing multiple strict pull-ups</li><li>✓ Banging out sets of dips</li><li>✓ Showing off a defined six-pack</li><li>✓ Rocking strong, toned lats and arms</li><li>✓ Feeling stronger and more confident than ever</li></ul><p class="text-xl font-bold mt-4">Let's make this happen! 💪❤️</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><button onclick="chView('exercises')" class="bg-indigo-600 text-white p-4 rounded-lg font-bold hover:bg-indigo-700">📖 Exercise Guide & Form</button><button onclick="chView('overview')" class="bg-teal-600 text-white p-4 rounded-lg font-bold hover:bg-teal-700">📅 Program Overview</button></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><button onclick="chView('info')" class="bg-blue-600 text-white p-4 rounded-lg font-bold hover:bg-blue-700">📋 Personal Info</button><button onclick="chView('workout')" class="bg-pink-600 text-white p-4 rounded-lg font-bold hover:bg-pink-700">💪 Workout</button><button onclick="chView('stats')" class="bg-purple-600 text-white p-4 rounded-lg font-bold hover:bg-purple-700">📊 Stats</button></div></div>`;
+  // Home page HTML
 }
 
 function rInfo(){
-  return`<div class="p-4 max-w-4xl mx-auto">
-<div class="bg-blue-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
-<h2 class="text-2xl font-bold">Personal Info</h2>
-<button onclick="chView('home')" class="bg-white text-blue-600 px-4 py-2 rounded font-bold">🏠</button>
-</div>
-<div class="bg-white rounded-lg p-6 space-y-4">
-<div><label class="block font-bold mb-2">Name:</label>
-<input class="w-full p-3 border-2 rounded" value="${st.info.name||''}" onchange="updInfo('name',this.value)"/></div>
-<div><label class="block font-bold mb-2">Age:</label>
-<input type="number" class="w-full p-3 border-2 rounded" value="${st.info.age||''}" onchange="updInfo('age',this.value)"/></div>
-<div><label class="block font-bold mb-2">Start Weight (lbs):</label>
-<input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.sw||''}" onchange="updInfo('sw',this.value)"/></div>
-<div><label class="block font-bold mb-2">Target Weight (lbs):</label>
-<input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.tw||''}" onchange="updInfo('tw',this.value)"/></div>
-<div><label class="block font-bold mb-2">Goals:</label>
-<textarea class="w-full p-3 border-2 rounded" rows="4" onchange="updInfo('goals',this.value)">${st.info.goals||''}</textarea></div>
-</div>
-<div class="bg-green-50 border-4 border-green-500 rounded-lg p-6 mt-6">
-<h3 class="text-2xl font-bold text-center mb-4">📸 Starting Photos</h3>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-${['Front','Side','Back'].map(v=>{
-  const k='start'+v;
-  return`<div class="border-2 border-dashed border-green-500 rounded p-4 bg-white text-center">
-<label class="font-bold block mb-2">${v}</label>
-<input type="file" accept="image/*" class="w-full text-sm mb-2" onchange="photo('${k}',event)"/>
-${st.photos[k]?`<img src="${st.photos[k]}" class="max-h-40 mx-auto rounded mt-2"/>`:''}
-</div>`;
-}).join('')}
-</div>
-</div>
-</div>`;
+// Render personal info page
+  return`<div class="p-4 max-w-4xl mx-auto"><div class="bg-blue-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center"><h2 class="text-2xl font-bold">Personal Info</h2><button onclick="chView('home')" class="bg-white text-blue-600 px-4 py-2 rounded font-bold">🏠</button></div><div class="bg-white rounded-lg p-6 space-y-4"><div><label class="block font-bold mb-2">Name:</label><input class="w-full p-3 border-2 rounded" value="${st.info.name||''}" onchange="updInfo('name',this.value)"/></div><div><label class="block font-bold mb-2">Age:</label><input type="number" class="w-full p-3 border-2 rounded" value="${st.info.age||''}" onchange="updInfo('age',this.value)"/></div><div><label class="block font-bold mb-2">Start Weight (lbs):</label><input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.sw||''}" onchange="updInfo('sw',this.value)"/></div><div><label class="block font-bold mb-2">Target Weight (lbs):</label><input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.tw||''}" onchange="updInfo('tw',this.value)"/></div><div><label class="block font-bold mb-2">Goals:</label><textarea class="w-full p-3 border-2 rounded" rows="4" onchange="updInfo('goals',this.value)">${st.info.goals||''}</textarea></div></div><div class="bg-green-50 border-4 border-green-500 rounded-lg p-6 mt-6"><h3 class="text-2xl font-bold text-center mb-4">📸 Starting Photos</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4">${['Front','Side','Back'].map(v=>{const k='start'+v;return`<div class="border-2 border-dashed border-green-500 rounded p-4 bg-white text-center"><label class="font-bold block mb-2">${v}</label><input type="file" accept="image/*" class="w-full text-sm mb-2" onchange="photo('${k}',event)"/>${st.photos[k]?`<img src="${st.photos[k]}" class="max-h-40 mx-auto rounded mt-2"/>`:''}</div>`;}).join('')}</div></div></div>`;
+  // Personal info page HTML
 }
+
+// PART 2 ENDS HERE
+// REPLACE FROM line 268 (function getWellnessData) THROUGH line ~870 (end of rInfo function)
+// NEXT LINE NOT TO REPLACE: function rStats(){
 
 function rStats(){
   if(st.chart){
