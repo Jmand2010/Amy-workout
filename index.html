@@ -8,82 +8,267 @@
 <!-- Character encoding set to UTF-8 for proper text display -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Responsive viewport configuration for mobile devices -->
-<title>Amy's Workout</title>
+<title>Amy's Workout - Login</title>
 <!-- Page title shown in browser tab -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <!-- Enables full-screen mode when added to iOS home screen -->
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- Loads Tailwind CSS framework from CDN -->
 <script type="module">
-<!-- Module script tag for Firebase ES6 imports -->
+// Firebase imports
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-<!-- Import Firebase app initialization function -->
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-<!-- Import Firebase authentication functions -->
-import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-<!-- Import Firebase Realtime Database functions -->
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getDatabase, ref, set, get, onValue, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
+// Firebase config
 const firebaseConfig = {
-<!-- Firebase project configuration object -->
   apiKey: "AIzaSyDu-ypnZu4ojzJAR8N1wpWkvhXqmxyNyUY",
-  <!-- API key for Firebase authentication -->
   authDomain: "amy-workout-app.firebaseapp.com",
-  <!-- Domain for Firebase authentication -->
   databaseURL: "https://amy-workout-app-default-rtdb.firebaseio.com",
-  <!-- URL for Firebase Realtime Database -->
   projectId: "amy-workout-app",
-  <!-- Firebase project ID -->
   storageBucket: "amy-workout-app.firebasestorage.app",
-  <!-- Firebase storage bucket URL -->
   messagingSenderId: "127656923512",
-  <!-- Firebase Cloud Messaging sender ID -->
   appId: "1:127656923512:web:e3143e94bef691d930788d"
-  <!-- Firebase application ID -->
 };
 
 const app = initializeApp(firebaseConfig);
-<!-- Initialize Firebase with configuration -->
 const auth = getAuth(app);
-<!-- Get Firebase Authentication instance -->
 const db = getDatabase(app);
-<!-- Get Firebase Database instance -->
 let uid = null;
-<!-- User ID variable, initially null -->
+let userEmail = null;
+let dataRef = null;
+let lastSaveTime = 0;
+let saveTimer = null;
 
-signInAnonymously(auth);
-<!-- Sign in user anonymously -->
-onAuthStateChanged(auth, async (u) => {
-<!-- Listen for authentication state changes -->
-  if (u) {
-  <!-- Check if user is authenticated -->
-    uid = u.uid;
-    <!-- Store user ID -->
+// Authentication listener
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    uid = user.uid;
+    userEmail = user.email;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    dataRef = ref(db, 'users/' + uid);
     try {
-    <!-- Begin error handling block -->
-      const snap = await get(ref(db, 'users/' + uid));
-      <!-- Fetch user data from database -->
-      if (snap.exists()) window.loadAppData(snap.val());
-      <!-- Load data if it exists -->
-    } catch(e){}
-    <!-- Catch and ignore errors -->
+      const snapshot = await get(dataRef);
+      if (snapshot.exists()) window.loadAppData(snapshot.val());
+      else window.render();
+      onValue(dataRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          if (data.lastModified && data.lastModified > lastSaveTime) window.loadAppData(data);
+        }
+      });
+    } catch(error) {
+      alert('Error loading data. Please refresh.');
+    }
+  } else {
+    uid = null;
+    userEmail = null;
+    if (dataRef) { off(dataRef); dataRef = null; }
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
   }
 });
 
-window.saveAppData = async (data) => {
-<!-- Global function to save app data -->
-  if (uid) {
-  <!-- Only save if user is authenticated -->
-    try { await set(ref(db, 'users/' + uid), data); } catch(e){}
-    <!-- Save data to Firebase, ignore errors -->
+// Login
+window.handleLogin = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+  const button = event.target;
+  if (!email || !password) { errorEl.textContent = 'Please enter both email and password'; errorEl.style.display = 'block'; return; }
+  button.disabled = true; button.textContent = 'Logging in...';
+  try {
+    errorEl.style.display = 'none';
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    let message = 'Login failed: ';
+    if (error.code === 'auth/user-not-found') message += 'No account found.';
+    else if (error.code === 'auth/wrong-password') message += 'Incorrect password.';
+    else if (error.code === 'auth/invalid-email') message += 'Invalid email.';
+    else if (error.code === 'auth/invalid-credential') message += 'Invalid email or password.';
+    else if (error.code === 'auth/too-many-requests') message += 'Too many attempts. Try later.';
+    else message += error.message;
+    errorEl.textContent = message; errorEl.style.display = 'block';
+    button.disabled = false; button.textContent = 'Login';
   }
+};
+
+// Signup
+window.handleSignup = async () => {
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirmPassword = document.getElementById('signupConfirmPassword').value;
+  const errorEl = document.getElementById('signupError');
+  const button = event.target;
+  if (!email || !password || !confirmPassword) { errorEl.textContent = 'Fill in all fields'; errorEl.style.display = 'block'; return; }
+  if (password !== confirmPassword) { errorEl.textContent = 'Passwords do not match'; errorEl.style.display = 'block'; return; }
+  if (password.length < 6) { errorEl.textContent = 'Password must be 6+ characters'; errorEl.style.display = 'block'; return; }
+  button.disabled = true; button.textContent = 'Creating...';
+  try {
+    errorEl.style.display = 'none';
+    await createUserWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    let message = 'Signup failed: ';
+    if (error.code === 'auth/email-already-in-use') message += 'Email already registered. Login instead.';
+    else if (error.code === 'auth/invalid-email') message += 'Invalid email.';
+    else if (error.code === 'auth/weak-password') message += 'Password too weak.';
+    else message += error.message;
+    errorEl.textContent = message; errorEl.style.display = 'block';
+    button.disabled = false; button.textContent = 'Create Account';
+  }
+};
+
+// Password reset
+window.handlePasswordReset = async () => {
+  const email = document.getElementById('resetEmail').value.trim();
+  const errorEl = document.getElementById('resetError');
+  const successEl = document.getElementById('resetSuccess');
+  const button = event.target;
+  if (!email) { errorEl.textContent = 'Enter your email'; errorEl.style.display = 'block'; successEl.style.display = 'none'; return; }
+  button.disabled = true; button.textContent = 'Sending...';
+  try {
+    errorEl.style.display = 'none';
+    await sendPasswordResetEmail(auth, email);
+    successEl.textContent = '✅ Reset email sent! Check inbox and spam.';
+    successEl.style.display = 'block';
+    button.disabled = false; button.textContent = 'Send Reset Email';
+    setTimeout(() => window.showLoginForm(), 4000);
+  } catch (error) {
+    let message = 'Reset failed: ';
+    if (error.code === 'auth/user-not-found') message += 'No account found.';
+    else if (error.code === 'auth/invalid-email') message += 'Invalid email.';
+    else if (error.code === 'auth/too-many-requests') message += 'Too many requests. Wait.';
+    else message += error.message;
+    errorEl.textContent = message; errorEl.style.display = 'block'; successEl.style.display = 'none';
+    button.disabled = false; button.textContent = 'Send Reset Email';
+  }
+};
+
+// Logout
+window.handleLogout = async () => {
+  if (confirm('Logout?')) {
+    try {
+      if (saveTimer) { clearTimeout(saveTimer); await window.saveAppDataNow(); }
+      await signOut(auth);
+    } catch (error) { alert('Logout failed: ' + error.message); }
+  }
+};
+
+// Form switching
+window.showSignupForm = () => {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('signupForm').style.display = 'block';
+  document.getElementById('resetForm').style.display = 'none';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('signupError').style.display = 'none';
+};
+window.showLoginForm = () => {
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('signupForm').style.display = 'none';
+  document.getElementById('resetForm').style.display = 'none';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('signupError').style.display = 'none';
+  document.getElementById('resetError').style.display = 'none';
+  document.getElementById('resetSuccess').style.display = 'none';
+};
+window.showResetForm = () => {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('signupForm').style.display = 'none';
+  document.getElementById('resetForm').style.display = 'block';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('resetError').style.display = 'none';
+  document.getElementById('resetSuccess').style.display = 'none';
+};
+
+// Auto-save (1 second after last change)
+window.saveAppData = async (data) => {
+  if (!uid) return;
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      lastSaveTime = Date.now();
+      data.lastModified = lastSaveTime;
+      await set(ref(db, 'users/' + uid), data);
+      console.log('✅ Auto-saved');
+    } catch(error) { console.error('Save error:', error); }
+  }, 1000);
+};
+
+// Immediate save
+window.saveAppDataNow = async () => {
+  if (!uid) return;
+  try {
+    lastSaveTime = Date.now();
+    const data = { data: window.st.data, info: window.st.info, photos: window.st.photos, lastModified: lastSaveTime };
+    await set(ref(db, 'users/' + uid), data);
+    console.log('✅ Saved');
+  } catch(error) { console.error('Save error:', error); }
 };
 </script>
 <!-- Close Firebase module script -->
 </head>
 <!-- Close head section -->
 <body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen">
+  <div id="loginScreen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem">
+<div style="max-width:420px;width:100%">
+<div id="loginForm" class="bg-white rounded-lg shadow-2xl p-8">
+<div class="text-center mb-6">
+<h1 class="text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent mb-2">Amy's Workout</h1>
+<p class="text-gray-600 text-lg">24-Week Transformation</p>
+</div>
+<div id="loginError" class="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" style="display:none"></div>
+<div class="space-y-4">
+<div><label class="block text-sm font-bold text-gray-700 mb-2">Email:</label>
+<input type="email" id="loginEmail" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="your@email.com" onkeypress="if(event.key==='Enter')handleLogin()"></div>
+<div><label class="block text-sm font-bold text-gray-700 mb-2">Password:</label>
+<input type="password" id="loginPassword" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="••••••••" onkeypress="if(event.key==='Enter')handleLogin()"></div>
+<button onclick="handleLogin()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 rounded-lg font-bold text-lg hover:opacity-90">Login</button>
+</div>
+<div class="mt-6 text-center space-y-3">
+<button onclick="showResetForm()" class="text-blue-600 hover:underline text-sm font-medium">Forgot Password?</button>
+<div class="text-gray-600 text-sm">Don't have an account? <button onclick="showSignupForm()" class="text-purple-600 font-bold hover:underline">Sign Up</button></div>
+</div>
+</div>
+<div id="signupForm" class="bg-white rounded-lg shadow-2xl p-8" style="display:none">
+<div class="text-center mb-6">
+<h1 class="text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent mb-2">Create Account</h1>
+<p class="text-gray-600 text-lg">Start your transformation</p>
+</div>
+<div id="signupError" class="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" style="display:none"></div>
+<div class="space-y-4">
+<div><label class="block text-sm font-bold text-gray-700 mb-2">Email:</label>
+<input type="email" id="signupEmail" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="your@email.com"></div>
+<div><label class="block text-sm font-bold text-gray-700 mb-2">Password:</label>
+<input type="password" id="signupPassword" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="At least 6 characters"></div>
+<div><label class="block text-sm font-bold text-gray-700 mb-2">Confirm Password:</label>
+<input type="password" id="signupConfirmPassword" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="Re-enter password" onkeypress="if(event.key==='Enter')handleSignup()"></div>
+<button onclick="handleSignup()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 rounded-lg font-bold text-lg hover:opacity-90">Create Account</button>
+</div>
+<div class="mt-6 text-center">
+<button onclick="showLoginForm()" class="text-purple-600 font-bold hover:underline">← Back to Login</button>
+</div>
+</div>
+<div id="resetForm" class="bg-white rounded-lg shadow-2xl p-8" style="display:none">
+<div class="text-center mb-6">
+<h1 class="text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent mb-2">Reset Password</h1>
+<p class="text-gray-600">We'll send a reset link</p>
+</div>
+<div id="resetError" class="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" style="display:none"></div>
+<div id="resetSuccess" class="bg-green-100 border-2 border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4" style="display:none"></div>
+<div class="space-y-4">
+<div><label class="block text-sm font-bold text-gray-700 mb-2">Email:</label>
+<input type="email" id="resetEmail" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="your@email.com" onkeypress="if(event.key==='Enter')handlePasswordReset()"></div>
+<button onclick="handlePasswordReset()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 rounded-lg font-bold text-lg hover:opacity-90">Send Reset Email</button>
+</div>
+<div class="mt-6 text-center">
+<button onclick="showLoginForm()" class="text-purple-600 font-bold hover:underline">← Back to Login</button>
+</div>
+</div>
+</div>
+</div>
 <!-- Body with pink to purple gradient background, full screen height -->
-<div id="app"></div>
+<div id="app" style="display:none"></div>
 <!-- Main app container div -->
 <script>
 <!-- Main application script begins -->
@@ -295,15 +480,10 @@ let st={v:'home',p:1,w:1,d:1,data:{},info:{name:'',age:'',sw:'',tw:'',goals:''},
 <!-- State object: v=view, p=phase, w=week, d=day, data=workout data, info=user info, photos=progress photos, chart=current chart -->
 
 window.loadAppData=d=>{
-<!-- Function to load app data from Firebase -->
   if(d.data)st.data=d.data;
-  <!-- Load workout data if exists -->
   if(d.info)st.info=d.info;
-  <!-- Load user info if exists -->
   if(d.photos)st.photos=d.photos;
-  <!-- Load photos if exist -->
   render();
-  <!-- Trigger UI re-render -->
 };
 
 const sv=()=>{if(window.saveAppData)window.saveAppData({data:st.data,info:st.info,photos:st.photos});};
@@ -559,13 +739,13 @@ function rHome(){
   // Current week
   const prg=(cw/24)*100;
   // Progress %
-  return`<div class="p-4 max-w-4xl mx-auto"><div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-lg mb-4"><h1 class="text-3xl font-bold mb-2">Amy's 24-Week Transformation</h1><p class="text-lg">December 2025 → June 2026</p><p class="mt-2">Age: 54 | Training: 4:00-5:00 AM</p></div><div class="bg-white rounded-lg p-4 mb-4 border-2 border-purple-400"><h2 class="text-xl font-bold mb-3">Progress</h2><div class="text-center mb-3"><div class="text-2xl font-bold text-purple-600">Week ${cw} of 24</div><div class="text-sm text-gray-600">Phase ${st.p}: ${PRG[st.p].n}</div></div><div class="w-full bg-gray-200 rounded-full h-4 mb-2"><div class="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full" style="width:${prg}%"></div></div><div class="text-center text-sm text-gray-600">${Math.round(prg)}% Complete</div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"><div class="bg-blue-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-blue-600">${s.tw}</div><div class="text-xs text-gray-600">Workouts</div></div><div class="bg-green-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-green-600">${Math.round(s.tl).toLocaleString()}</div><div class="text-xs text-gray-600">Lbs Lifted</div></div><div class="bg-purple-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-purple-600">${s.tr.toLocaleString()}</div><div class="text-xs text-gray-600">Reps</div></div><div class="bg-pink-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-pink-600">${s.wts.length}</div><div class="text-xs text-gray-600">Weigh-ins</div></div></div><div class="bg-green-50 border-2 border-green-500 rounded-lg p-4 mb-4"><h2 class="text-xl font-bold text-green-700 mb-3">Your Goals:</h2><ul class="space-y-2 text-sm"><li>✓ Achieve strict pull-ups (multiple sets)</li><li>✓ Perform dips with confidence</li><li>✓ Develop visible six-pack abs with toned obliques</li><li>✓ Build strong, defined lats and upper body</li><li>✓ Full body restoration</li></ul></div><div class="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6"><h2 class="text-lg font-bold text-red-700 mb-2">⚠️ HOCOM & Tracheobronchomalacia Considerations</h2><ul class="space-y-1 text-xs"><li>• <strong>Always listen to your body</strong> - You know when to rest</li><li>• <strong>Monitor breathing quality</strong> - Stop immediately if breathing becomes difficult</li><li>• <strong>Heart rate awareness</strong> - If HR won't elevate properly, reduce intensity</li><li>• <strong>Choose cardio that feels best</strong> - Stationary bike often easiest for breathing</li><li>• <strong>Recovery is critical</strong> - These conditions make rest even more important</li><li>• <strong>Avoid Valsalva maneuver</strong> - Don't hold breath during heavy lifts</li></ul></div><div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-blue-700 mb-3">📊 Tracking & Measurements</h3><div class="text-sm space-y-2"><div><strong>Weekly (Every Sunday):</strong> Body weight, Progress photos (front/side/back), All workout performance</div><div><strong>Every 4 Weeks:</strong> Body measurements (chest, waist, arms), Assessment & adjustments</div></div></div><div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-blue-700 mb-3">📊 Expected Milestones</h3><div class="text-sm space-y-1"><div><strong>Week 4:</strong> Strength increase, movement patterns natural</div><div><strong>Week 8:</strong> Solid foundation, feeling stronger</div><div><strong>Week 12:</strong> First full pull-up attempt!</div><div><strong>Week 16:</strong> Multiple pull-ups possible</div><div><strong>Week 20:</strong> Sets of 5+ pull-ups, abs showing</div><div><strong>Week 24:</strong> Visible six-pack, strong & ripped!</div></div></div><div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-yellow-700 mb-3">⚠️ Important Reminders</h3><ul class="space-y-1 text-xs"><li>• Warm up 5-10 minutes before each workout</li><li>• Use Smith machine for safety when training alone</li><li>• Progressive overload: Increase weight or reps each week when possible</li><li>• Sleep 7-9 hours nightly for recovery</li><li>• Drink 80+ oz of water daily</li><li>• Listen to your breathing - it's your guide</li><li>• You and your husband can do most exercises together!</li></ul></div><div class="bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg p-6 mb-6 text-center"><h3 class="text-2xl font-bold mb-3">🌟 YOU'VE GOT THIS, AMY! 🌟</h3><p class="mb-3">By June 2026, you WILL be:</p><ul class="text-left max-w-md mx-auto space-y-2"><li>✓ Doing multiple strict pull-ups</li><li>✓ Banging out sets of dips</li><li>✓ Showing off a defined six-pack</li><li>✓ Rocking strong, toned lats and arms</li><li>✓ Feeling stronger and more confident than ever</li></ul><p class="text-xl font-bold mt-4">Let's make this happen! 💪❤️</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><button onclick="chView('exercises')" class="bg-indigo-600 text-white p-4 rounded-lg font-bold hover:bg-indigo-700">📖 Exercise Guide & Form</button><button onclick="chView('overview')" class="bg-teal-600 text-white p-4 rounded-lg font-bold hover:bg-teal-700">📅 Program Overview</button></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><button onclick="chView('info')" class="bg-blue-600 text-white p-4 rounded-lg font-bold hover:bg-blue-700">📋 Personal Info</button><button onclick="chView('workout')" class="bg-pink-600 text-white p-4 rounded-lg font-bold hover:bg-pink-700">💪 Workout</button><button onclick="chView('stats')" class="bg-purple-600 text-white p-4 rounded-lg font-bold hover:bg-purple-700">📊 Stats</button></div></div>`;
+  return`<div class="p-4 max-w-4xl mx-auto"><div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 rounded-lg mb-4"><div class="flex justify-between items-start mb-4"><div><h1 class="text-3xl font-bold mb-2">Amy's 24-Week Transformation</h1><p class="text-lg">December 2025 → June 2026</p></div><button onclick="handleLogout()" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition-colors">Logout</button></div><p class="text-sm">Logged in as: ${userEmail || 'User'}</p></div><div class="bg-white rounded-lg p-4 mb-4 border-2 border-purple-400"><h2 class="text-xl font-bold mb-3">Progress</h2><div class="text-center mb-3"><div class="text-2xl font-bold text-purple-600">Week ${cw} of 24</div><div class="text-sm text-gray-600">Phase ${st.p}: ${PRG[st.p].n}</div></div><div class="w-full bg-gray-200 rounded-full h-4 mb-2"><div class="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full" style="width:${prg}%"></div></div><div class="text-center text-sm text-gray-600">${Math.round(prg)}% Complete</div></div><div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6"><div class="bg-blue-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-blue-600">${s.tw}</div><div class="text-xs text-gray-600">Workouts</div></div><div class="bg-green-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-green-600">${Math.round(s.tl).toLocaleString()}</div><div class="text-xs text-gray-600">Lbs Lifted</div></div><div class="bg-purple-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-purple-600">${s.tr.toLocaleString()}</div><div class="text-xs text-gray-600">Reps</div></div><div class="bg-pink-50 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-pink-600">${s.wts.length}</div><div class="text-xs text-gray-600">Weigh-ins</div></div></div><div class="bg-green-50 border-2 border-green-500 rounded-lg p-4 mb-4"><h2 class="text-xl font-bold text-green-700 mb-3">Your Goals:</h2><ul class="space-y-2 text-sm"><li>✓ Achieve strict pull-ups (multiple sets)</li><li>✓ Perform dips with confidence</li><li>✓ Develop visible six-pack abs with toned obliques</li><li>✓ Build strong, defined lats and upper body</li><li>✓ Full body restoration</li></ul></div><div class="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6"><h2 class="text-lg font-bold text-red-700 mb-2">⚠️ HOCOM & Tracheobronchomalacia Considerations</h2><ul class="space-y-1 text-xs"><li>• <strong>Always listen to your body</strong> - You know when to rest</li><li>• <strong>Monitor breathing quality</strong> - Stop immediately if breathing becomes difficult</li><li>• <strong>Heart rate awareness</strong> - If HR won't elevate properly, reduce intensity</li><li>• <strong>Choose cardio that feels best</strong> - Stationary bike often easiest for breathing</li><li>• <strong>Recovery is critical</strong> - These conditions make rest even more important</li><li>• <strong>Avoid Valsalva maneuver</strong> - Don't hold breath during heavy lifts</li></ul></div><div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-blue-700 mb-3">📊 Tracking & Measurements</h3><div class="text-sm space-y-2"><div><strong>Weekly (Every Sunday):</strong> Body weight, Progress photos (front/side/back), All workout performance</div><div><strong>Every 4 Weeks:</strong> Body measurements (chest, waist, arms), Assessment & adjustments</div></div></div><div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-blue-700 mb-3">📊 Expected Milestones</h3><div class="text-sm space-y-1"><div><strong>Week 4:</strong> Strength increase, movement patterns natural</div><div><strong>Week 8:</strong> Solid foundation, feeling stronger</div><div><strong>Week 12:</strong> First full pull-up attempt!</div><div><strong>Week 16:</strong> Multiple pull-ups possible</div><div><strong>Week 20:</strong> Sets of 5+ pull-ups, abs showing</div><div><strong>Week 24:</strong> Visible six-pack, strong & ripped!</div></div></div><div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6"><h3 class="font-bold text-yellow-700 mb-3">⚠️ Important Reminders</h3><ul class="space-y-1 text-xs"><li>• Warm up 5-10 minutes before each workout</li><li>• Use Smith machine for safety when training alone</li><li>• Progressive overload: Increase weight or reps each week when possible</li><li>• Sleep 7-9 hours nightly for recovery</li><li>• Drink 80+ oz of water daily</li><li>• Listen to your breathing - it's your guide</li><li>• You and your husband can do most exercises together!</li></ul></div><div class="bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg p-6 mb-6 text-center"><h3 class="text-2xl font-bold mb-3">🌟 YOU'VE GOT THIS, AMY! 🌟</h3><p class="mb-3">By June 2026, you WILL be:</p><ul class="text-left max-w-md mx-auto space-y-2"><li>✓ Doing multiple strict pull-ups</li><li>✓ Banging out sets of dips</li><li>✓ Showing off a defined six-pack</li><li>✓ Rocking strong, toned lats and arms</li><li>✓ Feeling stronger and more confident than ever</li></ul><p class="text-xl font-bold mt-4">Let's make this happen! 💪❤️</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><button onclick="chView('exercises')" class="bg-indigo-600 text-white p-4 rounded-lg font-bold hover:bg-indigo-700">📖 Exercise Guide & Form</button><button onclick="chView('overview')" class="bg-teal-600 text-white p-4 rounded-lg font-bold hover:bg-teal-700">📅 Program Overview</button></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><button onclick="chView('info')" class="bg-blue-600 text-white p-4 rounded-lg font-bold hover:bg-blue-700">📋 Personal Info</button><button onclick="chView('workout')" class="bg-pink-600 text-white p-4 rounded-lg font-bold hover:bg-pink-700">💪 Workout</button><button onclick="chView('stats')" class="bg-purple-600 text-white p-4 rounded-lg font-bold hover:bg-purple-700">📊 Stats</button></div></div>`;
   // Home page HTML
 }
 
 function rInfo(){
 // Render personal info page
-  return`<div class="p-4 max-w-4xl mx-auto"><div class="bg-blue-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center"><h2 class="text-2xl font-bold">Personal Info</h2><button onclick="chView('home')" class="bg-white text-blue-600 px-4 py-2 rounded font-bold">🏠</button></div><div class="bg-white rounded-lg p-6 space-y-4"><div><label class="block font-bold mb-2">Name:</label><input class="w-full p-3 border-2 rounded" value="${st.info.name||''}" onchange="updInfo('name',this.value)"/></div><div><label class="block font-bold mb-2">Age:</label><input type="number" class="w-full p-3 border-2 rounded" value="${st.info.age||''}" onchange="updInfo('age',this.value)"/></div><div><label class="block font-bold mb-2">Start Weight (lbs):</label><input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.sw||''}" onchange="updInfo('sw',this.value)"/></div><div><label class="block font-bold mb-2">Target Weight (lbs):</label><input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.tw||''}" onchange="updInfo('tw',this.value)"/></div><div><label class="block font-bold mb-2">Goals:</label><textarea class="w-full p-3 border-2 rounded" rows="4" onchange="updInfo('goals',this.value)">${st.info.goals||''}</textarea></div></div><div class="bg-green-50 border-4 border-green-500 rounded-lg p-6 mt-6"><h3 class="text-2xl font-bold text-center mb-4">📸 Starting Photos</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4">${['Front','Side','Back'].map(v=>{const k='start'+v;return`<div class="border-2 border-dashed border-green-500 rounded p-4 bg-white text-center"><label class="font-bold block mb-2">${v}</label><input type="file" accept="image/*" class="w-full text-sm mb-2" onchange="photo('${k}',event)"/>${st.photos[k]?`<img src="${st.photos[k]}" class="max-h-40 mx-auto rounded mt-2"/>`:''}</div>`;}).join('')}</div></div></div>`;
+  return`<div class="p-4 max-w-4xl mx-auto"><div class="bg-blue-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center"><h2 class="text-2xl font-bold">Personal Info</h2><div class="flex gap-2"><button onclick="handleLogout()" class="bg-white text-blue-600 px-3 py-2 rounded font-bold text-sm">Logout</button><button onclick="chView('home')" class="bg-white text-blue-600 px-4 py-2 rounded font-bold">🏠</button></div></div><div class="bg-white rounded-lg p-6 space-y-4"><div><label class="block font-bold mb-2">Name:</label><input class="w-full p-3 border-2 rounded" value="${st.info.name||''}" onchange="updInfo('name',this.value)"/></div><div><label class="block font-bold mb-2">Age:</label><input type="number" class="w-full p-3 border-2 rounded" value="${st.info.age||''}" onchange="updInfo('age',this.value)"/></div><div><label class="block font-bold mb-2">Start Weight (lbs):</label><input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.sw||''}" onchange="updInfo('sw',this.value)"/></div><div><label class="block font-bold mb-2">Target Weight (lbs):</label><input type="number" step="0.1" class="w-full p-3 border-2 rounded" value="${st.info.tw||''}" onchange="updInfo('tw',this.value)"/></div><div><label class="block font-bold mb-2">Goals:</label><textarea class="w-full p-3 border-2 rounded" rows="4" onchange="updInfo('goals',this.value)">${st.info.goals||''}</textarea></div></div><div class="bg-green-50 border-4 border-green-500 rounded-lg p-6 mt-6"><h3 class="text-2xl font-bold text-center mb-4">📸 Starting Photos</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4">${['Front','Side','Back'].map(v=>{const k='start'+v;return`<div class="border-2 border-dashed border-green-500 rounded p-4 bg-white text-center"><label class="font-bold block mb-2">${v}</label><input type="file" accept="image/*" class="w-full text-sm mb-2" onchange="photo('${k}',event)"/>${st.photos[k]?`<img src="${st.photos[k]}" class="max-h-40 mx-auto rounded mt-2"/>`:''}</div>`;}).join('')}</div></div></div>`;
   // Personal info page HTML
 }
 
@@ -610,7 +790,8 @@ ${renderChart(title,data)}
   return`<div class="p-4 max-w-4xl mx-auto">
 <div class="bg-purple-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
 <h2 class="text-2xl font-bold">📊 Stats & Charts</h2>
-<button onclick="chView('home')" class="bg-white text-purple-600 px-4 py-2 rounded font-bold">🏠</button>
+<div class="flex gap-2"><button onclick="handleLogout()" class="bg-white text-purple-600 px-3 py-2 rounded font-bold text-sm">Logout</button><button onclick="chView('home')" class="bg-white text-purple-600 px-4 py-2 rounded font-bold">🏠</button></div>
+</div>
 </div>
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 <div class="bg-white rounded-lg p-6 text-center">
@@ -670,7 +851,8 @@ function rAdvancedAnalytics(){
   return `<div class="p-4 max-w-6xl mx-auto">
     <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
       <h2 class="text-2xl font-bold">📊 Advanced Analytics</h2>
-      <button onclick="chView('stats')" class="bg-white text-indigo-600 px-4 py-2 rounded font-bold hover:bg-gray-100">← Back</button>
+      <div class="flex gap-2"><button onclick="handleLogout()" class="bg-white text-indigo-600 px-3 py-2 rounded font-bold text-sm">Logout</button><button onclick="chView('stats')" class="bg-white text-indigo-600 px-4 py-2 rounded font-bold hover:bg-gray-100">← Back</button></div>
+    </div>
     </div>
 
     <div class="bg-white rounded-lg p-4 mb-4 border-2 border-indigo-300">
@@ -1283,7 +1465,7 @@ function rWork(){
 <div class="bg-green-600 text-white p-4 rounded-lg mb-4">
 <div class="flex justify-between items-center mb-3">
 <h2 class="text-xl font-bold">REST DAY</h2>
-<button onclick="chView('home')" class="bg-white text-green-600 px-4 py-2 rounded font-bold">🏠</button>
+<div class="flex gap-2"><button onclick="handleLogout()" class="bg-white text-green-600 px-3 py-2 rounded font-bold text-sm">Logout</button><button onclick="chView('home')" class="bg-white text-green-600 px-4 py-2 rounded font-bold">🏠</button></div>
 </div>
 <div class="grid grid-cols-3 gap-2 text-sm">
 <select class="p-2 rounded text-black" onchange="st.p=+this.value;st.w=1;st.d=1;render()">
@@ -1341,7 +1523,7 @@ ${st.photos[pk]?`<img src="${st.photos[pk]}" class="max-h-32 mx-auto rounded mt-
 <div class="bg-blue-600 text-white p-4 rounded-lg mb-4">
 <div class="flex justify-between items-center mb-3">
 <h2 class="text-xl font-bold">CARDIO DAY</h2>
-<button onclick="chView('home')" class="bg-white text-blue-600 px-4 py-2 rounded font-bold">🏠</button>
+<div class="flex gap-2"><button onclick="handleLogout()" class="bg-white text-blue-600 px-3 py-2 rounded font-bold text-sm">Logout</button><button onclick="chView('home')" class="bg-white text-blue-600 px-4 py-2 rounded font-bold">🏠</button></div>
 </div>
 <div class="grid grid-cols-3 gap-2 text-sm">
 <select class="p-2 rounded text-black" onchange="st.p=+this.value;st.w=1;st.d=1;render()">
@@ -1402,11 +1584,11 @@ ${st.photos[pk]?`<img src="${st.photos[pk]}" class="max-h-32 mx-auto rounded mt-
 </div>`;
   }
 
-  let h=`<div class="p-4 max-w-4xl mx-auto">
+ let h=`<div class="p-4 max-w-4xl mx-auto">
 <div class="bg-pink-600 text-white p-4 rounded-lg mb-4">
 <div class="flex justify-between items-center mb-3">
 <h2 class="text-xl font-bold">${dy.n}</h2>
-<button onclick="chView('home')" class="bg-white text-pink-600 px-4 py-2 rounded font-bold">🏠</button>
+<div class="flex gap-2"><button onclick="handleLogout()" class="bg-white text-pink-600 px-3 py-2 rounded font-bold text-sm">Logout</button><button onclick="chView('home')" class="bg-white text-pink-600 px-4 py-2 rounded font-bold">🏠</button></div>
 </div>
 <div class="grid grid-cols-3 gap-2 text-sm">
 <select class="p-2 rounded text-black" onchange="st.p=+this.value;st.w=1;st.d=1;render()">
@@ -2594,7 +2776,7 @@ function rExercises(){
     <!-- HEADER SECTION: Title and home button -->
     <div class="bg-indigo-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
       <h2 class="text-2xl font-bold">📖 Exercise Guide & Form</h2>
-      <button onclick="chView('home')" class="bg-white text-indigo-600 px-4 py-2 rounded font-bold">🏠</button>
+      <div class="flex gap-2"><button onclick="handleLogout()" class="bg-white text-indigo-600 px-3 py-2 rounded font-bold text-sm">Logout</button><button onclick="chView('home')" class="bg-white text-indigo-600 px-4 py-2 rounded font-bold">🏠</button></div>
     </div>
     <!-- INTRO BOX: Brief description of the page -->
     <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-lg mb-6">
@@ -2719,7 +2901,7 @@ function rOverview(){
   return `<div class="p-4 max-w-4xl mx-auto">
     <div class="bg-teal-600 text-white p-4 rounded-lg mb-4 flex justify-between items-center">
       <h2 class="text-2xl font-bold">📅 Program Overview</h2>
-      <button onclick="chView('home')" class="bg-white text-teal-600 px-4 py-2 rounded font-bold">🏠</button>
+      <div class="flex gap-2"><button onclick="handleLogout()" class="bg-white text-teal-600 px-3 py-2 rounded font-bold text-sm">Logout</button><button onclick="chView('home')" class="bg-white text-teal-600 px-4 py-2 rounded font-bold">🏠</button></div>
     </div>
 
     <div class="bg-gradient-to-r from-teal-500 to-blue-600 text-white p-6 rounded-lg mb-6">
