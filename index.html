@@ -35,16 +35,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 let uid = null;
-let userEmail = null;  // ← ADD THIS LINE
+let userEmail = null;
 let dataRef = null;
 let lastSaveTime = 0;
 let saveTimer = null;
+
+// Make userEmail globally accessible
+window.userEmail = null;
 
 // Authentication listener
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     uid = user.uid;
     userEmail = user.email;
+    window.userEmail = user.email;  // ← ADD THIS LINE
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     dataRef = ref(db, 'users/' + uid);
@@ -61,9 +65,10 @@ onAuthStateChanged(auth, async (user) => {
     } catch(error) {
       alert('Error loading data. Please refresh.');
     }
-  } else {
+} else {
     uid = null;
     userEmail = null;
+    window.userEmail = null;  // ← ADD THIS LINE
     if (dataRef) { off(dataRef); dataRef = null; }
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
